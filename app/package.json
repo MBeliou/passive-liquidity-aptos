@@ -81,7 +81,8 @@
 	},
 	"dependencies": {
 		"node-watcher": "^0.0.4",
-		"postgres": "^3.4.5"
+		"postgres": "^3.4.5",
+		"zod": "^4.1.11"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [

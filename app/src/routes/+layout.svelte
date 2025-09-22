@@ -2,8 +2,25 @@
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import { ModeWatcher } from 'mode-watcher';
+	import TabBar, { type TabBarLink } from '$lib/components/app/tab-bar/tab-bar.svelte';
+	import PiggyBank from '@lucide/svelte/icons/piggy-bank';
 
 	let { children } = $props();
+
+	const links: TabBarLink[] = [
+		{
+			label: 'Earn',
+			icon: PiggyBank,
+			url: '#',
+			isActive: true
+		},
+		{
+			label: 'Profile',
+			icon: PiggyBank,
+			url: '#',
+			isActive: false
+		}
+	];
 </script>
 
 <svelte:head>
@@ -13,3 +30,5 @@
 <ModeWatcher />
 
 {@render children?.()}
+
+<TabBar {links}></TabBar>
