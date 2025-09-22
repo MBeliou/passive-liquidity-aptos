@@ -79,6 +79,7 @@
 		"vitest-browser-svelte": "^0.1.0"
 	},
 	"dependencies": {
+		"node-watcher": "^0.0.4",
 		"postgres": "^3.4.5"
 	},
 	"pnpm": {
