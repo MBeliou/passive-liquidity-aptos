@@ -12,6 +12,9 @@
 </script>
 
 <script lang="ts">
+	import * as Drawer from '$lib/components/ui/drawer/index.js';
+	import SearchPanel from '../search-panel/search-panel.svelte';
+
 	const isMobile = new IsMobile();
 	let {
 		links
@@ -22,7 +25,6 @@
 
 {#if isMobile.current}
 	<!--  on bottom, separate -->
-
 	<div class="fixed inset-x-0 bottom-2 isolate">
 		<div class="relative flex items-stretch justify-between">
 			<div class="bg-muted flex h-fit gap-1 rounded-full p-1">
@@ -42,12 +44,7 @@
 				{/each}
 			</div>
 
-			<!-- if action button -->
-			<button
-				class="bg-muted flex aspect-square h-16 w-16 items-center justify-center rounded-full"
-			>
-				<Search></Search>
-			</button>
+			<SearchPanel></SearchPanel>
 		</div>
 	</div>
 {:else}

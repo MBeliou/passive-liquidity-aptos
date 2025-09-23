@@ -1,6 +1,6 @@
-import { pgTable, serial, integer, varchar, text, decimal, timestamp } from 'drizzle-orm/pg-core';
+import { decimal, integer, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core';
 
-export const token = pgTable('tokens', {
+export const tokensTable = pgTable('tokens', {
 	id: varchar({ length: 66 }).primaryKey(),
 	symbol: text().notNull(),
 	name: text(),
@@ -10,20 +10,20 @@ export const token = pgTable('tokens', {
 	updatedAt: timestamp('updated_at').defaultNow()
 });
 
-export const pools = pgTable('pools', {
+export const poolsTable = pgTable('pools', {
 	id: varchar().primaryKey(),
 
-	tokenA: varchar('token_a').references(() => token.id),
-	tokenB: varchar('token_b').references(() => token.id),
+	tokenA: varchar('token_a').references(() => tokensTable.id),
+	tokenB: varchar('token_b').references(() => tokensTable.id),
 	fee: decimal().notNull(),
 	dex: varchar().notNull(), // Only dealing with tapp for now but we might have time to expand
 	positionIndex: integer('position_index').default(0), // highest position found
 	updatedAt: timestamp('updated_at').defaultNow()
 });
 
-export const positions = pgTable('positions', {
+export const positionsTable = pgTable('positions', {
 	index: integer(),
-	pool: varchar().references(() => pools.id),
+	pool: varchar().references(() => poolsTable.id),
 	updatedAt: timestamp('updated_at').defaultNow()
 });
 
