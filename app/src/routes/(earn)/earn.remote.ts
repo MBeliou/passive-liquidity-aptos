@@ -2,6 +2,7 @@ import { query } from '$app/server';
 import type { TokenListResponse } from '$lib/types/token-list';
 import { z } from 'zod';
 
+/* Vaults is what we're running, we're building on top of tapp's pools */
 export const getVaults = query(async () => {
 	return [];
 });

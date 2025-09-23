@@ -37,7 +37,7 @@
 		"@storybook/addon-vitest": "^9.1.7",
 		"@storybook/sveltekit": "^9.1.7",
 		"@sveltejs/adapter-auto": "^6.0.0",
-		"@sveltejs/kit": "^2.22.0",
+		"@sveltejs/kit": "^2.43.2",
 		"@sveltejs/vite-plugin-svelte": "^6.0.0",
 		"@tailwindcss/forms": "^0.5.9",
 		"@tailwindcss/vite": "^4.0.0",
@@ -80,6 +80,9 @@
 		"vitest-browser-svelte": "^0.1.0"
 	},
 	"dependencies": {
+		"@aptos-labs/ts-sdk": "^5.0.0",
+		"@tapp-exchange/sdk": "^0.6.1",
+		"axios": "^1.12.2",
 		"node-watcher": "^0.0.4",
 		"postgres": "^3.4.5",
 		"zod": "^4.1.11"
