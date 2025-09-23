@@ -15,7 +15,7 @@
 	let isSearching = $derived(query.loading);
 </script>
 
-<Drawer.Root open={true}>
+<Drawer.Root>
 	<Drawer.Trigger>
 		<button class="bg-muted flex aspect-square h-16 w-16 items-center justify-center rounded-full">
 			<Search></Search>
