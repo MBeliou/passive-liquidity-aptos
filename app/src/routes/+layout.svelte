@@ -11,13 +11,13 @@
 		{
 			label: 'Earn',
 			icon: PiggyBank,
-			url: '#',
+			url: '/',
 			isActive: true
 		},
 		{
 			label: 'Profile',
 			icon: PiggyBank,
-			url: '#',
+			url: '/profile',
 			isActive: false
 		}
 	];
@@ -29,6 +29,9 @@
 
 <ModeWatcher />
 
-{@render children?.()}
+<div class="min-h-screen pb-20">
+
+	{@render children?.()}
+</div>
 
 <TabBar {links}></TabBar>

@@ -3,7 +3,7 @@
 	import Button, { buttonVariants } from '$lib/components/ui/button/button.svelte';
 	import { IsMobile } from '$lib/hooks/is-mobile.svelte';
 	import Search from '@lucide/svelte/icons/search';
-	import type { Component } from 'svelte';
+	import { onMount, type Component } from 'svelte';
 
 	export type TabBarLink = {
 		label: string;
@@ -20,6 +20,14 @@
 	}: {
 		links: TabBarLink[];
 	} = $props();
+
+	let width = $state(100);
+
+	onMount(() => {
+		setTimeout(() => {
+			width = window.innerWidth;
+		}, 100);
+	});
 </script>
 
 {#if isMobile.current}
@@ -33,12 +41,12 @@
 						data-active-tab={link.isActive}
 						href={link.url}
 						class={[
-							'z-20 flex h-16 flex-col items-center gap-0.5 px-6 py-2 text-sm',
+							'z-20 flex h-12 flex-col items-center justify-center gap-0.5 px-6 py-1 text-xs',
 							'text-muted-foreground hover:text-foreground',
 							link.isActive && 'text-primary bg-muted-foreground/20 rounded-full'
 						]}
 					>
-						<link.icon></link.icon>
+						<link.icon size={16}></link.icon>
 						{link.label}
 					</a>
 				{/each}
@@ -54,7 +62,26 @@
 	</div>
 {:else}
 	<!--  on top -->
-	<div class="flex items-center justify-between bg-red-500 md:justify-center">
-		<div class="">placeholder</div>
+	<div class="pointer-events-none fixed inset-x-0 top-8 flex justify-center">
+		<div class="bg-muted pointer-events-auto flex items-center rounded-full md:justify-center p-1">
+			{#each links as link (link.label)}
+				<a
+					data-active-tab={link.isActive}
+					href={link.url}
+					class={[
+						'z-20 px-6 py-2 text-sm',
+						'text-muted-foreground hover:text-foreground',
+						link.isActive && 'text-primary bg-muted-foreground/20 rounded-full'
+					]}
+				>
+					{link.label}
+				</a>
+			{/each}
+			<button
+				class="hover:bg-muted-foreground/20 text-muted-foreground hover:text-foreground flex h-full items-center justify-center rounded-full px-3 transition-all"
+			>
+				<Search></Search>
+			</button>
+		</div>
 	</div>
 {/if}
