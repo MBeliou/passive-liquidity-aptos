@@ -9,8 +9,12 @@
 
 <svelte:boundary>
 	<div class="flex min-h-screen flex-col">
-		<div class="">header with action</div>
+		<div class="flex justify-between">
+			<h1 class="text-3xl tracking-wide font-bold">Earn</h1>
+			<div>Wallet button</div>
+		</div>
 		<div class="flex-1">
+			<!-- 
 			<section>
 				<div>
 					<h2>Assets</h2>
@@ -24,6 +28,14 @@
 						</li>
 					{/each}
 				</div>
+			</section>
+			 -->
+			<section>
+				<div>
+					<h2 class="text-lg font-semibold">Top Pools</h2>
+					<p class="text-muted-foreground text-sm">Best performers</p>
+				</div>
+				<div></div>
 			</section>
 		</div>
 	</div>
