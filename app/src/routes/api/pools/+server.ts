@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { useTapp } from '$lib/shared/tapp-sdk';
+import { useTapp } from '$lib/shared/tapp/sdk';
 
 export const GET: RequestHandler = async () => {
     console.log("received")

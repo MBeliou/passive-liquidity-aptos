@@ -1,5 +1,5 @@
 import { query } from '$app/server';
-import { useTapp } from '$lib/shared/tapp-sdk';
+import { useTapp } from '$lib/shared/tapp/sdk';
 
 export const getVaultInfo = query(async () => {
 	// NOTE: We should already know the relevant pools when querying here

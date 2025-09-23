@@ -1,5 +1,5 @@
 import { query } from '$app/server';
-import { useTapp } from '$lib/shared/tapp-sdk';
+import { useTapp } from '$lib/shared/tapp/sdk';
 import { PoolType } from '@tapp-exchange/sdk';
 
 export const getTappPools = query(async () => {
@@ -7,8 +7,6 @@ export const getTappPools = query(async () => {
 		// We'll be getting the 100 top pools by TVL. There are only around 40 concentrated pools
 		const poolsPerPage = 10;
 		const totalPages = 10;
-
-        
 
 		const poolPromises = Array.from({ length: totalPages }, (_, index) => {
 			const page = index + 1;
@@ -21,13 +19,14 @@ export const getTappPools = query(async () => {
 		});
 
 		const results = await Promise.allSettled(poolPromises);
-
 		const allPools = results
 			.filter((result) => result.status === 'fulfilled' && result.value?.data)
 			.flatMap(
 				(result) =>
 					(result as PromiseFulfilledResult<Awaited<(typeof poolPromises)[number]>>).value.data
 			);
+		console.log(`found ${allPools.length} pools`);
+		console.dir(allPools);
 
 		const poolsByTokenPair = allPools.reduce(
 			(acc, pool) => {
@@ -45,7 +44,7 @@ export const getTappPools = query(async () => {
 			{} as Record<string, typeof allPools>
 		);
 
-        //console.log(JSON.stringify(allPools))
+		//console.log(JSON.stringify(allPools))
 
 		// FIXME, typing is wrong on APR
 		/*

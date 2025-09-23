@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { getTappPools } from './data.remote';
 
-	const tappPools = await getTappPools();
 </script>
 
 <svelte:boundary>
 	<div>
-		{#each Object.entries(tappPools) as [symbols, pools]}
+		{#each Object.entries(await getTappPools()) as [symbols, pools]}
 			<div>
 				<h3>
 					{symbols}

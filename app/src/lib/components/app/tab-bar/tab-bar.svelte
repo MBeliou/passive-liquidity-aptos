@@ -1,9 +1,7 @@
 <script lang="ts" module>
-	import { browser } from '$app/environment';
-	import Button, { buttonVariants } from '$lib/components/ui/button/button.svelte';
 	import { IsMobile } from '$lib/hooks/is-mobile.svelte';
 	import Search from '@lucide/svelte/icons/search';
-	import { onMount, type Component } from 'svelte';
+	import { type Component } from 'svelte';
 
 	export type TabBarLink = {
 		label: string;
@@ -20,14 +18,6 @@
 	}: {
 		links: TabBarLink[];
 	} = $props();
-
-	let width = $state(100);
-
-	onMount(() => {
-		setTimeout(() => {
-			width = window.innerWidth;
-		}, 100);
-	});
 </script>
 
 {#if isMobile.current}
@@ -63,7 +53,7 @@
 {:else}
 	<!--  on top -->
 	<div class="pointer-events-none fixed inset-x-0 top-8 flex justify-center">
-		<div class="bg-muted pointer-events-auto flex items-center rounded-full md:justify-center p-1">
+		<div class="bg-muted pointer-events-auto flex items-center rounded-full p-1 md:justify-center">
 			{#each links as link (link.label)}
 				<a
 					data-active-tab={link.isActive}
