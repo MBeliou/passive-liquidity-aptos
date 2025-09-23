@@ -50,6 +50,7 @@ class TappContract {
 	}
 }
 
+
 export function useTapp(aptos: Aptos) {
 	return {
 		sdk: TAPP_SDK,

@@ -1,5 +1,6 @@
 services:
   db:
+    container_name: passive_liquidity
     image: postgres
     restart: always
     ports:
@@ -7,8 +8,8 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: mysecretpassword
-      POSTGRES_DB: local
+      POSTGRES_DB: passive_liquidity_db
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - passive_liquidity_pgdata:/var/lib/postgresql/data
 volumes:
-  pgdata:
+  passive_liquidity_pgdata:
