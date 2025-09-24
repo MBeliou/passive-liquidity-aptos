@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Separator from '$lib/components/ui/separator/separator.svelte';
-	import { getPools, getTappPools } from './data.remote';
+	import { getPools } from './data.remote';
 
 	const feeTiers = [0.01, 0.05, 0.3, 1];
 
@@ -13,7 +13,7 @@
 
 <section class=" px-4 pt-24">
 	<h2 class="border-b pb-1 text-2xl font-semibold">Pools</h2>
-	<ul class="grid grid-cols-2 gap-4 mt-6">
+	<ul class="mt-6 grid grid-cols-2 gap-4">
 		{#each await getPools() as pool}
 			{@const slug = pool.tokenA.symbol.toLowerCase() + '-' + pool.tokenB.symbol.toLowerCase()}
 			<!-- TODO: also add slug -->

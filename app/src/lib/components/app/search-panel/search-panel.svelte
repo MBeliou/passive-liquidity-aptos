@@ -1,18 +1,18 @@
 <script lang="ts">
 	import * as Drawer from '$lib/components/ui/drawer/index.js';
 	import Input from '$lib/components/ui/input/input.svelte';
-	import Search from '@lucide/svelte/icons/search';
-	import { searchTokens } from './data.remote';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 	import LoaderCircle from '@lucide/svelte/icons/loader-circle';
+	import Search from '@lucide/svelte/icons/search';
+	import { searchTokens } from './data.remote';
 
 	const filters = ['all', 'pools', 'tokens'] as const;
 
+	let {
+		search = $bindable(),
+		query
+	}: { search: string; query: ReturnType<typeof searchTokens> } = $props();
 	let currentFilter = $state<(typeof filters)[number]>('all');
-
-	let searchContent = $state('');
-	const query = (() => searchTokens(searchContent))();
-	let isSearching = $derived(query.loading);
 </script>
 
 <Drawer.Root>
@@ -37,43 +37,53 @@
 		</Drawer.Header>
 
 		<div class="flex-grow gap-4 overflow-y-auto p-4">
-			<h2 class=" mb-1 text-xl font-medium">Tokens</h2>
-			<ul class="overflow-y-auto">
-				{#each await searchTokens(searchContent) as token (token.id)}
-					<li class="flex items-center gap-2 border-t py-3">
-						<div
-							class="bg-muted flex size-10 items-center justify-center overflow-hidden rounded-full"
-						>
-							{#if token.logo}
-								<div
-									class="size-full bg-cover bg-center"
-									style="background-image: url({token.logo});"
-								></div>
-							{:else}
-								<div class="text-muted-foreground">?</div>
-							{/if}
-						</div>
-						<div class="flex-grow">
-							<div class="text-lg font-medium">
-								{token.name}
+			{#if query.loading}
+				<div class="flex flex-col items-center justify-center">
+					<LoaderCircle class="text-muted-foreground animate-spin" size={32}></LoaderCircle>
+				</div>
+			{:else if query.current && query.current.length === 0}
+				<div class="flex flex-col items-center justify-center">
+					<p class="text-muted-foreground">No results found</p>
+				</div>
+			{:else if query.current}
+				<h2 class=" mb-1 text-xl font-medium">Tokens</h2>
+				<ul class="overflow-y-auto">
+					{#each query.current as token (token.id)}
+						<li class="flex items-center gap-2 border-t py-3">
+							<div
+								class="bg-muted flex size-10 items-center justify-center overflow-hidden rounded-full"
+							>
+								{#if token.logo}
+									<div
+										class="size-full bg-cover bg-center"
+										style="background-image: url({token.logo});"
+									></div>
+								{:else}
+									<div class="text-muted-foreground">?</div>
+								{/if}
 							</div>
-							<div class="text-muted-foreground text-xs font-semibold">
-								{token.symbol}
+							<div class="flex-grow">
+								<div class="text-lg font-medium">
+									{token.name}
+								</div>
+								<div class="text-muted-foreground text-xs font-semibold">
+									{token.symbol}
+								</div>
 							</div>
-						</div>
 
-						<div>
-							<ChevronRight></ChevronRight>
-						</div>
-					</li>
-				{/each}
-			</ul>
+							<div>
+								<ChevronRight></ChevronRight>
+							</div>
+						</li>
+					{/each}
+				</ul>
+			{/if}
 		</div>
 
 		<Drawer.Footer>
 			<div class="relative">
 				<div class="absolute inset-y-0 left-4 flex flex-col justify-center">
-					{#if isSearching}
+					{#if query.loading}
 						<LoaderCircle class="text-muted-foreground animate-spin" size={18}></LoaderCircle>
 					{:else}
 						<Search class="text-muted-foreground" size={18}></Search>
@@ -83,11 +93,16 @@
 					class="rounded-full pl-10"
 					type="search"
 					placeholder="Search for a token or a pool..."
-					bind:value={searchContent}
-					oninput={(v) => {
+					bind:value={search}
+				></Input>
+				<!-- oninput={restProps.oninput} -->
+				<!-- 
+				oninput={(e) => {
+						restProps.oninput?.(e);
+						console.log(e.currentTarget.value)
 						searchTokens(searchContent).refresh();
 					}}
-				></Input>
+				-->
 			</div>
 		</Drawer.Footer>
 	</Drawer.Content>

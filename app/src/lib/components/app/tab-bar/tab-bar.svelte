@@ -12,8 +12,8 @@
 </script>
 
 <script lang="ts">
-	import * as Drawer from '$lib/components/ui/drawer/index.js';
 	import SearchPanel from '../search-panel/search-panel.svelte';
+	import { searchTokens } from '../search-panel/data.remote';
 
 	const isMobile = new IsMobile();
 	let {
@@ -21,6 +21,10 @@
 	}: {
 		links: TabBarLink[];
 	} = $props();
+
+	let search = $state('');
+
+	const query = $derived(searchTokens(search));
 </script>
 
 {#if isMobile.current}
@@ -44,7 +48,7 @@
 				{/each}
 			</div>
 
-			<SearchPanel></SearchPanel>
+			<SearchPanel bind:search {query}></SearchPanel>
 		</div>
 	</div>
 {:else}
