@@ -53,7 +53,6 @@ export class TappAPI {
 			method: typeof method;
 			result: { data: T };
 		};
-		console.dir(json);
 
 		return json.result.data;
 	}
