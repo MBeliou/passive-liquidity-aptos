@@ -27,10 +27,9 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<ModeWatcher defaultMode="dark" track={false}/>
+<ModeWatcher defaultMode="dark" track={false} />
 
-<div class="min-h-screen pb-20">
-
+<div class="min-h-screen pb-20 max-w-7xl mx-auto border-x w-full">
 	{@render children?.()}
 </div>
 

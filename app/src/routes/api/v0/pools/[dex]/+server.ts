@@ -4,6 +4,8 @@ import type { RequestHandler } from './$types';
 import { useTapp } from '$lib/shared/tapp/sdk';
 import { useAptos } from '$lib/shared';
 import { PoolType } from '@tapp-exchange/sdk';
+import { poolsTable } from '$lib/server/db/schema';
+import { db } from '$lib/server/db';
 
 export const POST: RequestHandler = async ({ params }) => {
 	const { dex, id } = params;
@@ -38,6 +40,26 @@ export const POST: RequestHandler = async ({ params }) => {
 			(result) =>
 				(result as PromiseFulfilledResult<Awaited<(typeof poolPromises)[number]>>).value.data
 		);
+
+	const poolsUpsert : (typeof poolsTable.$inferInsert)[] = allPools.map((pool) => {
+		return {
+			id: pool.poolId,
+			dex: dex,
+			fee_tier: pool.feeTier,
+			fee: pool.fee,
+			tokenA: pool.tokens[0].addr,
+			tokenB: pool.tokens[1].addr,
+			updatedAt: new Date(),
+			
+		}
+
+	})
+	await db.insert(poolsTable).values(poolsUpsert).onConflictDoUpdate({
+		target: poolsTable.id,
+		set: {
+			dex: poolsTable.dex,
+		}
+	})
 
 	return json({
 		status: 'success',
