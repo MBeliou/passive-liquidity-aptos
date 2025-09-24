@@ -1,8 +1,6 @@
 import adapter from '@sveltejs/adapter-auto';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
-const isStorybook = process.env.IS_STORYBOOK === 'true';
-
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	// Consult https://svelte.dev/docs/kit/integrations
@@ -13,18 +11,14 @@ const config = {
 		// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
 		// See https://svelte.dev/docs/kit/adapters for more information about adapters.
 		adapter: adapter(),
-		experimental: isStorybook
-			? {}
-			: {
-					remoteFunctions: true
-				}
+		experimental: {
+			remoteFunctions: true
+		}
 	},
 	compilerOptions: {
-		experimental: isStorybook
-			? {}
-			: {
-					async: true
-				}
+		experimental: {
+			async: true
+		}
 	}
 };
 
