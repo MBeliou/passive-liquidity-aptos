@@ -8,10 +8,8 @@
 
 	const filters = ['all', 'pools', 'tokens'] as const;
 
-	let {
-		search = $bindable(),
-		query
-	}: { search: string; query: ReturnType<typeof searchTokens> } = $props();
+	let { search = $bindable(), query }: { search: string; query: ReturnType<typeof searchTokens> } =
+		$props();
 	let currentFilter = $state<(typeof filters)[number]>('all');
 </script>
 
@@ -95,14 +93,6 @@
 					placeholder="Search for a token or a pool..."
 					bind:value={search}
 				></Input>
-				<!-- oninput={restProps.oninput} -->
-				<!-- 
-				oninput={(e) => {
-						restProps.oninput?.(e);
-						console.log(e.currentTarget.value)
-						searchTokens(searchContent).refresh();
-					}}
-				-->
 			</div>
 		</Drawer.Footer>
 	</Drawer.Content>
