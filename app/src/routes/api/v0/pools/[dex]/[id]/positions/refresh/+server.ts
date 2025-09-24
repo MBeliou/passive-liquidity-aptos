@@ -3,8 +3,21 @@ import type { RequestHandler } from './$types';
 import { ALLOWED_DEXES } from '$lib/data/dexes';
 import { db } from '$lib/server/db';
 import { poolsTable, positionsTable } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { useAptos, useTapp } from '$lib/shared';
+
+function parseTickValue(tickBits: string): number {
+	const tick = BigInt(tickBits);
+	const MAX_U64 = BigInt('18446744073709551615'); // 2^64 - 1
+	const MAX_I64 = BigInt('9223372036854775807'); // 2^63 - 1
+
+	// If it's larger than max signed 64-bit, it's actually negative
+	if (tick > MAX_I64) {
+		return Number(tick - MAX_U64 - BigInt(1)); // Convert to negative
+	}
+
+	return Number(tick);
+}
 
 export const POST: RequestHandler = async ({ params }) => {
 	const { dex, id } = params;
@@ -32,17 +45,31 @@ export const POST: RequestHandler = async ({ params }) => {
 		maximumIndex: maximumIndex
 	});
 
-	console.dir(positions);
+	console.dir(positions, { depth: 4 });
 
 	const toUpsert: (typeof positionsTable.$inferInsert)[] = positions.positions.map((pos) => {
 		return {
-			index: pos.index,
+			index: parseInt(pos.index),
 			pool: poolInfo.id,
-			updatedAt: new Date(),
+			tickLower: parseTickValue(pos.tick_lower_index.bits),
+			tickUpper: parseTickValue(pos.tick_upper_index.bits),
+			liquidity: pos.liquidity,
+			updatedAt: new Date()
 		};
 	});
 
-	db.insert(positionsTable).values();
+	await db
+		.insert(positionsTable)
+		.values(toUpsert)
+		.onConflictDoUpdate({
+			target: [positionsTable.index, positionsTable.pool],
+			set: {
+				tickLower: sql`EXCLUDED.tick_lower`,
+				tickUpper: sql`EXCLUDED.tick_upper`,
+				liquidity: sql`EXCLUDED.liquidity`,
+				updatedAt: sql`EXCLUDED.updated_at`
+			}
+		});
 	// First we try getting all positions
 	//tapp.contract.getPositions()
 	//console.dir(poolInfo);

@@ -1,7 +1,7 @@
 import { query } from '$app/server';
 import { db } from '$lib/server/db';
-import { poolsTable, tokensTable } from '$lib/server/db/schema';
-import { eq, and, ilike } from 'drizzle-orm';
+import { poolsTable, positionsTable, tokensTable } from '$lib/server/db/schema';
+import { eq, and, ilike, inArray } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 
@@ -21,6 +21,17 @@ export const getAggregatePoolInfo = query(z.string(), async (slug: string) => {
 		.innerJoin(tokenB, eq(poolsTable.tokenB, tokenB.id))
 		.where(and(ilike(tokenA.symbol, tokenASymbol), ilike(tokenB.symbol, tokenBSymbol)));
 
-	console.dir(pools, { depth: 5 });
+	const positions = await db
+		.select()
+		.from(positionsTable)
+		.where(
+			inArray(
+				positionsTable.pool,
+				pools.map((p) => p.pools.id)
+			)
+		);
+
+	console.dir(positions);
+
 	return pools;
 });

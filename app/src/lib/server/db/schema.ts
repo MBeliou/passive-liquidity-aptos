@@ -1,4 +1,12 @@
-import { decimal, integer, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core';
+import {
+	decimal,
+	integer,
+	pgTable,
+	primaryKey,
+	text,
+	timestamp,
+	varchar
+} from 'drizzle-orm/pg-core';
 
 export const tokensTable = pgTable('tokens', {
 	id: varchar({ length: 66 }).primaryKey(),
@@ -21,11 +29,18 @@ export const poolsTable = pgTable('pools', {
 	updatedAt: timestamp('updated_at').defaultNow()
 });
 
-export const positionsTable = pgTable('positions', {
-	index: integer(),
-	pool: varchar().references(() => poolsTable.id),
-	updatedAt: timestamp('updated_at').defaultNow()
-});
+export const positionsTable = pgTable(
+	'positions',
+	{
+		index: integer().notNull(),
+		pool: varchar().references(() => poolsTable.id).notNull(),
+		updatedAt: timestamp('updated_at').defaultNow(),
+		tickLower: integer('tick_lower').notNull(),
+		tickUpper: integer('tick_upper').notNull(),
+		liquidity: varchar().notNull()
+	},
+	(table) => [primaryKey({ columns: [table.index, table.pool] })]
+);
 
 /*
  NOTE: Not quite doing the vaults for now, we'll see if we get the opportunity.
