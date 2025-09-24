@@ -6,6 +6,7 @@ import { useAptos } from '$lib/shared';
 import { PoolType } from '@tapp-exchange/sdk';
 import { poolsTable } from '$lib/server/db/schema';
 import { db } from '$lib/server/db';
+import { sql } from 'drizzle-orm';
 
 export const POST: RequestHandler = async ({ params }) => {
 	const { dex, id } = params;
@@ -41,25 +42,30 @@ export const POST: RequestHandler = async ({ params }) => {
 				(result as PromiseFulfilledResult<Awaited<(typeof poolPromises)[number]>>).value.data
 		);
 
-	const poolsUpsert : (typeof poolsTable.$inferInsert)[] = allPools.map((pool) => {
+	const poolsUpsert: (typeof poolsTable.$inferInsert)[] = allPools.map((pool) => {
 		return {
 			id: pool.poolId,
 			dex: dex,
-			fee_tier: pool.feeTier,
-			fee: pool.fee,
+			//fee_tier: pool.feeTier,
+			fee: pool.feeTier,
 			tokenA: pool.tokens[0].addr,
 			tokenB: pool.tokens[1].addr,
-			updatedAt: new Date(),
-			
-		}
+			updatedAt: new Date()
+		};
+	});
 
-	})
-	await db.insert(poolsTable).values(poolsUpsert).onConflictDoUpdate({
-		target: poolsTable.id,
-		set: {
-			dex: poolsTable.dex,
-		}
-	})
+	await db
+		.insert(poolsTable)
+		.values(poolsUpsert)
+		.onConflictDoUpdate({
+			target: poolsTable.id,
+			/*set: {
+				fee: poolsTable.fee
+			}*/
+			set: {
+				fee: sql`excluded.fee`
+			}
+		});
 
 	return json({
 		status: 'success',

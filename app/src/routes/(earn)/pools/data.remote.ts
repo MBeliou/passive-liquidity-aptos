@@ -1,6 +1,86 @@
 import { query } from '$app/server';
+import { db } from '$lib/server/db';
+import { poolsTable, tokensTable } from '$lib/server/db/schema';
 import { useTapp } from '$lib/shared/tapp/sdk';
 import { PoolType } from '@tapp-exchange/sdk';
+import { eq, inArray, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
+
+export const getPools = query(async () => {
+	const tokenA = alias(tokensTable, 'tokenA');
+	const tokenB = alias(tokensTable, 'tokenB');
+	const pools = await db
+		.select()
+		.from(poolsTable)
+		.innerJoin(tokenA, eq(poolsTable.tokenA, tokenA.id))
+		.innerJoin(tokenB, eq(poolsTable.tokenB, tokenB.id));
+
+	const pools2 = await db
+		.select({
+			// Token pair information
+			tokenA: {
+				id: tokenA.id,
+				symbol: tokenA.symbol,
+				name: tokenA.name,
+				about: tokenA.about,
+				logo: tokenA.logo,
+				decimals: tokenA.decimals,
+			},
+			tokenB: {
+				id: tokenB.id,
+				symbol: tokenB.symbol,
+				name: tokenB.name,
+				about: tokenB.about,
+				logo: tokenB.logo,
+				decimals: tokenB.decimals,
+			},
+			
+			// Aggregated pool data as JSON
+			poolDetails: sql<Array<{
+				id: string;
+				fee: string;
+				dex: string;
+				positionIndex: number;
+				updatedAt: Date;
+			}>>`
+				json_agg(
+					json_build_object(
+						'id', ${poolsTable.id},
+						'fee', ${poolsTable.fee},
+						'dex', ${poolsTable.dex},
+						'positionIndex', ${poolsTable.positionIndex},
+						'updatedAt', ${poolsTable.updatedAt}
+					)
+				)
+			`,
+			
+			// Summary statistics
+			totalPools: sql<number>`count(*)`,
+			uniqueFees: sql<string[]>`array_agg(DISTINCT ${poolsTable.fee})`,
+			maxPositionIndex: sql<number>`max(${poolsTable.positionIndex})`,
+		})
+		.from(poolsTable)
+		.innerJoin(tokenA, eq(poolsTable.tokenA, tokenA.id))
+		.innerJoin(tokenB, eq(poolsTable.tokenB, tokenB.id))
+		.groupBy(
+			tokenA.id,
+			tokenA.symbol,
+			tokenA.name,
+			tokenA.about,
+			tokenA.logo,
+			tokenA.decimals,
+			tokenB.id,
+			tokenB.symbol,
+			tokenB.name,
+			tokenB.about,
+			tokenB.logo,
+			tokenB.decimals,
+		);
+
+		console.dir(pools2, {depth: 5});
+
+	return pools2;
+});
 
 export const getTappPools = query(async () => {
 	try {
