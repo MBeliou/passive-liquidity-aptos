@@ -10,8 +10,7 @@
 <svelte:boundary>
 	<div class="flex min-h-screen flex-col">
 		<div class="flex justify-between">
-			<h1 class="text-3xl tracking-wide font-bold">Earn</h1>
-			<div>Wallet button</div>
+			<h1 class="text-3xl font-bold tracking-wide">Earn</h1>
 		</div>
 		<div class="flex-1">
 			<!-- 

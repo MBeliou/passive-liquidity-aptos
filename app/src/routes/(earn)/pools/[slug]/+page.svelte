@@ -14,7 +14,6 @@
 				url: page.url.toString()
 			}}
 		></ShareButton>
-		<div>Wallet button</div>
 	</div>
 </div>
 

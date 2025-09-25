@@ -26,6 +26,7 @@
 	let search = $state('');
 
 	const query = $derived(searchTokens(search));
+	
 </script>
 
 {#if isMobile.current}
@@ -54,7 +55,7 @@
 	</div>
 {:else}
 	<!--  on top -->
-	<div class="pointer-events-none fixed inset-x-0 top-8 mx-auto px-4 grid max-w-7xl grid-cols-3">
+	<div class="pointer-events-none fixed inset-x-0 top-8 mx-auto grid max-w-7xl grid-cols-3 px-4">
 		<div
 			class="bg-muted pointer-events-auto col-start-2 mx-auto flex items-center rounded-full p-1 md:justify-center"
 		>
@@ -78,7 +79,7 @@
 			</button>
 		</div>
 
-		<div class="flex items-center justify-end ">
+		<div class="flex items-center justify-end">
 			<WalletConnector class=" pointer-events-auto"></WalletConnector>
 		</div>
 	</div>

@@ -1,3 +1,4 @@
+import { searchTokens } from '$lib/components/app/search-panel/data.remote';
 import { useTapp } from '$lib/shared';
 import type { WalletState } from '$lib/wallet/wallet.svelte';
 import type { Aptos } from '@aptos-labs/ts-sdk';
@@ -7,7 +8,7 @@ import { getContext, setContext } from 'svelte';
 export class UserState {
 	account = $state<AccountInfo | null>(null);
 
-	balances = $state<ReturnType<InstanceType<typeof UserState>['getBalances']>>(Promise.resolve([]));
+	balances = $state<Awaited<ReturnType<InstanceType<typeof UserState>['getBalances']>>>([]);
 
 	aptosClient: Aptos;
 	tappClient: ReturnType<typeof useTapp>;
@@ -19,7 +20,7 @@ export class UserState {
 		$effect(() => {
 			if (this.account) {
 				console.log('found account');
-				this.balances = this.getBalances();
+				this.refreshBalances();
 				this.getPositions();
 			}
 		});
@@ -44,7 +45,23 @@ export class UserState {
 				}
 			}
 		});
-		return balances;
+
+		const metadatas = await this.aptosClient.getFungibleAssetMetadata({
+			options: {
+				where: {
+					asset_type: {
+						_in: balances.map((b) => b.asset_type)
+					}
+				}
+			}
+		});
+		return balances.map((b) => {
+			const metadata = metadatas.find((m) => m.asset_type === b.asset_type);
+			return {
+				...b,
+				metadata: metadata!
+			};
+		});
 	}
 
 	async getPositions() {
@@ -54,6 +71,12 @@ export class UserState {
 		});
 
 		return positions.data;
+	}
+
+	// Utils
+
+	async refreshBalances() {
+		this.balances = await this.getBalances();
 	}
 }
 
