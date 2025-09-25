@@ -45,16 +45,16 @@
 	const chartConfig = {
 		'0.01': { label: '0.01%', color: 'var(--chart-1)' },
 		'0.03': { label: '0.03%', color: 'var(--chart-2)' },
-    '0.05': { label: '0.03%', color: 'var(--chart-2)' },
-    '1': { label: '0.03%', color: 'var(--chart-2)' }
-	} satisfies Chart.ChartConfig;*/
-  
+    '0.05': { label: '0.03%', color: 'var(--chart-3)' },
+    '1': { label: '0.03%', color: 'var(--chart-4)' }
+	} satisfies Chart.ChartConfig;
+  */
 	const chartConfig = Object.fromEntries(
 		FEE_TIERS.map((f, i) => {
       const fee = f.toString();
 			const item = {
 				label: `${fee}%`,
-				color: `var(--chart-${i+1}`
+				color: `var(--chart-${i+1})`
 			};
 
 			return [fee, item];
