@@ -2,11 +2,13 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Drawer from '$lib/components/ui/drawer/index.js';
 	import WalletButton from '$lib/wallet/components/wallet-button.svelte';
-	import { getWallet } from '$lib/wallet/wallet.svelte';
+	import { getWalletState } from '$lib/wallet/wallet.svelte';
 	import { onMount } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import WalletTrigger from './wallet-trigger.svelte';
+	import { getUser } from '$lib/user/user-state.svelte';
 	let { ...restProps }: HTMLButtonAttributes = $props();
+
 	/* 
         Responsible for managing wallet connections:
         - Show available wallet options
@@ -15,7 +17,8 @@
         Mobile is a drawer, desktop is a panel
     */
 
-	const wallet = getWallet();
+	const wallet = getWalletState();
+	const userState = getUser();
 
 	onMount(() => {
 		return () => {
@@ -31,13 +34,26 @@
 <Drawer.Root bind:open>
 	<WalletTrigger wallet={wallet.wallet} class={restProps.class}></WalletTrigger>
 	{#if wallet.connected}
-		<Drawer.Content>
+		<Drawer.Content class="min-h-[60vh]">
 			<Drawer.Header>
 				<Drawer.Title>Are you sure absolutely sure?</Drawer.Title>
 				<Drawer.Description>This action cannot be undone.</Drawer.Description>
 			</Drawer.Header>
 
-			<div></div>
+			<div>
+				<!-- We need a list of assets owned right about here -->
+				{#await userState.balances}
+					<div>Loading</div>
+				{:then balances}
+					<ul>
+						{#each balances as balance}
+							<li>
+								{balance.storage_id}
+							</li>
+						{/each}
+					</ul>
+				{/await}
+			</div>
 			<Drawer.Footer>
 				<Button>Submit</Button>
 				<Drawer.Close>Cancel</Drawer.Close>

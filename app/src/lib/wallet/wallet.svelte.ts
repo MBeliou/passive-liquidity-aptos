@@ -13,7 +13,7 @@ import {
 } from '@aptos-labs/wallet-adapter-core';
 import { getContext, setContext } from 'svelte';
 
-class WalletState {
+export class WalletState {
 	connected = $state(false);
 	account = $state<AccountInfo | null>(null);
 	network = $state<NetworkInfo | null>(null);
@@ -24,11 +24,7 @@ class WalletState {
 	notDetectedWallets = $derived.by(() => this.walletCore?.notDetectedWallets || []);
 
 	isLoading = $state(false);
-	/*
-	get wallet() {
-		return this.walletCore?.wallet || null;
-	}
-*/
+
 	onError: (error: unknown) => void;
 
 	constructor(
@@ -60,7 +56,11 @@ class WalletState {
 	async connect(walletName: string) {
 		try {
 			this.isLoading = true;
-			await this.walletCore?.connect(walletName);
+			if (this.walletCore) {
+				await this.walletCore.connect(walletName);
+
+				this.account = this.walletCore.account;
+			}
 		} catch (error) {
 			if (this.onError) {
 				this.onError(error);
@@ -90,6 +90,7 @@ class WalletState {
 	async disconnect() {
 		try {
 			await this.walletCore?.disconnect();
+			this.account = null;
 		} catch (error) {
 			if (this.onError) this.onError(error);
 			return Promise.reject(error);
@@ -202,18 +203,10 @@ class WalletState {
 
 const WALLET_KEY = Symbol('APTOS_WALLET');
 
-export function setWallet(
-	optInWallets: AvailableWallets[],
-	dappConfig: DappConfig,
-	onError?: (error: unknown) => void,
-	disableTelemetry = false
-) {
-	return setContext(
-		WALLET_KEY,
-		new WalletState(optInWallets, dappConfig, onError, disableTelemetry)
-	);
+export function setWalletState(wallet: WalletState) {
+	return setContext(WALLET_KEY, wallet);
 }
 
-export function getWallet(): WalletState {
-	return getContext<ReturnType<typeof setWallet>>(WALLET_KEY);
+export function getWalletState() {
+	return getContext<ReturnType<typeof setWalletState>>(WALLET_KEY);
 }

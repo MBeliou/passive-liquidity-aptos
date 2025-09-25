@@ -4,8 +4,10 @@
 	import { ModeWatcher } from 'mode-watcher';
 	import TabBar, { type TabBarLink } from '$lib/components/app/tab-bar/tab-bar.svelte';
 	import PiggyBank from '@lucide/svelte/icons/piggy-bank';
-	import { setWallet } from '$lib/wallet/wallet.svelte';
+	import { setWalletState, WalletState } from '$lib/wallet/wallet.svelte';
 	import { Network } from '@aptos-labs/ts-sdk';
+	import { setUser, UserState } from '$lib/user/user-state.svelte';
+	import { useAptos } from '$lib/shared';
 
 	let { children } = $props();
 
@@ -24,11 +26,17 @@
 		}
 	];
 
-	setWallet(['Petra', "Backpack", "Continue with Google", "Continue with Apple"], {
-		network: Network.MAINNET,
-		crossChainWallets: true
-	});
-	
+	const walletState = new WalletState(
+		['Petra', 'Backpack', 'Continue with Google', 'Continue with Apple'],
+		{
+			network: Network.MAINNET,
+			crossChainWallets: true
+		}
+	);
+	setWalletState(walletState);
+
+	const userState = new UserState(walletState, useAptos());
+	setUser(userState);
 </script>
 
 <svelte:head>
