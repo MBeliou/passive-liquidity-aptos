@@ -30,7 +30,6 @@ export class UserState {
 	}
 
 	async getBalances() {
-		console.log('getting balances');
 		if (!this.account) {
 			return [];
 		}
@@ -45,7 +44,6 @@ export class UserState {
 				}
 			}
 		});
-		console.log(balances);
 		return balances;
 	}
 
