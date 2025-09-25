@@ -24,7 +24,7 @@
 		}
 	];
 
-	setWallet(['Petra'], {
+	setWallet(['Petra', "Backpack", "Continue with Google", "Continue with Apple"], {
 		network: Network.MAINNET,
 		crossChainWallets: true
 	});

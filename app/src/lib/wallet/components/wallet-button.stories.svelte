@@ -1,0 +1,287 @@
+<script lang="ts" module>
+	import { defineMeta } from '@storybook/addon-svelte-csf';
+	import WalletButton from './wallet-button.svelte';
+	import {
+		type AdapterWallet,
+		type AdapterNotDetectedWallet,
+		WalletReadyState
+	} from '@aptos-labs/wallet-adapter-core';
+
+	const { Story } = defineMeta({
+		title: 'Wallet/Button',
+		component: WalletButton,
+		tags: ['autodocs'],
+		argTypes: {},
+		args: {}
+	});
+
+	const petraWallet: AdapterWallet = {
+		name: 'Petra',
+		icon: 'data:image/png;base64,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',
+		url: 'https://chrome.google.com/webstore/detail/petra-aptos-wallet/ejjladinnckdgjemekebdpeokbikhfci',
+		version: '1.0.0',
+		isAptosNativeWallet: true,
+		chains: ['aptos:devnet', 'aptos:testnet', 'aptos:localnet', 'aptos:mainnet'],
+		readyState: WalletReadyState.Installed,
+		accounts: [],
+		features: ['some_feature']
+	};
+	const googleWallet: AdapterWallet = {
+		version: '1.0.0',
+		chains: ['aptos:devnet', 'aptos:testnet', 'aptos:localnet', 'aptos:mainnet'],
+		client: {
+			defaultNetworkName: 'mainnet',
+			dappInfo: {
+				domain: 'http://localhost:5173',
+				name: ''
+			},
+			transport: {
+				baseUrl: 'https://aptosconnect.app',
+				provider: 'google'
+			},
+			pairingClient: {
+				onDisconnectListeners: {},
+				accessors: {},
+				defaultNetworkName: 'mainnet',
+				initPromise: {}
+			}
+		},
+		aptosClient: {
+			config: {
+				network: 'mainnet',
+				client: {},
+				clientConfig: {},
+				fullnodeConfig: {},
+				indexerConfig: {},
+				faucetConfig: {},
+				transactionGenerationConfig: {}
+			},
+			account: {
+				config: {
+					network: 'mainnet',
+					client: {},
+					clientConfig: {},
+					fullnodeConfig: {},
+					indexerConfig: {},
+					faucetConfig: {},
+					transactionGenerationConfig: {}
+				},
+				abstraction: {
+					config: {
+						network: 'mainnet',
+						client: {},
+						clientConfig: {},
+						fullnodeConfig: {},
+						indexerConfig: {},
+						faucetConfig: {},
+						transactionGenerationConfig: {}
+					}
+				}
+			},
+			abstraction: {
+				config: {
+					network: 'mainnet',
+					client: {},
+					clientConfig: {},
+					fullnodeConfig: {},
+					indexerConfig: {},
+					faucetConfig: {},
+					transactionGenerationConfig: {}
+				}
+			},
+			ans: {
+				config: {
+					network: 'mainnet',
+					client: {},
+					clientConfig: {},
+					fullnodeConfig: {},
+					indexerConfig: {},
+					faucetConfig: {},
+					transactionGenerationConfig: {}
+				}
+			},
+			coin: {
+				config: {
+					network: 'mainnet',
+					client: {},
+					clientConfig: {},
+					fullnodeConfig: {},
+					indexerConfig: {},
+					faucetConfig: {},
+					transactionGenerationConfig: {}
+				}
+			},
+			digitalAsset: {
+				config: {
+					network: 'mainnet',
+					client: {},
+					clientConfig: {},
+					fullnodeConfig: {},
+					indexerConfig: {},
+					faucetConfig: {},
+					transactionGenerationConfig: {}
+				}
+			},
+			faucet: {
+				config: {
+					network: 'mainnet',
+					client: {},
+					clientConfig: {},
+					fullnodeConfig: {},
+					indexerConfig: {},
+					faucetConfig: {},
+					transactionGenerationConfig: {}
+				}
+			},
+			fungibleAsset: {
+				config: {
+					network: 'mainnet',
+					client: {},
+					clientConfig: {},
+					fullnodeConfig: {},
+					indexerConfig: {},
+					faucetConfig: {},
+					transactionGenerationConfig: {}
+				}
+			},
+			general: {
+				config: {
+					network: 'mainnet',
+					client: {},
+					clientConfig: {},
+					fullnodeConfig: {},
+					indexerConfig: {},
+					faucetConfig: {},
+					transactionGenerationConfig: {}
+				}
+			},
+			staking: {
+				config: {
+					network: 'mainnet',
+					client: {},
+					clientConfig: {},
+					fullnodeConfig: {},
+					indexerConfig: {},
+					faucetConfig: {},
+					transactionGenerationConfig: {}
+				}
+			},
+			transaction: {
+				config: {
+					network: 'mainnet',
+					client: {},
+					clientConfig: {},
+					fullnodeConfig: {},
+					indexerConfig: {},
+					faucetConfig: {},
+					transactionGenerationConfig: {}
+				},
+				build: {
+					config: {
+						network: 'mainnet',
+						client: {},
+						clientConfig: {},
+						fullnodeConfig: {},
+						indexerConfig: {},
+						faucetConfig: {},
+						transactionGenerationConfig: {}
+					}
+				},
+				simulate: {
+					config: {
+						network: 'mainnet',
+						client: {},
+						clientConfig: {},
+						fullnodeConfig: {},
+						indexerConfig: {},
+						faucetConfig: {},
+						transactionGenerationConfig: {}
+					}
+				},
+				submit: {
+					config: {
+						network: 'mainnet',
+						client: {},
+						clientConfig: {},
+						fullnodeConfig: {},
+						indexerConfig: {},
+						faucetConfig: {},
+						transactionGenerationConfig: {}
+					}
+				},
+				batch: {
+					_events: {},
+					_eventsCount: 0,
+					config: {
+						network: 'mainnet',
+						client: {},
+						clientConfig: {},
+						fullnodeConfig: {},
+						indexerConfig: {},
+						faucetConfig: {},
+						transactionGenerationConfig: {}
+					}
+				}
+			},
+			table: {
+				config: {
+					network: 'mainnet',
+					client: {},
+					clientConfig: {},
+					fullnodeConfig: {},
+					indexerConfig: {},
+					faucetConfig: {},
+					transactionGenerationConfig: {}
+				}
+			},
+			keyless: {
+				config: {
+					network: 'mainnet',
+					client: {},
+					clientConfig: {},
+					fullnodeConfig: {},
+					indexerConfig: {},
+					faucetConfig: {},
+					transactionGenerationConfig: {}
+				}
+			},
+			object: {
+				config: {
+					network: 'mainnet',
+					client: {},
+					clientConfig: {},
+					fullnodeConfig: {},
+					indexerConfig: {},
+					faucetConfig: {},
+					transactionGenerationConfig: {}
+				}
+			}
+		},
+		name: 'Continue with Google',
+		icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBjbGFzcz0iaF8yMCB3XzIwIj48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTIzLjU0IDEyLjc2MTNDMjMuNTQgMTEuOTQ1OSAyMy40NjY4IDExLjE2MTggMjMuMzMwOSAxMC40MDkxSDEyLjVWMTQuODU3NUgxOC42ODkxQzE4LjQyMjUgMTYuMjk1IDE3LjYxMjMgMTcuNTEyOSAxNi4zOTQzIDE4LjMyODRWMjEuMjEzOEgyMC4xMTA5QzIyLjI4NTUgMTkuMjExOCAyMy41NCAxNi4yNjM2IDIzLjU0IDEyLjc2MTNaIiBmaWxsPSIjNDI4NUY0Ij48L3BhdGg+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMi40OTk1IDIzLjk5OThDMTUuNjA0NSAyMy45OTk4IDE4LjIwNzcgMjIuOTcgMjAuMTEwNCAyMS4yMTM3TDE2LjM5MzggMTguMzI4MkMxNS4zNjQgMTkuMDE4MiAxNC4wNDY3IDE5LjQyNTkgMTIuNDk5NSAxOS40MjU5QzkuNTA0MjUgMTkuNDI1OSA2Ljk2OTAyIDE3LjQwMyA2LjA2NDcgMTQuNjg0OEgyLjIyMjY2VjE3LjY2NDRDNC4xMTQ5MyAyMS40MjI4IDguMDA0MDIgMjMuOTk5OCAxMi40OTk1IDIzLjk5OThaIiBmaWxsPSIjMzRBODUzIj48L3BhdGg+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik02LjA2NTIzIDE0LjY4NTFDNS44MzUyMyAxMy45OTUxIDUuNzA0NTUgMTMuMjU4MSA1LjcwNDU1IDEyLjUwMDFDNS43MDQ1NSAxMS43NDIyIDUuODM1MjMgMTEuMDA1MSA2LjA2NTIzIDEwLjMxNTFWNy4zMzU1N0gyLjIyMzE4QzEuNDQ0MzIgOC44ODgwNyAxIDEwLjY0NDQgMSAxMi41MDAxQzEgMTQuMzU1OCAxLjQ0NDMyIDE2LjExMjIgMi4yMjMxOCAxNy42NjQ3TDYuMDY1MjMgMTQuNjg1MVoiIGZpbGw9IiNGQkJDMDUiPjwvcGF0aD48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyLjQ5OTUgNS41NzM4NkMxNC4xODc5IDUuNTczODYgMTUuNzAzOCA2LjE1NDA5IDE2Ljg5NTYgNy4yOTM2NEwyMC4xOTQgMy45OTUyM0MxOC4yMDI0IDIuMTM5NTUgMTUuNTk5MiAxIDEyLjQ5OTUgMUM4LjAwNDAyIDEgNC4xMTQ5MyAzLjU3NzA1IDIuMjIyNjYgNy4zMzU0NUw2LjA2NDcgMTAuMzE1QzYuOTY5MDIgNy41OTY4MiA5LjUwNDI1IDUuNTczODYgMTIuNDk5NSA1LjU3Mzg2WiIgZmlsbD0iI0VBNDMzNSI+PC9wYXRoPjwvc3ZnPg==',
+		url: 'https://aptosconnect.app',
+		readyState: WalletReadyState.Installed,
+		isAptosNativeWallet: true
+	};
+
+	function walletAsInstalled(wallet: AdapterWallet | AdapterNotDetectedWallet): AdapterWallet {
+		return {
+			...wallet,
+			readyState: 'Installed'
+		};
+	}
+</script>
+
+<Story
+	name="Default"
+	args={{
+		wallet: petraWallet
+	}}
+/>
+
+<Story
+	name="Connect With Google"
+	args={{
+		wallet: googleWallet
+	}}
+/>

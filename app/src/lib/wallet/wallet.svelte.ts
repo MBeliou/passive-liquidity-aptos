@@ -44,6 +44,9 @@ class WalletState {
 				this.walletCore?.onNetworkChange();
 			}
 		});
+
+		console.dir(this.wallets);
+		console.log("not installed", this.notDetectedWallets)
 	}
 
 	async connect(walletName: string) {
