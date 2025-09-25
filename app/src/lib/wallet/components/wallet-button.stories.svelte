@@ -24,258 +24,35 @@
 		chains: ['aptos:devnet', 'aptos:testnet', 'aptos:localnet', 'aptos:mainnet'],
 		readyState: WalletReadyState.Installed,
 		accounts: [],
+
+		// @ts-expect-error typescript is being too narrow here
 		features: ['some_feature']
 	};
 	const googleWallet: AdapterWallet = {
 		version: '1.0.0',
 		chains: ['aptos:devnet', 'aptos:testnet', 'aptos:localnet', 'aptos:mainnet'],
-		client: {
-			defaultNetworkName: 'mainnet',
-			dappInfo: {
-				domain: 'http://localhost:5173',
-				name: ''
-			},
-			transport: {
-				baseUrl: 'https://aptosconnect.app',
-				provider: 'google'
-			},
-			pairingClient: {
-				onDisconnectListeners: {},
-				accessors: {},
-				defaultNetworkName: 'mainnet',
-				initPromise: {}
-			}
-		},
-		aptosClient: {
-			config: {
-				network: 'mainnet',
-				client: {},
-				clientConfig: {},
-				fullnodeConfig: {},
-				indexerConfig: {},
-				faucetConfig: {},
-				transactionGenerationConfig: {}
-			},
-			account: {
-				config: {
-					network: 'mainnet',
-					client: {},
-					clientConfig: {},
-					fullnodeConfig: {},
-					indexerConfig: {},
-					faucetConfig: {},
-					transactionGenerationConfig: {}
-				},
-				abstraction: {
-					config: {
-						network: 'mainnet',
-						client: {},
-						clientConfig: {},
-						fullnodeConfig: {},
-						indexerConfig: {},
-						faucetConfig: {},
-						transactionGenerationConfig: {}
-					}
-				}
-			},
-			abstraction: {
-				config: {
-					network: 'mainnet',
-					client: {},
-					clientConfig: {},
-					fullnodeConfig: {},
-					indexerConfig: {},
-					faucetConfig: {},
-					transactionGenerationConfig: {}
-				}
-			},
-			ans: {
-				config: {
-					network: 'mainnet',
-					client: {},
-					clientConfig: {},
-					fullnodeConfig: {},
-					indexerConfig: {},
-					faucetConfig: {},
-					transactionGenerationConfig: {}
-				}
-			},
-			coin: {
-				config: {
-					network: 'mainnet',
-					client: {},
-					clientConfig: {},
-					fullnodeConfig: {},
-					indexerConfig: {},
-					faucetConfig: {},
-					transactionGenerationConfig: {}
-				}
-			},
-			digitalAsset: {
-				config: {
-					network: 'mainnet',
-					client: {},
-					clientConfig: {},
-					fullnodeConfig: {},
-					indexerConfig: {},
-					faucetConfig: {},
-					transactionGenerationConfig: {}
-				}
-			},
-			faucet: {
-				config: {
-					network: 'mainnet',
-					client: {},
-					clientConfig: {},
-					fullnodeConfig: {},
-					indexerConfig: {},
-					faucetConfig: {},
-					transactionGenerationConfig: {}
-				}
-			},
-			fungibleAsset: {
-				config: {
-					network: 'mainnet',
-					client: {},
-					clientConfig: {},
-					fullnodeConfig: {},
-					indexerConfig: {},
-					faucetConfig: {},
-					transactionGenerationConfig: {}
-				}
-			},
-			general: {
-				config: {
-					network: 'mainnet',
-					client: {},
-					clientConfig: {},
-					fullnodeConfig: {},
-					indexerConfig: {},
-					faucetConfig: {},
-					transactionGenerationConfig: {}
-				}
-			},
-			staking: {
-				config: {
-					network: 'mainnet',
-					client: {},
-					clientConfig: {},
-					fullnodeConfig: {},
-					indexerConfig: {},
-					faucetConfig: {},
-					transactionGenerationConfig: {}
-				}
-			},
-			transaction: {
-				config: {
-					network: 'mainnet',
-					client: {},
-					clientConfig: {},
-					fullnodeConfig: {},
-					indexerConfig: {},
-					faucetConfig: {},
-					transactionGenerationConfig: {}
-				},
-				build: {
-					config: {
-						network: 'mainnet',
-						client: {},
-						clientConfig: {},
-						fullnodeConfig: {},
-						indexerConfig: {},
-						faucetConfig: {},
-						transactionGenerationConfig: {}
-					}
-				},
-				simulate: {
-					config: {
-						network: 'mainnet',
-						client: {},
-						clientConfig: {},
-						fullnodeConfig: {},
-						indexerConfig: {},
-						faucetConfig: {},
-						transactionGenerationConfig: {}
-					}
-				},
-				submit: {
-					config: {
-						network: 'mainnet',
-						client: {},
-						clientConfig: {},
-						fullnodeConfig: {},
-						indexerConfig: {},
-						faucetConfig: {},
-						transactionGenerationConfig: {}
-					}
-				},
-				batch: {
-					_events: {},
-					_eventsCount: 0,
-					config: {
-						network: 'mainnet',
-						client: {},
-						clientConfig: {},
-						fullnodeConfig: {},
-						indexerConfig: {},
-						faucetConfig: {},
-						transactionGenerationConfig: {}
-					}
-				}
-			},
-			table: {
-				config: {
-					network: 'mainnet',
-					client: {},
-					clientConfig: {},
-					fullnodeConfig: {},
-					indexerConfig: {},
-					faucetConfig: {},
-					transactionGenerationConfig: {}
-				}
-			},
-			keyless: {
-				config: {
-					network: 'mainnet',
-					client: {},
-					clientConfig: {},
-					fullnodeConfig: {},
-					indexerConfig: {},
-					faucetConfig: {},
-					transactionGenerationConfig: {}
-				}
-			},
-			object: {
-				config: {
-					network: 'mainnet',
-					client: {},
-					clientConfig: {},
-					fullnodeConfig: {},
-					indexerConfig: {},
-					faucetConfig: {},
-					transactionGenerationConfig: {}
-				}
-			}
-		},
 		name: 'Continue with Google',
 		icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBjbGFzcz0iaF8yMCB3XzIwIj48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTIzLjU0IDEyLjc2MTNDMjMuNTQgMTEuOTQ1OSAyMy40NjY4IDExLjE2MTggMjMuMzMwOSAxMC40MDkxSDEyLjVWMTQuODU3NUgxOC42ODkxQzE4LjQyMjUgMTYuMjk1IDE3LjYxMjMgMTcuNTEyOSAxNi4zOTQzIDE4LjMyODRWMjEuMjEzOEgyMC4xMTA5QzIyLjI4NTUgMTkuMjExOCAyMy41NCAxNi4yNjM2IDIzLjU0IDEyLjc2MTNaIiBmaWxsPSIjNDI4NUY0Ij48L3BhdGg+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMi40OTk1IDIzLjk5OThDMTUuNjA0NSAyMy45OTk4IDE4LjIwNzcgMjIuOTcgMjAuMTEwNCAyMS4yMTM3TDE2LjM5MzggMTguMzI4MkMxNS4zNjQgMTkuMDE4MiAxNC4wNDY3IDE5LjQyNTkgMTIuNDk5NSAxOS40MjU5QzkuNTA0MjUgMTkuNDI1OSA2Ljk2OTAyIDE3LjQwMyA2LjA2NDcgMTQuNjg0OEgyLjIyMjY2VjE3LjY2NDRDNC4xMTQ5MyAyMS40MjI4IDguMDA0MDIgMjMuOTk5OCAxMi40OTk1IDIzLjk5OThaIiBmaWxsPSIjMzRBODUzIj48L3BhdGg+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik02LjA2NTIzIDE0LjY4NTFDNS44MzUyMyAxMy45OTUxIDUuNzA0NTUgMTMuMjU4MSA1LjcwNDU1IDEyLjUwMDFDNS43MDQ1NSAxMS43NDIyIDUuODM1MjMgMTEuMDA1MSA2LjA2NTIzIDEwLjMxNTFWNy4zMzU1N0gyLjIyMzE4QzEuNDQ0MzIgOC44ODgwNyAxIDEwLjY0NDQgMSAxMi41MDAxQzEgMTQuMzU1OCAxLjQ0NDMyIDE2LjExMjIgMi4yMjMxOCAxNy42NjQ3TDYuMDY1MjMgMTQuNjg1MVoiIGZpbGw9IiNGQkJDMDUiPjwvcGF0aD48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyLjQ5OTUgNS41NzM4NkMxNC4xODc5IDUuNTczODYgMTUuNzAzOCA2LjE1NDA5IDE2Ljg5NTYgNy4yOTM2NEwyMC4xOTQgMy45OTUyM0MxOC4yMDI0IDIuMTM5NTUgMTUuNTk5MiAxIDEyLjQ5OTUgMUM4LjAwNDAyIDEgNC4xMTQ5MyAzLjU3NzA1IDIuMjIyNjYgNy4zMzU0NUw2LjA2NDcgMTAuMzE1QzYuOTY5MDIgNy41OTY4MiA5LjUwNDI1IDUuNTczODYgMTIuNDk5NSA1LjU3Mzg2WiIgZmlsbD0iI0VBNDMzNSI+PC9wYXRoPjwvc3ZnPg==',
 		url: 'https://aptosconnect.app',
 		readyState: WalletReadyState.Installed,
-		isAptosNativeWallet: true
-	};
+		isAptosNativeWallet: true,
+		// @ts-expect-error typescript is being too narrow here
 
-	function walletAsInstalled(wallet: AdapterWallet | AdapterNotDetectedWallet): AdapterWallet {
-		return {
-			...wallet,
-			readyState: 'Installed'
-		};
-	}
+		features: []
+	};
 </script>
 
 <Story
 	name="Default"
 	args={{
 		wallet: petraWallet
+	}}
+/>
+
+<Story
+	name="Wallet not installed"
+	args={{
+		wallet: { ...petraWallet, readyState: WalletReadyState.NotDetected }
 	}}
 />
 

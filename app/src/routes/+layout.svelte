@@ -28,6 +28,7 @@
 		network: Network.MAINNET,
 		crossChainWallets: true
 	});
+	
 </script>
 
 <svelte:head>

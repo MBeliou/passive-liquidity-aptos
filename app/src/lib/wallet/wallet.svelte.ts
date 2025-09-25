@@ -24,7 +24,11 @@ class WalletState {
 	notDetectedWallets = $derived.by(() => this.walletCore?.notDetectedWallets || []);
 
 	isLoading = $state(false);
-
+	/*
+	get wallet() {
+		return this.walletCore?.wallet || null;
+	}
+*/
 	onError: (error: unknown) => void;
 
 	constructor(
@@ -42,18 +46,20 @@ class WalletState {
 			if (this.connected) {
 				this.walletCore?.onAccountChange();
 				this.walletCore?.onNetworkChange();
+				this.wallet = this.walletCore?.wallet || null;
 			}
 		});
 
-		console.dir(this.wallets);
-		console.log("not installed", this.notDetectedWallets)
+		$effect(() => {
+			if (this.walletCore) {
+				this.eventsSetUp(this.walletCore);
+			}
+		});
 	}
 
 	async connect(walletName: string) {
-		// set is loading
-
 		try {
-			this.isLoading = false;
+			this.isLoading = true;
 			await this.walletCore?.connect(walletName);
 		} catch (error) {
 			if (this.onError) {
@@ -102,12 +108,7 @@ class WalletState {
 
 	async changeNetwork(network: Network) {
 		this.expectsWalletCore();
-		try {
-			await this.walletCore?.changeNetwork(network);
-		} catch (error) {
-			if (this.onError) this.onError(error);
-			return Promise.reject(error);
-		}
+		await this.errorGuard(this.walletCore?.changeNetwork(network));
 	}
 
 	async handleConnect() {
@@ -161,6 +162,18 @@ class WalletState {
 	private expectsWalletCore() {
 		if (!this.walletCore) {
 			throw new Error('WalletCore is not initialized');
+		}
+	}
+
+	private async errorGuard<T>(promise?: Promise<T>) {
+		try {
+			return await promise;
+			//fn?.();
+		} catch (error) {
+			if (this.onError) {
+				this.onError(error);
+			}
+			return Promise.reject(error);
 		}
 	}
 

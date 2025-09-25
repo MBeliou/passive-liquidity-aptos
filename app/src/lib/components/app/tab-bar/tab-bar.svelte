@@ -14,6 +14,7 @@
 <script lang="ts">
 	import SearchPanel from '../search-panel/search-panel.svelte';
 	import { searchTokens } from '../search-panel/data.remote';
+	import WalletConnector from '../wallet/wallet-connector.svelte';
 
 	const isMobile = new IsMobile();
 	let {
@@ -53,8 +54,10 @@
 	</div>
 {:else}
 	<!--  on top -->
-	<div class="pointer-events-none fixed inset-x-0 top-8 flex justify-center">
-		<div class="bg-muted pointer-events-auto flex items-center rounded-full p-1 md:justify-center">
+	<div class="pointer-events-none fixed inset-x-0 top-8 mx-auto px-4 grid max-w-7xl grid-cols-3">
+		<div
+			class="bg-muted pointer-events-auto col-start-2 mx-auto flex items-center rounded-full p-1 md:justify-center"
+		>
 			{#each links as link (link.label)}
 				<a
 					data-active-tab={link.isActive}
@@ -73,6 +76,10 @@
 			>
 				<Search></Search>
 			</button>
+		</div>
+
+		<div class="flex items-center justify-end ">
+			<WalletConnector class=" pointer-events-auto"></WalletConnector>
 		</div>
 	</div>
 {/if}
