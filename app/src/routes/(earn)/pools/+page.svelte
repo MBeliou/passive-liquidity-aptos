@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import { getPools } from './data.remote';
 
 	const feeTiers = [0.01, 0.05, 0.3, 1];
@@ -16,7 +15,6 @@
 	<ul class="mt-6 grid grid-cols-2 gap-4">
 		{#each await getPools() as pool}
 			{@const slug = pool.tokenA.symbol.toLowerCase() + '-' + pool.tokenB.symbol.toLowerCase()}
-			<!-- TODO: also add slug -->
 			<li>
 				<a class="hover:border-primary grid gap-6 rounded border" href="/pools/{slug}">
 					<div class="flex items-center gap-4 p-4">

@@ -45,7 +45,7 @@
 
 <ModeWatcher defaultMode="dark" track={false} />
 
-<div class="mx-auto min-h-screen w-full max-w-7xl border-x pb-20">
+<div class="mx-auto min-h-screen w-full max-w-7xl pb-20 mt-8">
 	{@render children?.()}
 </div>
 
