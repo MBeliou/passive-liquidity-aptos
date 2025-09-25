@@ -33,8 +33,6 @@
 		};
 	});
 
-	let open = $state(false);
-
 	const allTokens = searchTokens(undefined);
 </script>
 
@@ -43,7 +41,7 @@
 		<LoaderCircle></LoaderCircle>
 	</div>
 {:else}
-	<Drawer.Root bind:open>
+	<Drawer.Root>
 		<WalletTrigger wallet={wallet.wallet} class={restProps.class}></WalletTrigger>
 		{#if wallet.connected}
 			<Drawer.Content class="pointer-events-auto flex min-h-[60vh] flex-col">

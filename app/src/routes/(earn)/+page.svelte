@@ -13,22 +13,6 @@
 			<h1 class="text-3xl font-bold tracking-wide">Earn</h1>
 		</div>
 		<div class="flex-1">
-			<!-- 
-			<section>
-				<div>
-					<h2>Assets</h2>
-					<p>Assets description</p>
-				</div>
-
-				<div>
-					{#each await getAssets() as asset}
-						<li>
-							{asset.name} - {asset.symbol} - {asset.assetType}
-						</li>
-					{/each}
-				</div>
-			</section>
-			 -->
 			<section>
 				<div>
 					<h2 class="text-lg font-semibold">Top Pools</h2>

@@ -26,12 +26,11 @@
 	let search = $state('');
 
 	const query = $derived(searchTokens(search));
-	
 </script>
 
 {#if isMobile.current}
 	<!--  on bottom, separate -->
-	<div class="fixed inset-x-0 bottom-2 isolate">
+	<div class="fixed inset-x-4 bottom-2 isolate">
 		<div class="relative flex items-stretch justify-between">
 			<div class="bg-muted flex h-fit gap-1 rounded-full p-1">
 				{#each links as link (link.label)}
@@ -72,11 +71,14 @@
 					{link.label}
 				</a>
 			{/each}
-			<button
+			<!-- 
+				<button
 				class="hover:bg-muted-foreground/20 text-muted-foreground hover:text-foreground flex h-full items-center justify-center rounded-full px-3 transition-all"
-			>
+				>
 				<Search></Search>
 			</button>
+			-->
+			<SearchPanel class="h-full w-full pr-3" bind:search {query}></SearchPanel>
 		</div>
 
 		<div class="flex items-center justify-end">

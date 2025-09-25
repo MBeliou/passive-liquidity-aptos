@@ -5,17 +5,18 @@
 	import LoaderCircle from '@lucide/svelte/icons/loader-circle';
 	import Search from '@lucide/svelte/icons/search';
 	import { searchTokens } from './data.remote';
+	import type { HTMLButtonAttributes } from 'svelte/elements';
 
 	const filters = ['all', 'pools', 'tokens'] as const;
 
-	let { search = $bindable(), query }: { search: string; query: ReturnType<typeof searchTokens> } =
+	let { search = $bindable(), query, ...restProps }: { search: string; query: ReturnType<typeof searchTokens> } & HTMLButtonAttributes =
 		$props();
 	let currentFilter = $state<(typeof filters)[number]>('all');
 </script>
 
 <Drawer.Root>
 	<Drawer.Trigger>
-		<button class="bg-muted flex aspect-square h-16 w-16 items-center justify-center rounded-full">
+		<button class={["bg-muted flex aspect-square h-16 w-16 items-center justify-center rounded-full", restProps.class]}>
 			<Search></Search>
 		</button>
 	</Drawer.Trigger>
