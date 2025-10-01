@@ -1,6 +1,7 @@
 import type { positionsTable } from '$lib/server/db/schema';
+import { formatRange, makeFeeLabel, normalizeFeeTier, type ChartData } from './pool-chart.svelte';
 
-export const FEE_TIERS = ['0.01', '0.03', '0.05', '1'] as const;
+export const FEE_TIERS = ['0.01', '0.3', '0.05', '1'] as const;
 export type Fee = (typeof FEE_TIERS)[number];
 
 export type PositionWithFee = typeof positionsTable.$inferSelect & {
@@ -15,17 +16,17 @@ export type PositionWithFee = typeof positionsTable.$inferSelect & {
 export function binLiquidity(
 	midPrice: number,
 	positions: PositionWithFee[],
-	options = { bins: 20, delta: 10 }
+	options = { bins: 20, delta: 5 }
 ) {
 	const { bins, delta } = options;
 
 	const tickToPrice = (tick: number): number => {
 		return Math.pow(1.0001, tick);
 	};
-
+	/*
 	const getFeeLabel = (feeBps: number): string => {
 		return `${feeBps.toFixed(3)}%`;
-	};
+	};*/
 
 	const rangeMin = midPrice * (1 - delta / 100);
 	const rangeMax = midPrice * (1 + delta / 100);
@@ -50,7 +51,8 @@ export function binLiquidity(
 	inRangePositions.forEach((pos) => {
 		const lowerPrice = tickToPrice(pos.tickLower);
 		const upperPrice = tickToPrice(pos.tickUpper);
-		const feeLabel = getFeeLabel(pos.fee);
+		//const feeLabel = makeFeeLabel(pos.fee);
+		const feeLabel = pos.fee.toString();
 		const liquidityAmount = parseFloat(pos.liquidity);
 
 		binRanges.forEach((binRange, idx) => {
@@ -73,5 +75,23 @@ export function binLiquidity(
 		});
 	});
 
-	return result;
+	const typedResult: ChartData[] = [];
+	result.forEach((r) => {
+		const range = formatRange(r.range);
+
+		const feeAccumulator: Record<string, number> = {};
+		FEE_TIERS.forEach((tier) => {
+			//const formattedTier = makeFeeLabel(tier);
+			//const formattedTier = parseFloat(tier).toFixed(2);
+			const formattedTier = normalizeFeeTier(tier);
+			// @ts-expect-error Typescript resolves earlier ...({}) as never so that gets gutted out
+			const liquidity = r[tier] ?? 0;
+			feeAccumulator[formattedTier] = liquidity;
+		});
+
+		typedResult.push({ range, ...feeAccumulator });
+	});
+
+	//return result;
+	return typedResult;
 }

@@ -57,8 +57,8 @@ export const POST: RequestHandler = async ({ params }) => {
 		.from(positionsTable)
 		.where(eq(positionsTable.pool, id));
 
-	const indexesToRefresh = knownPositions.map((k) => k.index);
-	const maxKnown = Math.max(...indexesToRefresh);
+	const indexesToRefresh = (knownPositions ?? []).map((k) => k.index);
+	const maxKnown = Math.max(...indexesToRefresh, 0);
 	const toFetch = Array.from({ length: maximumIndex - maxKnown }, (_, i) => maxKnown + i + 1);
 
 	const positions = await tapp.contract.iterGetPositions(poolInfo.id, {
@@ -77,21 +77,28 @@ export const POST: RequestHandler = async ({ params }) => {
 		};
 	});
 
-	await db
-		.insert(positionsTable)
-		.values(toUpsert)
-		.onConflictDoUpdate({
-			target: [positionsTable.index, positionsTable.pool],
-			set: {
-				tickLower: sql`EXCLUDED.tick_lower`,
-				tickUpper: sql`EXCLUDED.tick_upper`,
-				liquidity: sql`EXCLUDED.liquidity`,
-				updatedAt: sql`EXCLUDED.updated_at`
-			}
-		});
+	if (toUpsert.length > 0) {
+		await db
+			.insert(positionsTable)
+			.values(toUpsert)
+			.onConflictDoUpdate({
+				target: [positionsTable.index, positionsTable.pool],
+				set: {
+					tickLower: sql`EXCLUDED.tick_lower`,
+					tickUpper: sql`EXCLUDED.tick_upper`,
+					liquidity: sql`EXCLUDED.liquidity`,
+					updatedAt: sql`EXCLUDED.updated_at`
+				}
+			});
 
-	return json({
-		status: 'success',
-		message: `refreshed positions for: ${params.dex}::${params.id}`
-	});
+		return json({
+			status: 'success',
+			message: `refreshed positions for: ${params.dex}::${params.id}`
+		});
+	} else {
+		return json({
+			status: 'success',
+			message: `No active position found for: ${params.dex}::${params.id}`
+		});
+	}
 };

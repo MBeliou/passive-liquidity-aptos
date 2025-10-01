@@ -47,10 +47,6 @@ export const load = (async ({ params }) => {
 			fee: parseFloat(p.fee)
 		};
 	});
-	//console.log(positions);
-	// Now that we've got the positions, we'll want to group them by fee tier / actual poolID.
-	const positionsPerPool: Record<string, typeof positionsTable.$inferSelect> = {};
-
 	const assets = { tokenA: pools[0].tokenA, tokenB: pools[0].tokenB };
 
 	const tapp = useTapp(useAptos(APTOS_KEY));
@@ -63,13 +59,77 @@ export const load = (async ({ params }) => {
 		sqrtPrice: poolInfo.sqrtPrice
 	});
 
-	console.dir(computedMidPrice);
+	const binnedLiquidity = binLiquidity(computedMidPrice, positions, {
+		delta: 10,
+		bins: 10
+	});
+
+	// Compute full liquidity distribution and position counts per fee tier
+	const liquidityTotals: Record<string, number> = {};
+	const positionCounts: Record<string, number> = {};
+	positions.forEach((pos) => {
+		const feeKey = pos.fee.toString();
+		const liquidityAmount = parseFloat(pos.liquidity);
+		if (!liquidityTotals[feeKey]) {
+			liquidityTotals[feeKey] = 0;
+			positionCounts[feeKey] = 0;
+		}
+		liquidityTotals[feeKey] += liquidityAmount;
+		positionCounts[feeKey]++;
+	});
+
+	const totalLiquidity = Object.values(liquidityTotals).reduce((sum, val) => sum + val, 0);
+	const liquidityDistribution: Record<string, number> = {};
+	Object.entries(liquidityTotals).forEach(([feeKey, amount]) => {
+		liquidityDistribution[feeKey] = totalLiquidity > 0 ? (amount / totalLiquidity) * 100 : 0;
+	});
+
+	// Compute in-range liquidity distribution and position counts per fee tier
+	const tickToPrice = (tick: number): number => Math.pow(1.0001, tick);
+	const delta = 10;
+	const rangeMin = computedMidPrice * (1 - delta / 100);
+	const rangeMax = computedMidPrice * (1 + delta / 100);
+
+	const inRangeLiquidityTotals: Record<string, number> = {};
+	const inRangePositionCounts: Record<string, number> = {};
+	positions.forEach((pos) => {
+		const lowerPrice = tickToPrice(pos.tickLower);
+		const upperPrice = tickToPrice(pos.tickUpper);
+
+		if (upperPrice >= rangeMin && lowerPrice <= rangeMax) {
+			const feeKey = pos.fee.toString();
+			const liquidityAmount = parseFloat(pos.liquidity);
+			if (!inRangeLiquidityTotals[feeKey]) {
+				inRangeLiquidityTotals[feeKey] = 0;
+				inRangePositionCounts[feeKey] = 0;
+			}
+			inRangeLiquidityTotals[feeKey] += liquidityAmount;
+			inRangePositionCounts[feeKey]++;
+		}
+	});
+
+	const totalInRangeLiquidity = Object.values(inRangeLiquidityTotals).reduce(
+		(sum, val) => sum + val,
+		0
+	);
+	const inRangeLiquidityDistribution: Record<string, number> = {};
+	Object.entries(inRangeLiquidityTotals).forEach(([feeKey, amount]) => {
+		inRangeLiquidityDistribution[feeKey] =
+			totalInRangeLiquidity > 0 ? (amount / totalInRangeLiquidity) * 100 : 0;
+	});
+
 	return {
 		assets,
 		pools: pools.map((p) => p.pools),
 		positions: positions.map((p) => {
 			return { ...p, fee: parseFloat(p.fee) };
 		}),
-		liquidity: binLiquidity(0.965, positions)
+		liquidity: binnedLiquidity,
+		about: {
+			liquidityDistribution,
+			inRangeLiquidityDistribution,
+			positionCounts,
+			inRangePositionCounts
+		}
 	};
 }) satisfies PageServerLoad;
