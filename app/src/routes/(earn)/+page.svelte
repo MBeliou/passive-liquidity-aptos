@@ -14,6 +14,7 @@
 	});
 
 	import { getVaults, getAssets } from './earn.remote';
+	import LogoStack from '$lib/components/app/logo-stack/logo-stack.svelte';
 </script>
 
 <div class="flex justify-between px-4">
@@ -38,6 +39,7 @@
 									href="/pools/{slug}"
 								>
 									<div class="flex items-center gap-4 p-4">
+										<!-- 
 										<div class="relative">
 											<div
 												class="size-8 rounded-full border bg-cover bg-center"
@@ -48,6 +50,8 @@
 												style="background-image: url({pool.tokenB.logo});"
 											></div>
 										</div>
+										 -->
+										<LogoStack tokenA={{logo: pool.tokenA.logo}} tokenB={{logo: pool.tokenB.logo}}></LogoStack>
 										<div>
 											<h2>
 												<div>

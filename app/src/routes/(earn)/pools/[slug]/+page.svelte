@@ -8,6 +8,7 @@
 
 	import TappLogo from '$lib/assets/tapp-logo.png';
 	import { FEE_TIERS } from '$lib/components/app/charts/pool/utils.js';
+	import LogoStack from '$lib/components/app/logo-stack/logo-stack.svelte';
 
 	let { data } = $props();
 
@@ -20,7 +21,6 @@
 		return sorted;
 	});
 
-
 	const percentFormat = new Intl.NumberFormat(undefined, {
 		style: 'percent',
 		minimumFractionDigits: 2,
@@ -31,7 +31,23 @@
 <div class="grid gap-8">
 	<div class="grid gap-4 border-b">
 		<div class="flex justify-between">
-			<h1 class="text-3xl font-bold tracking-wide">Pool name / assets</h1>
+			<div class="flex items-center space-x-8">
+				<div>
+					<LogoStack
+						tokenA={{ logo: data.assets.tokenA.logo }}
+						tokenB={{ logo: data.assets.tokenB.logo }}
+					></LogoStack>
+				</div>
+				<div>
+					<h1 class="text-3xl font-bold tracking-wide">
+						{data.assets.tokenA.name} / {data.assets.tokenB.name}
+					</h1>
+					<div class="text-muted-foreground text-sm font-semibold">
+						{data.assets.tokenA.symbol} / {data.assets.tokenB.symbol}
+					</div>
+				</div>
+			</div>
+
 			<div class="flex items-center">
 				<ShareButton
 					content={{
@@ -59,7 +75,7 @@
 						-->
 					<div class="flex items-center border-t">
 						{#each FEE_TIERS as feeTier}
-						{@const hasTier = tappPools.includes(parseFloat(feeTier))}
+							{@const hasTier = tappPools.includes(parseFloat(feeTier))}
 							<div
 								class={[
 									'flex flex-grow flex-col items-center justify-center border-r p-2 font-medium'
