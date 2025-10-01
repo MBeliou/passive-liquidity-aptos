@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import PoolChart from '$lib/components/app/charts/pool/pool-chart.svelte';
+	//import PoolChart from '$lib/components/app/charts/pool/pool-chart.svelte';
 	import ShareButton from '$lib/components/app/share-button/share-button.svelte';
-	import { getAggregatePoolInfo } from './data.remote';
+
+	let { data } = $props();
+
+	$inspect(data.liquidity)
 </script>
 
 <div class="flex justify-between">
@@ -18,9 +23,10 @@
 </div>
 
 <section>
-	{#await getAggregatePoolInfo(page.params.slug!) then poolsInfo}
-		<div>
-			{JSON.stringify(poolsInfo)}
-		</div>
-	{/await}
+	<div>
+		{JSON.stringify(data.pools)}
+	</div>
+	<div class="mt-4">
+		<PoolChart chartData={data.liquidity}></PoolChart> 
+	</div>
 </section>

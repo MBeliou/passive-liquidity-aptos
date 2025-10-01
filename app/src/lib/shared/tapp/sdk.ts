@@ -38,9 +38,9 @@ class TappContract {
 	}
 	async iterGetPositions(
 		poolAddress: string,
-		options: { indexes?: number[]; maximumIndex: number; batchSize?: number }
+		options: { indexes?: number[]; maximumIndex: number; batchSize?: number; delayMs?: number }
 	) {
-		const { indexes, maximumIndex, batchSize = 50 } = options;
+		const { indexes, maximumIndex, batchSize = 50, delayMs = 100 } = options;
 		const positions: Position[] = [];
 		const successfulIndexes: number[] = [];
 		const failedIndexes: number[] = [];
@@ -57,51 +57,29 @@ class TappContract {
 				`Fetching positions batch ${Math.floor(i / batchSize) + 1}: indexes ${batch[0]}-${batch[batch.length - 1]}`
 			);
 
-			// Create promises for this batch
-			const batchPromises = batch.map(async (positionIndex) => {
-				try {
-					const position = await this.getPosition(poolAddress, positionIndex);
-					return { success: true, index: positionIndex, position };
-				} catch (error) {
-					// Position doesn't exist or other error
-					return { success: false, index: positionIndex, error: error.message };
-				}
-			});
-
-			// Execute batch with Promise.allSettled to handle individual failures
-			const batchResults = await Promise.allSettled(batchPromises);
-
-			// Process results
 			let batchSuccessCount = 0;
 			let batchFailureCount = 0;
 
-			batchResults.forEach((result, idx) => {
-				const positionIndex = batch[idx];
-
-				if (result.status === 'fulfilled') {
-					if (result.value.success) {
-						positions.push(result.value.position);
-						successfulIndexes.push(positionIndex);
-						batchSuccessCount++;
-					} else {
-						failedIndexes.push(positionIndex);
-						batchFailureCount++;
-						// Optionally log specific failures
-						// console.warn(`Position ${positionIndex} failed: ${result.value.error}`);
-					}
-				} else {
+			// Process each position sequentially with delay
+			for (const positionIndex of batch) {
+				try {
+					const position = await this.getPosition(poolAddress, positionIndex);
+					positions.push(position);
+					successfulIndexes.push(positionIndex);
+					batchSuccessCount++;
+				} catch (error) {
 					failedIndexes.push(positionIndex);
 					batchFailureCount++;
-					console.warn(`Batch promise rejected for index ${positionIndex}:`, result.reason);
+					// console.warn(`Position ${positionIndex} failed: ${error.message}`);
 				}
-			});
+
+				// Add delay between each request to avoid rate limiting
+				if (positionIndex !== batch[batch.length - 1]) {
+					await new Promise((resolve) => setTimeout(resolve, delayMs));
+				}
+			}
 
 			console.log(`Batch complete: ${batchSuccessCount} success, ${batchFailureCount} failed`);
-
-			// Optional: Add delay between batches to avoid rate limiting
-			if (i + batchSize < positionIndexes.length) {
-				await new Promise((resolve) => setTimeout(resolve, 100)); // 100ms delay
-			}
 		}
 
 		console.log(

@@ -5,6 +5,7 @@ import { db } from '$lib/server/db';
 import { poolsTable, positionsTable } from '$lib/server/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import { useAptos, useTapp } from '$lib/shared';
+import { APTOS_KEY } from '$env/static/private';
 
 function parseTickValue(tickBits: string): number {
 	const tick = BigInt(tickBits);
@@ -38,7 +39,7 @@ export const POST: RequestHandler = async ({ params }) => {
 		});
 	}
 
-	const tapp = useTapp(useAptos());
+	const tapp = useTapp(useAptos(APTOS_KEY));
 	const maximumIndex = await tapp.contract.getPositionCountFromPool(poolInfo.id);
 	//console.log('info', info);
 	const positions = await tapp.contract.iterGetPositions(poolInfo.id, {
