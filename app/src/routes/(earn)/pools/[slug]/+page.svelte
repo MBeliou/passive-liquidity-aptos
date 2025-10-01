@@ -27,6 +27,7 @@
 	});
 
 	$effect(() => {
+		// TODO: we want an actual title and description here
 		tabBarState.setShareButton({
 			title: 'Pool',
 			description: 'description',
