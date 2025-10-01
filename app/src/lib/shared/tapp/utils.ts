@@ -52,3 +52,35 @@ export function calculatePriceBounds(tickData: TickData): PriceBounds {
 		priceUpper
 	};
 }
+
+interface SqrtPriceData {
+	sqrtPrice: string | bigint;
+	decimalsA: number;
+	decimalsB: number;
+}
+
+/**
+ * Convert Q64-encoded sqrt price to regular price
+ *
+ * @param data - Sqrt price and token decimals
+ * @returns Price in tokenB per tokenA
+ */
+export function sqrtPriceToPrice(data: SqrtPriceData): number {
+	// Convert to BigInt if string
+	const sqrtPriceRaw = typeof data.sqrtPrice === 'string' ? BigInt(data.sqrtPrice) : data.sqrtPrice;
+
+	// Q64 constant (2^64)
+	const Q64 = BigInt(2) ** BigInt(64);
+
+	// Decode sqrt price from Q64 format
+	const sqrtPrice = Number(sqrtPriceRaw) / Number(Q64);
+
+	// Square to get the price ratio
+	const priceRaw = sqrtPrice ** 2;
+
+	// Apply decimal adjustment
+	const decimalAdjustment = Math.pow(10, data.decimalsA - data.decimalsB);
+	const price = priceRaw * decimalAdjustment;
+
+	return price;
+}

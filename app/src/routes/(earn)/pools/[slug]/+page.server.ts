@@ -5,6 +5,9 @@ import { poolsTable, positionsTable, tokensTable } from '$lib/server/db/schema';
 import { eq, and, ilike, inArray } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import type { PageServerLoad } from './$types';
+import { useAptos, useTapp } from '$lib/shared';
+import { APTOS_KEY } from '$env/static/private';
+import { sqrtPriceToPrice } from '$lib/shared/tapp/utils';
 
 export const load = (async ({ params }) => {
 	// slug is built as tokenA-tokenB
@@ -44,10 +47,23 @@ export const load = (async ({ params }) => {
 			fee: parseFloat(p.fee)
 		};
 	});
+	//console.log(positions);
+	// Now that we've got the positions, we'll want to group them by fee tier / actual poolID.
+	const positionsPerPool: Record<string, typeof positionsTable.$inferSelect> = {};
 
 	const assets = { tokenA: pools[0].tokenA, tokenB: pools[0].tokenB };
 
-	console.dir(positions);
+	const tapp = useTapp(useAptos(APTOS_KEY));
+
+	const pool = pools[0];
+	const poolInfo = await tapp.sdk.Pool.getInfo(pool.pools.id);
+	const computedMidPrice = sqrtPriceToPrice({
+		decimalsA: pool.tokenA.decimals,
+		decimalsB: pool.tokenB.decimals,
+		sqrtPrice: poolInfo.sqrtPrice
+	});
+
+	console.dir(computedMidPrice);
 	return {
 		assets,
 		pools: pools.map((p) => p.pools),
