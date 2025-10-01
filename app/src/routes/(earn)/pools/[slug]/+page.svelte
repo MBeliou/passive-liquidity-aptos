@@ -19,6 +19,13 @@
 			.map((s) => parseFloat(s.fee));
 		return sorted;
 	});
+
+
+	const percentFormat = new Intl.NumberFormat(undefined, {
+		style: 'percent',
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 2
+	});
 </script>
 
 <div class="grid gap-8">
@@ -42,12 +49,30 @@
 					<h2 class=" font-medium">Tapp Exchange Pools</h2>
 				</div>
 				<div class="flex items-center">
-					{#each FEE_TIERS as feeTier}
+					<!-- 
+						{#each FEE_TIERS as feeTier}
 						{@const isAvailableOnTapp = tappPools.includes(parseFloat(feeTier))}
 						<div class={['', isAvailableOnTapp && 'bg-red-500']}>
 							{feeTier}
 						</div>
-					{/each}
+						{/each}
+						-->
+					<div class="flex items-center border-t">
+						{#each FEE_TIERS as feeTier}
+						{@const hasTier = tappPools.includes(parseFloat(feeTier))}
+							<div
+								class={[
+									'flex flex-grow flex-col items-center justify-center border-r p-2 font-medium'
+								]}
+							>
+								<!-- TODO: if high volume -> ⽕ else ⽶ -->
+								<div class="">{hasTier ? 'volume' : '-'}</div>
+								<div class="text-muted-foreground text-xs">
+									{percentFormat.format(feeTier / 100)}
+								</div>
+							</div>
+						{/each}
+					</div>
 				</div>
 			</div>
 		</div>
