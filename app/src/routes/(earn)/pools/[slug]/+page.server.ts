@@ -8,6 +8,11 @@ import type { PageServerLoad } from './$types';
 import { useAptos, useTapp } from '$lib/shared';
 import { APTOS_KEY } from '$env/static/private';
 import { sqrtPriceToPrice } from '$lib/shared/tapp/utils';
+import { TappAPI } from '$lib/shared/tapp';
+
+function dateToTimestamp(date: Date) {
+	return Math.floor(date.getTime());
+}
 
 export const load = (async ({ params }) => {
 	// slug is built as tokenA-tokenB
@@ -117,6 +122,18 @@ export const load = (async ({ params }) => {
 		inRangeLiquidityDistribution[feeKey] =
 			totalInRangeLiquidity > 0 ? (amount / totalInRangeLiquidity) * 100 : 0;
 	});
+
+	const tappAPI = new TappAPI();
+	const now = new Date();
+	const lastWeek = new Date();
+	lastWeek.setDate(now.getDate() - 7);
+
+	const prices = await tappAPI.getPoolPrices(
+		pool.pools.id,
+		dateToTimestamp(lastWeek),
+		dateToTimestamp(now),
+		'1h'
+	);
 
 	return {
 		assets,

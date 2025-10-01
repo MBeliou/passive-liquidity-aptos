@@ -29,7 +29,7 @@
 			key: f,
 			label: makeFeeLabel(f),
 			color: chartConfig[f].color,
-			value: valueFormatter(liquidity[f] ?? 0)
+			value: valueFormatter(liquidity[f] ?? 0)
 		};
 	});
 </script>
@@ -59,7 +59,7 @@
 						value={visibleData[index].value}
 						{...getArcTextProps('outer', {
 							startOffset: '70%',
-							outerPadding: 14,
+							outerPadding: 14
 						})}
 						class="fill-foreground"
 					/>

@@ -6,29 +6,54 @@
 	import ShareButton from '$lib/components/app/share-button/share-button.svelte';
 	import * as Card from '$lib/components/ui/card';
 
+	import TappLogo from '$lib/assets/tapp-logo.png';
+	import { FEE_TIERS } from '$lib/components/app/charts/pool/utils.js';
+
 	let { data } = $props();
 
 	//$inspect(data.liquidity);
+
+	const tappPools = $derived.by(() => {
+		const sorted = data.pools
+			.sort((a, b) => parseInt(a.fee) - parseInt(b.fee))
+			.map((s) => parseFloat(s.fee));
+		return sorted;
+	});
 </script>
 
 <div class="grid gap-8">
-	<div class="flex justify-between">
-		<h1 class="text-3xl font-bold tracking-wide">Pool name / assets</h1>
-		<div class="flex items-center">
-			<ShareButton
-				content={{
-					title: 'Pool',
-					description: 'description',
-					url: page.url.toString()
-				}}
-			></ShareButton>
+	<div class="grid gap-4 border-b">
+		<div class="flex justify-between">
+			<h1 class="text-3xl font-bold tracking-wide">Pool name / assets</h1>
+			<div class="flex items-center">
+				<ShareButton
+					content={{
+						title: 'Pool',
+						description: 'description',
+						url: page.url.toString()
+					}}
+				></ShareButton>
+			</div>
+		</div>
+		<div class="grid md:grid-cols-2">
+			<div>
+				<div class="flex items-center">
+					<img src={TappLogo} alt="Tapp Exchange Logo" class="w-12" />
+					<h2 class=" font-medium">Tapp Exchange Pools</h2>
+				</div>
+				<div class="flex items-center">
+					{#each FEE_TIERS as feeTier}
+						{@const isAvailableOnTapp = tappPools.includes(parseFloat(feeTier))}
+						<div class={['', isAvailableOnTapp && 'bg-red-500']}>
+							{feeTier}
+						</div>
+					{/each}
+				</div>
+			</div>
 		</div>
 	</div>
 
 	<section>
-		<div>
-			{JSON.stringify(data.about.liquidityDistribution)}
-		</div>
 		<div class="mt-4">
 			<PoolChart chartData={data.liquidity}></PoolChart>
 		</div>
