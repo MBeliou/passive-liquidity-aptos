@@ -29,7 +29,7 @@
 					<p class="text-muted-foreground text-sm">Top concentrated pools for you</p>
 				</div>
 				<div>
-					<ul class="mt-6 grid grid-cols-2 gap-4">
+					<ul class="mt-6 grid md:grid-cols-2 gap-4">
 						{#each await getPools() as pool}
 							{@const slug =
 								pool.tokenA.symbol.toLowerCase() + '-' + pool.tokenB.symbol.toLowerCase()}
