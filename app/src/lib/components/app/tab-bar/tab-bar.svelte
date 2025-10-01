@@ -56,6 +56,12 @@
 			<SearchPanel bind:search {query}></SearchPanel>
 		</div>
 	</div>
+
+	<div
+		class="pointer-events-none fixed inset-x-4 top-8 isolate z-50 flex justify-end [&>*]:pointer-events-auto"
+	>
+		<WalletConnector class=" backdrop-blur"></WalletConnector>
+	</div>
 {:else}
 	<!--  on top -->
 	<div class="pointer-events-none fixed inset-x-0 top-8 mx-auto grid max-w-7xl grid-cols-3 px-4">

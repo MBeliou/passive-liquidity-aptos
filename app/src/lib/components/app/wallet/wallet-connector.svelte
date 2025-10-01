@@ -37,7 +37,7 @@
 </script>
 
 {#if allTokens.loading}
-	<div class=" rounded-full border p-2">
+	<div class="rounded-full border p-2">
 		<LoaderCircle></LoaderCircle>
 	</div>
 {:else}
