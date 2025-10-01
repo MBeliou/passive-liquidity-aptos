@@ -1,4 +1,5 @@
 import {
+	bigint,
 	decimal,
 	integer,
 	pgTable,
@@ -35,8 +36,8 @@ export const positionsTable = pgTable(
 		index: integer().notNull(),
 		pool: varchar().references(() => poolsTable.id).notNull(),
 		updatedAt: timestamp('updated_at').defaultNow(),
-		tickLower: integer('tick_lower').notNull(),
-		tickUpper: integer('tick_upper').notNull(),
+		tickLower: bigint('tick_lower', {mode: "number"}).notNull(),
+		tickUpper: bigint('tick_upper', {mode: "number"}).notNull(),
 		liquidity: varchar().notNull()
 	},
 	(table) => [primaryKey({ columns: [table.index, table.pool] })]

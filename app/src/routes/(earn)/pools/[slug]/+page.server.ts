@@ -20,23 +20,8 @@ export const load = (async ({ params }) => {
 		.from(poolsTable)
 		.innerJoin(tokenA, eq(poolsTable.tokenA, tokenA.id))
 		.innerJoin(tokenB, eq(poolsTable.tokenB, tokenB.id))
-		//.innerJoin(positionsTable, eq(poolsTable.id, positionsTable.pool))
 		.where(and(ilike(tokenA.symbol, tokenASymbol), ilike(tokenB.symbol, tokenBSymbol)));
-	/*
-	const positions = await db
-		.select()
-		.from(positionsTable)
-		.innerJoin(poolsTable, eq(poolsTable.id, positionsTable.pool))
-		.where(
-			inArray(
-				positionsTable.pool,
-				pools.map((p) => p.pools.id)
-			)
-		);
 
-	console.dir(positions);
-
-	return { pools, positions };*/
 	const positions = (
 		await db
 			.select({
@@ -62,7 +47,7 @@ export const load = (async ({ params }) => {
 
 	const assets = { tokenA: pools[0].tokenA, tokenB: pools[0].tokenB };
 
-	console.dir(positions)
+	console.dir(positions);
 	return {
 		assets,
 		pools: pools.map((p) => p.pools),

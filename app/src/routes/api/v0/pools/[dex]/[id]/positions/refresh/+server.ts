@@ -20,6 +20,12 @@ function parseTickValue(tickBits: string): number {
 	return Number(tick);
 }
 
+function convertTickBitsToSigned(bits: bigint): number {
+	const MAX_I64 = BigInt(2) ** BigInt(63) - BigInt(1);
+	const MAX_U64 = BigInt(2) ** BigInt(64);
+	return bits > MAX_I64 ? Number(bits - MAX_U64) : Number(bits);
+}
+
 export const POST: RequestHandler = async ({ params }) => {
 	const { dex, id } = params;
 
@@ -41,19 +47,31 @@ export const POST: RequestHandler = async ({ params }) => {
 
 	const tapp = useTapp(useAptos(APTOS_KEY));
 	const maximumIndex = await tapp.contract.getPositionCountFromPool(poolInfo.id);
-	//console.log('info', info);
-	const positions = await tapp.contract.iterGetPositions(poolInfo.id, {
-		maximumIndex: maximumIndex
-	});
 
-	console.dir(positions, { depth: 4 });
+	// TODO: try and get all existing positions using the dedicated contract query. It will fail when too many positions exist
+	//const allPositions = await tapp.contract.getPositions(poolInfo.id);
+
+	// Get all the positions we already know about and want to refresh
+	const knownPositions = await db
+		.select({ index: positionsTable.index })
+		.from(positionsTable)
+		.where(eq(positionsTable.pool, id));
+
+	const indexesToRefresh = knownPositions.map((k) => k.index);
+	const maxKnown = Math.max(...indexesToRefresh);
+	const toFetch = Array.from({ length: maximumIndex - maxKnown }, (_, i) => maxKnown + i + 1);
+
+	const positions = await tapp.contract.iterGetPositions(poolInfo.id, {
+		maximumIndex: maximumIndex,
+		indexes: [...indexesToRefresh, ...toFetch]
+	});
 
 	const toUpsert: (typeof positionsTable.$inferInsert)[] = positions.positions.map((pos) => {
 		return {
 			index: parseInt(pos.index),
 			pool: poolInfo.id,
-			tickLower: parseTickValue(pos.tick_lower_index.bits),
-			tickUpper: parseTickValue(pos.tick_upper_index.bits),
+			tickLower: convertTickBitsToSigned(BigInt(pos.tick_lower_index.bits)),
+			tickUpper: convertTickBitsToSigned(BigInt(pos.tick_upper_index.bits)),
 			liquidity: pos.liquidity,
 			updatedAt: new Date()
 		};
@@ -71,9 +89,6 @@ export const POST: RequestHandler = async ({ params }) => {
 				updatedAt: sql`EXCLUDED.updated_at`
 			}
 		});
-	// First we try getting all positions
-	//tapp.contract.getPositions()
-	//console.dir(poolInfo);
 
 	return json({
 		status: 'success',
