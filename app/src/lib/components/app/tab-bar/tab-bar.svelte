@@ -15,6 +15,8 @@
 	import SearchPanel from '../search-panel/search-panel.svelte';
 	import { searchTokens } from '../search-panel/data.remote';
 	import WalletConnector from '../wallet/wallet-connector.svelte';
+	import ShareButton from '../share-button/share-button.svelte';
+	import { getTabBarState } from './tab-bar-state.svelte';
 
 	const isMobile = new IsMobile();
 	let {
@@ -26,6 +28,8 @@
 	let search = $state('');
 
 	const query = $derived(searchTokens(search));
+
+	const tabBarState = getTabBarState();
 </script>
 
 {#if isMobile.current}
@@ -81,7 +85,10 @@
 			<SearchPanel class="h-full w-full pr-3" bind:search {query}></SearchPanel>
 		</div>
 
-		<div class="flex items-center justify-end">
+		<div class="flex items-center justify-end gap-2">
+			{#if tabBarState.shareButton}
+				<ShareButton content={tabBarState.shareButton} class="pointer-events-auto"></ShareButton>
+			{/if}
 			<WalletConnector class=" pointer-events-auto"></WalletConnector>
 		</div>
 	</div>

@@ -8,6 +8,7 @@
 	import { Network } from '@aptos-labs/ts-sdk';
 	import { setUser, UserState } from '$lib/user/user-state.svelte';
 	import { useAptos } from '$lib/shared';
+	import { setTabBarState, TabBarState } from '$lib/components/app/tab-bar/tab-bar-state.svelte';
 
 	let { children } = $props();
 
@@ -37,6 +38,9 @@
 
 	const userState = new UserState(walletState, useAptos());
 	setUser(userState);
+
+	const tabBarState = new TabBarState();
+	setTabBarState(tabBarState);
 </script>
 
 <svelte:head>

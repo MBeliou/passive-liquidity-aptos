@@ -2,14 +2,16 @@
 	import { page } from '$app/state';
 	import { Button } from '$lib/components/ui/button';
 	import ShareIcon from '@lucide/svelte/icons/share-2';
+	import type { HTMLButtonAttributes } from 'svelte/elements';
 
 	let {
 		content,
-		cb
+		cb,
+		...restProps
 	}: {
 		content?: Partial<{ title: string; description: string } & { url?: string }>;
 		cb?: VoidFunction;
-	} = $props();
+	} & HTMLButtonAttributes = $props();
 
 	async function onShare() {
 		try {
@@ -25,6 +27,12 @@
 	}
 </script>
 
-<Button size="icon" variant="ghost" class="rounded-full" onclick={() => onShare()}>
+<Button
+	size="icon"
+	variant="ghost"
+	class={['rounded-full', ...restProps.class]}
+	{...restProps}
+	onclick={() => onShare()}
+>
 	<ShareIcon class="h-5 w-5" />
 </Button>

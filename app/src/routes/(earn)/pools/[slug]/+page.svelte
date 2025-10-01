@@ -2,15 +2,16 @@
 	import { page } from '$app/state';
 	import LiquidityRepartition from '$lib/components/app/charts/liquidity-repartition/liquidity-repartition.svelte';
 	import PoolChart from '$lib/components/app/charts/pool/pool-chart.svelte';
-	//import PoolChart from '$lib/components/app/charts/pool/pool-chart.svelte';
-	import ShareButton from '$lib/components/app/share-button/share-button.svelte';
 	import * as Card from '$lib/components/ui/card';
 
 	import TappLogo from '$lib/assets/tapp-logo.png';
 	import { FEE_TIERS } from '$lib/components/app/charts/pool/utils.js';
 	import LogoStack from '$lib/components/app/logo-stack/logo-stack.svelte';
+	import { getTabBarState } from '$lib/components/app/tab-bar/tab-bar-state.svelte';
 
 	let { data } = $props();
+
+	const tabBarState = getTabBarState();
 
 	//$inspect(data.liquidity);
 
@@ -26,9 +27,21 @@
 		minimumFractionDigits: 2,
 		maximumFractionDigits: 2
 	});
+
+	$effect(() => {
+		tabBarState.setShareButton({
+			title: 'Pool',
+			description: 'description',
+			url: page.url.toString()
+		});
+
+		return () => {
+			tabBarState.clearShareButton();
+		};
+	});
 </script>
 
-<div class="grid gap-8">
+<div class="grid gap-8 md:mt-24">
 	<div class="grid gap-4 border-b">
 		<div class="flex justify-between">
 			<div class="flex items-center space-x-8">
@@ -46,16 +59,6 @@
 						{data.assets.tokenA.symbol} / {data.assets.tokenB.symbol}
 					</div>
 				</div>
-			</div>
-
-			<div class="flex items-center">
-				<ShareButton
-					content={{
-						title: 'Pool',
-						description: 'description',
-						url: page.url.toString()
-					}}
-				></ShareButton>
 			</div>
 		</div>
 		<div class="grid md:grid-cols-2">
