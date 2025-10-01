@@ -13,8 +13,6 @@
 
 	const tabBarState = getTabBarState();
 
-	//$inspect(data.liquidity);
-
 	const tappPools = $derived.by(() => {
 		const sorted = data.pools
 			.sort((a, b) => parseInt(a.fee) - parseInt(b.fee))
@@ -41,8 +39,8 @@
 	});
 </script>
 
-<div class="grid gap-8 md:mt-24">
-	<div class="grid gap-4 border-b">
+<div class="grid gap-8">
+	<div class="to-muted/20 grid gap-4 rounded-b-xl border-b bg-gradient-to-b py-12 md:pt-24">
 		<div class="flex justify-between">
 			<div class="flex items-center space-x-8">
 				<div>
@@ -62,7 +60,7 @@
 			</div>
 		</div>
 		<div class="grid md:grid-cols-2">
-			<div>
+			<div class="">
 				<div class="flex items-center">
 					<img src={TappLogo} alt="Tapp Exchange Logo" class="w-12" />
 					<h2 class=" font-medium">Tapp Exchange Pools</h2>
@@ -76,7 +74,7 @@
 						</div>
 						{/each}
 						-->
-					<div class="flex items-center border-t">
+					<div class="flex items-center border-l border-t">
 						{#each FEE_TIERS as feeTier}
 							{@const hasTier = tappPools.includes(parseFloat(feeTier))}
 							<div
