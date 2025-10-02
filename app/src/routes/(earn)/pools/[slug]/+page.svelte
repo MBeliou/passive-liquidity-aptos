@@ -33,7 +33,7 @@
 	);
 
 	const tappPools = $derived.by(() => {
-		const sorted = data.pools
+		const sorted = [...data.pools]
 			.sort((a, b) => parseInt(a.fee) - parseInt(b.fee))
 			.map((s) => parseFloat(s.fee));
 		return sorted;
@@ -60,6 +60,8 @@
 			tabBarState.clearBackButton();
 		};
 	});
+
+	$inspect(data);
 </script>
 
 <div class="grid gap-8 [&>*]:px-6">
@@ -100,7 +102,7 @@
 								<!-- TODO: if high volume -> ⽕ else ⽶ -->
 								<div class="">{hasTier ? 'volume' : '-'}</div>
 								<div class="text-muted-foreground text-xs">
-									{percentFormat.format(feeTier / 100)}
+									{percentFormat.format(feeTier || 0 / 100)}
 								</div>
 							</div>
 						{/each}
@@ -109,14 +111,13 @@
 			</div>
 		</div>
 	</div>
-
 	<section>
 		<div class="mt-4">
 			<div class="mb-4 flex items-center justify-between">
 				<h2 class="text-lg font-semibold">Price Chart</h2>
 				<div class="flex items-center gap-2">
 					<span class="text-muted-foreground text-sm">Priced in:</span>
-					<ToggleGroup.Root type="single" class="border" bind:value={pricedInToken}>
+					<ToggleGroup.Root type="single" variant="outline" bind:value={pricedInToken}>
 						<ToggleGroup.Item value="A" class="px-3 py-1">
 							{data.assets.tokenA.symbol}
 						</ToggleGroup.Item>
@@ -127,7 +128,6 @@
 				</div>
 			</div>
 			<PriceChart data={displayPrices} tokenSymbol={priceTokenSymbol}></PriceChart>
-
 			<div class="mt-4">
 				<Card.Root>
 					<Card.Header>

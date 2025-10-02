@@ -1,6 +1,5 @@
 <script lang="ts">
 	import '../app.css';
-	import favicon from '$lib/assets/favicon.svg';
 	import { ModeWatcher } from 'mode-watcher';
 	import TabBar, { type TabBarLink } from '$lib/components/app/tab-bar/tab-bar.svelte';
 	import PiggyBank from '@lucide/svelte/icons/piggy-bank';
@@ -38,19 +37,13 @@
 
 	const userState = new UserState(walletState, useAptos());
 	setUser(userState);
-
 	const tabBarState = new TabBarState();
 	setTabBarState(tabBarState);
 </script>
 
-<svelte:head>
-	<link rel="icon" href={favicon} />
-</svelte:head>
+<ModeWatcher />
 
-<ModeWatcher defaultMode="dark" track={false} />
-
-<div class="mx-auto min-h-screen w-full max-w-7xl pb-20 mt-8">
+<div class="mx-auto mt-8 min-h-screen w-full max-w-7xl pb-20">
 	{@render children?.()}
 </div>
-
 <TabBar {links}></TabBar>

@@ -1,20 +1,13 @@
 <script lang="ts">
-	/*
-    What we want:
-        - 2 sections, one with assets, the other with vaults I suppose
-    */
+	import { FEE_TIERS } from '$lib/components/app/charts/pool/utils';
+	import LogoStack from '$lib/components/app/logo-stack/logo-stack.svelte';
 	import { getPools } from './pools/pools.remote';
-
-	const feeTiers = [0.01, 0.05, 0.3, 1];
 
 	const percentFormat = new Intl.NumberFormat(undefined, {
 		style: 'percent',
 		minimumFractionDigits: 2,
 		maximumFractionDigits: 2
 	});
-
-	import { getVaults, getAssets } from './earn.remote';
-	import LogoStack from '$lib/components/app/logo-stack/logo-stack.svelte';
 </script>
 
 <div class="flex justify-between px-4">
@@ -29,7 +22,7 @@
 					<p class="text-muted-foreground text-sm">Top concentrated pools for you</p>
 				</div>
 				<div>
-					<ul class="mt-6 grid md:grid-cols-2 gap-4">
+					<ul class="mt-6 grid gap-4 md:grid-cols-2">
 						{#each await getPools() as pool}
 							{@const slug =
 								pool.tokenA.symbol.toLowerCase() + '-' + pool.tokenB.symbol.toLowerCase()}
@@ -39,19 +32,10 @@
 									href="/pools/{slug}"
 								>
 									<div class="flex items-center gap-4 p-4">
-										<!-- 
-										<div class="relative">
-											<div
-												class="size-8 rounded-full border bg-cover bg-center"
-												style="background-image: url({pool.tokenA.logo});"
-											></div>
-											<div
-												class="absolute inset-y-0 left-4 top-2 size-8 rounded-full border bg-cover bg-center"
-												style="background-image: url({pool.tokenB.logo});"
-											></div>
-										</div>
-										 -->
-										<LogoStack tokenA={{logo: pool.tokenA.logo}} tokenB={{logo: pool.tokenB.logo}}></LogoStack>
+										<LogoStack
+											tokenA={{ logo: pool.tokenA.logo }}
+											tokenB={{ logo: pool.tokenB.logo }}
+										></LogoStack>
 										<div>
 											<h2>
 												<div>
@@ -63,8 +47,10 @@
 									</div>
 
 									<div class="flex items-center border-t">
-										{#each feeTiers as feeTier}
-											{@const hasTier = pool.uniqueFees.map((f) => parseFloat(f)).includes(feeTier)}
+										{#each FEE_TIERS as feeTier}
+											{@const hasTier = pool.uniqueFees
+												.map((f) => parseFloat(f))
+												.includes(parseFloat(feeTier))}
 											<div
 												class={[
 													'flex flex-grow flex-col items-center justify-center border-r p-2 font-medium'
@@ -86,4 +72,8 @@
 			</section>
 		</div>
 	</div>
+
+	{#snippet pending()}
+		<p>loading</p>
+	{/snippet}
 </svelte:boundary>

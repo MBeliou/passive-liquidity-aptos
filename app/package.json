@@ -65,7 +65,7 @@
     "prettier-plugin-svelte": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "storybook": "^10.0.0-beta.7",
-    "svelte": "^5.0.0",
+    "svelte": "^5.39.8",
     "svelte-check": "^4.0.0",
     "svelte-sonner": "^1.0.5",
     "sveltekit-superforms": "^2.27.1",
@@ -84,6 +84,7 @@
   "dependencies": {
     "@aptos-labs/ts-sdk": "^5.0.0",
     "@aptos-labs/wallet-adapter-core": "^7.4.0",
+    "@neondatabase/serverless": "^1.0.2",
     "@tapp-exchange/sdk": "^0.6.1",
     "axios": "^1.12.2",
     "d3-scale": "^4.0.2",

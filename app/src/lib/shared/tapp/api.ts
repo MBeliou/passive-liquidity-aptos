@@ -39,12 +39,10 @@ export class TappAPI {
 			endTime,
 			interval
 		};
-		console.dir(query);
 
 		const response = await this.query<Daum[]>('public/pool_price_chart', {
 			query
 		});
-		
 
 		return response;
 		/*
@@ -77,8 +75,7 @@ export class TappAPI {
 			result: { data: T };
 		};
 
-
-		return "data" in json.result ? json.result.data : json.result;
+		return 'data' in json.result ? json.result.data : json.result;
 	}
 }
 

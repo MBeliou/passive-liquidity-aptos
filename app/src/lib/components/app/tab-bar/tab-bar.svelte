@@ -27,9 +27,6 @@
 		links: TabBarLink[];
 	} = $props();
 
-	let search = $state('');
-
-	const query = $derived(searchTokens(search));
 
 	const tabBarState = getTabBarState();
 </script>
@@ -55,7 +52,7 @@
 				{/each}
 			</div>
 
-			<SearchPanel bind:search {query}></SearchPanel>
+			<SearchPanel ></SearchPanel>
 		</div>
 	</div>
 
@@ -71,8 +68,6 @@
 			>
 				<ArrowLeft class="h-5 w-5" />
 			</Button>
-		{:else}
-			<div></div>
 		{/if}
 		<WalletConnector class=" backdrop-blur"></WalletConnector>
 	</div>
@@ -108,14 +103,8 @@
 					{link.label}
 				</a>
 			{/each}
-			<!-- 
-				<button
-				class="hover:bg-muted-foreground/20 text-muted-foreground hover:text-foreground flex h-full items-center justify-center rounded-full px-3 transition-all"
-				>
-				<Search></Search>
-			</button>
-			-->
-			<SearchPanel class="h-full w-full pr-3" bind:search {query}></SearchPanel>
+
+			<SearchPanel class="h-full w-full pr-3" ></SearchPanel>
 		</div>
 
 		<div class="flex items-center justify-end gap-2">

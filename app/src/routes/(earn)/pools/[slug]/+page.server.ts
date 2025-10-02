@@ -138,7 +138,6 @@ export const load = (async ({ params }) => {
 
 	const volatility = analyzeVolatility(prices);
 
-	console.dir(prices);
 	return {
 		assets,
 		pools: pools.map((p) => p.pools),

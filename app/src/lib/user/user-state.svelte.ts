@@ -1,4 +1,3 @@
-import { searchTokens } from '$lib/components/app/search-panel/data.remote';
 import { useTapp } from '$lib/shared';
 import type { WalletState } from '$lib/wallet/wallet.svelte';
 import type { Aptos } from '@aptos-labs/ts-sdk';
@@ -9,7 +8,6 @@ export class UserState {
 	account = $state<AccountInfo | null>(null);
 
 	balances = $state<Awaited<ReturnType<InstanceType<typeof UserState>['getBalances']>>>([]);
-	managedPositions = $state<any[]>([]);
 	loadingManagedPositions = $state(false);
 
 	aptosClient: Aptos;
@@ -24,7 +22,7 @@ export class UserState {
 				console.log('found account');
 				this.refreshBalances();
 				this.getPositions();
-				this.refreshManagedPositions();
+				//thisrefreshManagedPositions();
 			} else {
 				// Clear managed positions when account disconnects
 				this.managedPositions = [];
@@ -101,46 +99,9 @@ export class UserState {
 		}
 	}
 
-	async triggerRebalance() {
-		if (!this.account) {
-			return null;
-		}
-
-		this.loadingManagedPositions = true;
-		try {
-			const response = await fetch('/api/manager/rebalance', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					userAddress: this.account.address.toString()
-				})
-			});
-
-			const result = await response.json();
-			console.log('Rebalance result:', result);
-
-			// Refresh positions after rebalancing
-			await this.refreshManagedPositions();
-
-			return result;
-		} catch (error) {
-			console.error('Failed to trigger rebalance:', error);
-			return null;
-		} finally {
-			this.loadingManagedPositions = false;
-		}
-	}
-
 	// Utils
-
 	async refreshBalances() {
 		this.balances = await this.getBalances();
-	}
-
-	async refreshManagedPositions() {
-		this.loadingManagedPositions = true;
-		this.managedPositions = await this.getManagedPositions();
-		this.loadingManagedPositions = false;
 	}
 }
 
