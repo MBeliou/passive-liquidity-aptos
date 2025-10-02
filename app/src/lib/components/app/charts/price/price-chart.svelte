@@ -1,9 +1,9 @@
 <script lang="ts">
 	import * as Chart from '$lib/components/ui/chart/index.js';
-	import { scaleLinear, scaleUtc } from 'd3-scale';
+	import type { Daum } from '$lib/shared/tapp/api';
+	import { scaleUtc } from 'd3-scale';
 	import { curveNatural } from 'd3-shape';
 	import { Area, AreaChart, LinearGradient } from 'layerchart';
-	import type { Daum } from '$lib/shared/tapp/api';
 
 	let { data }: { data: Daum[] } = $props();
 
@@ -14,11 +14,31 @@
 		}))
 	);
 
+	const COLORS = {
+		positive: 'oklch(76.8% 0.233 130.85)',
+		negative: 'oklch(63.7% 0.237 25.331)',
+		neutral: 'oklch(68.1% 0.162 75.834)'
+	};
+	const usedColor = (() => {
+		const lastPrice = chartData.at(-1)?.price ?? 0;
+		const firstPrice = chartData.at(0)?.price ?? 0;
+
+		if (lastPrice > firstPrice) {
+			return COLORS.positive;
+		}
+		if (lastPrice < firstPrice) {
+			return COLORS.negative;
+		}
+
+		return COLORS.neutral;
+	})();
+
 	const chartConfig = {
-		price: { label: 'Price', color: 'var(--chart-1)' }
+		//price: { label: 'Price', color: 'var(--chart-1)' }
+		price: { label: 'Price', color: usedColor }
 	} satisfies Chart.ChartConfig;
 
-	const seriesPadding = 0.1; // 10% higher and lower
+	const seriesPadding = 0.05; // 5% higher and lower
 	const range = $derived.by(() => {
 		const seriesPrices = chartData.map((c) => c.price);
 		const seriesMin = Math.min(...seriesPrices);
