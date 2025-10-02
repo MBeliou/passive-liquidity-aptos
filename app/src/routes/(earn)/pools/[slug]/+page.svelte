@@ -9,10 +9,28 @@
 	import { FEE_TIERS } from '$lib/components/app/charts/pool/utils.js';
 	import LogoStack from '$lib/components/app/logo-stack/logo-stack.svelte';
 	import { getTabBarState } from '$lib/components/app/tab-bar/tab-bar-state.svelte';
+	import * as ToggleGroup from '$lib/components/ui/toggle-group';
 
 	let { data } = $props();
 
 	const tabBarState = getTabBarState();
+
+	let pricedInToken = $state<'A' | 'B'>('B');
+
+	const displayPrices = $derived.by(() => {
+		if (pricedInToken === 'A') {
+			// Invert prices to show how many A per B
+			return data.prices.map((p) => ({
+				x: p.x,
+				y: (1 / parseFloat(p.y)).toString()
+			}));
+		}
+		return data.prices;
+	});
+
+	const priceTokenSymbol = $derived(
+		pricedInToken === 'A' ? data.assets.tokenA.symbol : data.assets.tokenB.symbol
+	);
 
 	const tappPools = $derived.by(() => {
 		const sorted = data.pools
@@ -99,7 +117,21 @@
 
 	<section>
 		<div class="mt-4">
-			<PriceChart data={data.prices}></PriceChart>
+			<div class="mb-4 flex items-center justify-between">
+				<h2 class="text-lg font-semibold">Price Chart</h2>
+				<div class="flex items-center gap-2">
+					<span class="text-muted-foreground text-sm">Priced in:</span>
+					<ToggleGroup.Root type="single" bind:value={pricedInToken}>
+						<ToggleGroup.Item value="A" class="px-3 py-1">
+							{data.assets.tokenA.symbol}
+						</ToggleGroup.Item>
+						<ToggleGroup.Item value="B" class="px-3 py-1">
+							{data.assets.tokenB.symbol}
+						</ToggleGroup.Item>
+					</ToggleGroup.Root>
+				</div>
+			</div>
+			<PriceChart data={displayPrices} tokenSymbol={priceTokenSymbol}></PriceChart>
 		</div>
 	</section>
 

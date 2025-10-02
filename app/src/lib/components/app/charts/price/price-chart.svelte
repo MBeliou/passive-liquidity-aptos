@@ -19,24 +19,25 @@
 		negative: 'oklch(63.7% 0.237 25.331)',
 		neutral: 'oklch(68.1% 0.162 75.834)'
 	};
-	const usedColor = (() => {
-		const lastPrice = chartData.at(-1)?.price ?? 0;
-		const firstPrice = chartData.at(0)?.price ?? 0;
+	const chartConfig = $derived.by(() => {
+		const usedColor = (() => {
+			const lastPrice = chartData.at(-1)?.price ?? 0;
+			const firstPrice = chartData.at(0)?.price ?? 0;
 
-		if (lastPrice > firstPrice) {
-			return COLORS.positive;
-		}
-		if (lastPrice < firstPrice) {
-			return COLORS.negative;
-		}
+			if (lastPrice > firstPrice) {
+				return COLORS.positive;
+			}
+			if (lastPrice < firstPrice) {
+				return COLORS.negative;
+			}
 
-		return COLORS.neutral;
-	})();
+			return COLORS.neutral;
+		})();
 
-	const chartConfig = {
-		//price: { label: 'Price', color: 'var(--chart-1)' }
-		price: { label: 'Price', color: usedColor }
-	} satisfies Chart.ChartConfig;
+		return {
+			price: { label: 'Price', color: usedColor }
+		} satisfies Chart.ChartConfig;
+	});
 
 	const seriesPadding = 0.05; // 5% higher and lower
 	const range = $derived.by(() => {
