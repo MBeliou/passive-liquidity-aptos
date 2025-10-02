@@ -77,9 +77,8 @@ export class TappAPI {
 			result: { data: T };
 		};
 
-		console.dir(json)
 
-		return json.result.data;
+		return "data" in json.result ? json.result.data : json.result;
 	}
 }
 

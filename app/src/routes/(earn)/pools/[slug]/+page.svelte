@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import LiquidityRepartition from '$lib/components/app/charts/liquidity-repartition/liquidity-repartition.svelte';
 	import PoolChart from '$lib/components/app/charts/pool/pool-chart.svelte';
+	import PriceChart from '$lib/components/app/charts/price/price-chart.svelte';
 	import * as Card from '$lib/components/ui/card';
 
 	import TappLogo from '$lib/assets/tapp-logo.png';
@@ -95,6 +96,12 @@
 			</div>
 		</div>
 	</div>
+
+	<section>
+		<div class="mt-4">
+			<PriceChart data={data.prices}></PriceChart>
+		</div>
+	</section>
 
 	<section>
 		<div class="mt-4">

@@ -135,6 +135,7 @@ export const load = (async ({ params }) => {
 		'1h'
 	);
 
+	console.dir(prices);
 	return {
 		assets,
 		pools: pools.map((p) => p.pools),
@@ -142,6 +143,7 @@ export const load = (async ({ params }) => {
 			return { ...p, fee: parseFloat(p.fee) };
 		}),
 		liquidity: binnedLiquidity,
+		prices,
 		about: {
 			liquidityDistribution,
 			inRangeLiquidityDistribution,

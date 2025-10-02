@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Chart from '$lib/components/ui/chart/index.js';
-	import { scaleUtc } from 'd3-scale';
+	import { scaleLinear, scaleUtc } from 'd3-scale';
 	import { curveNatural } from 'd3-shape';
 	import { Area, AreaChart, LinearGradient } from 'layerchart';
 	import type { Daum } from '$lib/shared/tapp/api';
@@ -15,8 +15,19 @@
 	);
 
 	const chartConfig = {
-		price: { label: 'price', color: 'var(--chart-1)' }
+		price: { label: 'Price', color: 'var(--chart-1)' }
 	} satisfies Chart.ChartConfig;
+
+	const seriesPadding = 0.1; // 10% higher and lower
+	const range = $derived.by(() => {
+		const seriesPrices = chartData.map((c) => c.price);
+		const seriesMin = Math.min(...seriesPrices);
+		const seriesMax = Math.max(...seriesPrices);
+		const appliedMin = Math.max(0, seriesMin * (1 - seriesPadding));
+		const appliedMax = seriesMax * (1 + seriesPadding);
+
+		return [appliedMin, appliedMax];
+	});
 </script>
 
 <Chart.Container config={chartConfig}>
@@ -24,7 +35,7 @@
 		data={chartData}
 		x="date"
 		xScale={scaleUtc()}
-		yPadding={[0, 25]}
+		yDomain={range}
 		series={[
 			{
 				key: 'price',
@@ -32,7 +43,6 @@
 				color: 'var(--color-price)'
 			}
 		]}
-		seriesLayout="stack"
 		props={{
 			area: {
 				curve: curveNatural,
@@ -40,10 +50,13 @@
 				line: { class: 'stroke-1' },
 				motion: 'tween'
 			},
+
 			xAxis: {
 				format: (v: Date) => v.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 			},
-			yAxis: { format: () => '' }
+			yAxis: {
+				format: (v: number) => v.toFixed(2)
+			}
 		}}
 	>
 		{#snippet tooltip()}
@@ -57,7 +70,7 @@
 						minute: '2-digit'
 					});
 				}}
-			/>
+			></Chart.Tooltip>
 		{/snippet}
 		{#snippet marks({ series, getAreaProps })}
 			{#each series as s, i (s.key)}
