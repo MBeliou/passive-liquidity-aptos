@@ -5,7 +5,7 @@
 	import { curveNatural } from 'd3-shape';
 	import { Area, AreaChart, LinearGradient } from 'layerchart';
 
-	let { data }: { data: Daum[] } = $props();
+	let { data, tokenSymbol }: { data: Daum[]; tokenSymbol?: string } = $props();
 
 	const chartData = $derived(
 		data.map((d) => ({
@@ -75,7 +75,7 @@
 				format: (v: Date) => v.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 			},
 			yAxis: {
-				format: (v: number) => v.toFixed(2)
+				format: (v: number) => (tokenSymbol ? `${tokenSymbol} ${v.toFixed(2)}` : v.toFixed(2))
 			}
 		}}
 	>
