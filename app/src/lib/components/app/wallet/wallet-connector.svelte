@@ -83,7 +83,7 @@
 								{#each filtered as balance (balance.asset_type)}
 									{@const meta = balance.metadata}
 									{@const tokenInfo = allTokens.current?.find((tok) => tok.symbol === meta.symbol)}
-									{#if tokenInfo}
+									{#if tokenInfo && parseInt(balance.amount) !== 0}
 										{@const balanceDisplay =
 											parseInt(balance.amount) * Math.pow(10, -tokenInfo.decimals)}
 										<li class="flex items-center gap-4">

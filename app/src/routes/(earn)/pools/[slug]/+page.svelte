@@ -62,7 +62,7 @@
 	});
 </script>
 
-<div class="grid gap-8">
+<div class="grid gap-8 [&>*]:px-6">
 	<div class="to-muted/20 grid gap-4 rounded-b-xl border-b bg-gradient-to-b py-12 md:pt-24">
 		<div class="flex justify-between">
 			<div class="flex items-center space-x-8">
@@ -89,14 +89,6 @@
 					<h2 class=" font-medium">Tapp Exchange Pools</h2>
 				</div>
 				<div class="flex items-center">
-					<!-- 
-						{#each FEE_TIERS as feeTier}
-						{@const isAvailableOnTapp = tappPools.includes(parseFloat(feeTier))}
-						<div class={['', isAvailableOnTapp && 'bg-red-500']}>
-							{feeTier}
-						</div>
-						{/each}
-						-->
 					<div class="flex items-center border-l border-t">
 						{#each FEE_TIERS as feeTier}
 							{@const hasTier = tappPools.includes(parseFloat(feeTier))}
@@ -124,7 +116,7 @@
 				<h2 class="text-lg font-semibold">Price Chart</h2>
 				<div class="flex items-center gap-2">
 					<span class="text-muted-foreground text-sm">Priced in:</span>
-					<ToggleGroup.Root type="single" bind:value={pricedInToken}>
+					<ToggleGroup.Root type="single" class="border" bind:value={pricedInToken}>
 						<ToggleGroup.Item value="A" class="px-3 py-1">
 							{data.assets.tokenA.symbol}
 						</ToggleGroup.Item>
@@ -178,6 +170,7 @@
 						>Repartition of liquidity that is close to the current price</Card.Description
 					>
 				</Card.Header>
+
 				<LiquidityRepartition liquidity={data.about.inRangeLiquidityDistribution}
 				></LiquidityRepartition>
 			</Card.Root>
