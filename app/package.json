@@ -43,6 +43,7 @@
     "@tailwindcss/vite": "^4.0.0",
     "@tanstack/table-core": "^8.21.3",
     "@types/d3-scale": "^4.0.9",
+    "@types/d3-shape": "^3.1.7",
     "@types/node": "^22",
     "@vitest/browser": "^3.2.3",
     "bits-ui": "^2.11.0",
@@ -86,6 +87,7 @@
     "@tapp-exchange/sdk": "^0.6.1",
     "axios": "^1.12.2",
     "d3-scale": "^4.0.2",
+    "d3-shape": "^3.2.0",
     "node-watcher": "^0.0.4",
     "postgres": "^3.4.5",
     "zod": "^4.1.11"
