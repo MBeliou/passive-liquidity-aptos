@@ -9,6 +9,7 @@ import { useAptos, useTapp } from '$lib/shared';
 import { APTOS_KEY } from '$env/static/private';
 import { sqrtPriceToPrice } from '$lib/shared/tapp/utils';
 import { TappAPI } from '$lib/shared/tapp';
+import { analyzeVolatility } from '$lib/server/volatility';
 
 function dateToTimestamp(date: Date) {
 	return Math.floor(date.getTime());
@@ -135,6 +136,8 @@ export const load = (async ({ params }) => {
 		'1h'
 	);
 
+	const volatility = analyzeVolatility(prices);
+
 	console.dir(prices);
 	return {
 		assets,
@@ -144,6 +147,7 @@ export const load = (async ({ params }) => {
 		}),
 		liquidity: binnedLiquidity,
 		prices,
+		volatility,
 		about: {
 			liquidityDistribution,
 			inRangeLiquidityDistribution,

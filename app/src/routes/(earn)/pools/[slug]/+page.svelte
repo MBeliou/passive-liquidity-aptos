@@ -132,6 +132,31 @@
 				</div>
 			</div>
 			<PriceChart data={displayPrices} tokenSymbol={priceTokenSymbol}></PriceChart>
+
+			<div class="mt-4">
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Volatility Analysis</Card.Title>
+						<Card.Description>{data.volatility.insight}</Card.Description>
+					</Card.Header>
+					<Card.Content>
+						<div class="grid grid-cols-3 gap-4">
+							<div>
+								<div class="text-muted-foreground text-xs uppercase tracking-wide">Week</div>
+								<div class="text-2xl font-semibold">{data.volatility.week.toFixed(1)}%</div>
+							</div>
+							<div>
+								<div class="text-muted-foreground text-xs uppercase tracking-wide">Day</div>
+								<div class="text-2xl font-semibold">{data.volatility.day.toFixed(1)}%</div>
+							</div>
+							<div>
+								<div class="text-muted-foreground text-xs uppercase tracking-wide">Recent</div>
+								<div class="text-2xl font-semibold">{data.volatility.hour.toFixed(1)}%</div>
+							</div>
+						</div>
+					</Card.Content>
+				</Card.Root>
+			</div>
 		</div>
 	</section>
 
