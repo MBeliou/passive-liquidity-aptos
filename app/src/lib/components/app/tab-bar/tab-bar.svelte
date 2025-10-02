@@ -17,6 +17,8 @@
 	import WalletConnector from '../wallet/wallet-connector.svelte';
 	import ShareButton from '../share-button/share-button.svelte';
 	import { getTabBarState } from './tab-bar-state.svelte';
+	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
+	import { Button } from '$lib/components/ui/button';
 
 	const isMobile = new IsMobile();
 	let {
@@ -58,13 +60,38 @@
 	</div>
 
 	<div
-		class="pointer-events-none fixed inset-x-4 top-8 isolate z-50 flex justify-end [&>*]:pointer-events-auto"
+		class="pointer-events-none fixed inset-x-4 top-8 isolate z-50 flex justify-between [&>*]:pointer-events-auto"
 	>
+		{#if tabBarState.backButton}
+			<Button
+				href={tabBarState.backButton}
+				size="icon"
+				variant="outline"
+				class="rounded-full border p-2 backdrop-blur"
+			>
+				<ArrowLeft class="h-5 w-5" />
+			</Button>
+		{:else}
+			<div></div>
+		{/if}
 		<WalletConnector class=" backdrop-blur"></WalletConnector>
 	</div>
 {:else}
 	<!--  on top -->
 	<div class="pointer-events-none fixed inset-x-0 top-8 mx-auto grid max-w-7xl grid-cols-3 px-4">
+		<div class="flex items-center justify-start">
+			{#if tabBarState.backButton}
+				<Button
+					href={tabBarState.backButton}
+					size="icon"
+					variant="ghost"
+					class="pointer-events-auto rounded-full"
+				>
+					<ArrowLeft class="h-5 w-5" />
+				</Button>
+			{/if}
+		</div>
+
 		<div
 			class="bg-muted pointer-events-auto col-start-2 mx-auto flex items-center rounded-full p-1 md:justify-center"
 		>

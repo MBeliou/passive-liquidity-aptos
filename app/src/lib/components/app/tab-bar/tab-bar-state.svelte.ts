@@ -8,6 +8,7 @@ export type ShareButtonConfig = {
 
 export class TabBarState {
 	shareButton = $state<ShareButtonConfig | null>(null);
+	backButton = $state<string | null>(null);
 
 	setShareButton(config: ShareButtonConfig) {
 		this.shareButton = config;
@@ -15,6 +16,14 @@ export class TabBarState {
 
 	clearShareButton() {
 		this.shareButton = null;
+	}
+
+	setBackButton(url?: string) {
+		this.backButton = url || '/';
+	}
+
+	clearBackButton() {
+		this.backButton = null;
 	}
 }
 

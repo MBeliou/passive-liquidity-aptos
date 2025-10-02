@@ -53,8 +53,11 @@
 			url: page.url.toString()
 		});
 
+		tabBarState.setBackButton('/');
+
 		return () => {
 			tabBarState.clearShareButton();
+			tabBarState.clearBackButton();
 		};
 	});
 </script>
