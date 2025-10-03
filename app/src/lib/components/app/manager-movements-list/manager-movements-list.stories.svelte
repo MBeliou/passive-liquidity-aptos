@@ -1,4 +1,4 @@
-<script context="module">
+<script context="module" lang="ts">
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import ManagerMovementsList from './manager-movements-list.svelte';
 

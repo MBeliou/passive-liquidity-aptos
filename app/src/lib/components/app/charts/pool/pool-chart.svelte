@@ -64,6 +64,8 @@
 	});
 
 	let context = $state<ChartContextValue>();
+
+	$inspect(chartData)
 </script>
 
 <Chart.Container config={chartConfig}>

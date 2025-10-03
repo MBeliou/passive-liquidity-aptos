@@ -1,5 +1,5 @@
 import type { positionsTable } from '$lib/server/db/schema';
-import { formatRange, makeFeeLabel, normalizeFeeTier, type ChartData } from './pool-chart.svelte';
+import { formatRange, normalizeFeeTier, type ChartData } from './pool-chart.svelte';
 
 export const FEE_TIERS = ['0.01', '0.3', '0.05', '1'] as const;
 export type Fee = (typeof FEE_TIERS)[number];
@@ -22,6 +22,10 @@ export function binLiquidity(
 
 	const tickToPrice = (tick: number): number => {
 		return Math.pow(1.0001, tick);
+	};
+
+	const priceToTick = (price: number): number => {
+		return Math.log(price) / Math.log(1.0001);
 	};
 	/*
 	const getFeeLabel = (feeBps: number): string => {
@@ -59,18 +63,10 @@ export function binLiquidity(
 			const [binMin, binMax] = binRange;
 
 			if (upperPrice >= binMin && lowerPrice <= binMax) {
-				const overlapMin = Math.max(lowerPrice, binMin);
-				const overlapMax = Math.min(upperPrice, binMax);
-				const overlapWidth = overlapMax - overlapMin;
-				const positionWidth = upperPrice - lowerPrice;
-				const overlapRatio = positionWidth > 0 ? overlapWidth / positionWidth : 1;
-
-				const proportionalLiquidity = liquidityAmount * overlapRatio;
-
 				if (!result[idx][feeLabel]) {
 					result[idx][feeLabel] = 0;
 				}
-				result[idx][feeLabel] += proportionalLiquidity;
+				result[idx][feeLabel] += liquidityAmount;
 			}
 		});
 	});
@@ -81,8 +77,6 @@ export function binLiquidity(
 
 		const feeAccumulator: Record<string, number> = {};
 		FEE_TIERS.forEach((tier) => {
-			//const formattedTier = makeFeeLabel(tier);
-			//const formattedTier = parseFloat(tier).toFixed(2);
 			const formattedTier = normalizeFeeTier(tier);
 			// @ts-expect-error Typescript resolves earlier ...({}) as never so that gets gutted out
 			const liquidity = r[tier] ?? 0;

@@ -1,5 +1,4 @@
 import { binLiquidity } from '$lib/components/app/charts/pool/utils';
-//import { binLiquidity } from '$lib/components/app/charts/pool/pool-chart.svelte';
 import { db } from '$lib/server/db';
 import { poolsTable, positionsTable, tokensTable } from '$lib/server/db/schema';
 import { eq, and, ilike, inArray } from 'drizzle-orm';
@@ -68,7 +67,11 @@ export const load = (async ({ params }) => {
 		decimalsB: pool.tokenB.decimals,
 		sqrtPrice: poolInfo.sqrtPrice
 	});
-
+	console.log(
+		positions
+			.filter((p) => p.fee === 0.05)
+			.reduce((prev, curr) => prev + parseFloat(curr.liquidity), 0)
+	);
 	const binnedLiquidity = binLiquidity(computedMidPrice, positions, {
 		delta: 10,
 		bins: 10
@@ -161,7 +164,8 @@ export const load = (async ({ params }) => {
 
 	const volumeChange =
 		totalVolumePrevDay > 0 ? ((totalVolume - totalVolumePrevDay) / totalVolumePrevDay) * 100 : 0;
-	const usedLiquidityPercent = totalLiquidity > 0 ? (totalInRangeLiquidity / totalLiquidity) * 100 : 0;
+	const usedLiquidityPercent =
+		totalLiquidity > 0 ? (totalInRangeLiquidity / totalLiquidity) * 100 : 0;
 
 	// Calculate in-range TVL (liquidity in USD)
 	const inRangeTVL = totalLiquidity > 0 ? (totalInRangeLiquidity / totalLiquidity) * totalTVL : 0;
@@ -181,7 +185,8 @@ export const load = (async ({ params }) => {
 		const poolInRangeLiquidity = inRangeLiquidityTotals[feeKey] || 0;
 		const inRangePercent =
 			poolTotalLiquidity > 0 ? (poolInRangeLiquidity / poolTotalLiquidity) * 100 : 0;
-		const poolInRangeTVL = poolTotalLiquidity > 0 ? (poolInRangeLiquidity / poolTotalLiquidity) * p.pools.tvl : 0;
+		const poolInRangeTVL =
+			poolTotalLiquidity > 0 ? (poolInRangeLiquidity / poolTotalLiquidity) * p.pools.tvl : 0;
 
 		// Calculate total fees captured (daily)
 		const totalFees = p.pools.volumeDay * (parseFloat(p.pools.fee) / 100);

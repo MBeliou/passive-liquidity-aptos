@@ -247,9 +247,7 @@
 
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>
-					Liquidity Distribution
-				</Card.Title>
+				<Card.Title>Liquidity Distribution</Card.Title>
 				<Card.Description>
 					How liquidity is distributed around the current price point between pools
 				</Card.Description>
@@ -372,7 +370,6 @@
 						>Repartition of liquidity that is close to the current price</Card.Description
 					>
 				</Card.Header>
-
 				<LiquidityRepartition liquidity={data.about.inRangeLiquidityDistribution}
 				></LiquidityRepartition>
 			</Card.Root>
