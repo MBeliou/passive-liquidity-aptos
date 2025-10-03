@@ -45,6 +45,22 @@
 		maximumFractionDigits: 2
 	});
 
+	const compactFormat = new Intl.NumberFormat(undefined, {
+		notation: 'compact',
+		maximumFractionDigits: 2
+	});
+
+	// Create a map of fee tier to pool for quick lookup
+	const poolsByFee = $derived(
+		data.pools.reduce(
+			(acc, pool) => {
+				acc[pool.fee] = pool;
+				return acc;
+			},
+			{} as Record<string, (typeof data.pools)[number]>
+		)
+	);
+
 	$effect(() => {
 		// TODO: we want an actual title and description here
 		tabBarState.setShareButton({
@@ -84,7 +100,44 @@
 				</div>
 			</div>
 		</div>
-		<div class="grid md:grid-cols-2">
+
+		<div class="mt-6">
+			<div class="grid grid-cols-4 gap-4 text-sm">
+				<div>
+					<div class="text-muted-foreground text-xs">Volume (24h)</div>
+					<div class="font-medium">
+						${compactFormat.format(data.poolMetrics.totalVolume)}
+						{#if data.poolMetrics.volumeChange !== 0}
+							<span class={data.poolMetrics.volumeChange > 0 ? 'text-green-500' : 'text-red-500'}>
+								{data.poolMetrics.volumeChange > 0 ? '+' : ''}{data.poolMetrics.volumeChange.toFixed(
+									1
+								)}%
+							</span>
+						{/if}
+					</div>
+				</div>
+				<div>
+					<div class="text-muted-foreground text-xs">TVL</div>
+					<div class="font-medium">${compactFormat.format(data.poolMetrics.totalTVL)}</div>
+				</div>
+				<div>
+					<div class="text-muted-foreground text-xs">APR Range</div>
+					<div class="font-medium">
+						{#if data.poolMetrics.minAPR === data.poolMetrics.maxAPR}
+							{data.poolMetrics.minAPR.toFixed(2)}%
+						{:else}
+							{data.poolMetrics.minAPR.toFixed(2)}% - {data.poolMetrics.maxAPR.toFixed(2)}%
+						{/if}
+					</div>
+				</div>
+				<div>
+					<div class="text-muted-foreground text-xs">Liquidity In Range</div>
+					<div class="font-medium">{data.poolMetrics.usedLiquidityPercent.toFixed(1)}%</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="mt-6 grid md:grid-cols-2">
 			<div class="">
 				<div class="flex items-center">
 					<img src={TappLogo} alt="Tapp Exchange Logo" class="w-12" />
@@ -93,16 +146,28 @@
 				<div class="flex items-center">
 					<div class="flex items-center border-l border-t">
 						{#each FEE_TIERS as feeTier}
-							{@const hasTier = tappPools.includes(parseFloat(feeTier))}
+							{@const pool = poolsByFee[feeTier]}
+							{@const hasTier = !!pool}
 							<div
 								class={[
-									'flex flex-grow flex-col items-center justify-center border-r p-2 font-medium'
+									'flex flex-grow flex-col items-center justify-center border-r p-2 text-center'
 								]}
 							>
-								<!-- TODO: if high volume -> ⽕ else ⽶ -->
-								<div class="">{hasTier ? 'volume' : '-'}</div>
-								<div class="text-muted-foreground text-xs">
-									{percentFormat.format(feeTier || 0 / 100)}
+								{#if hasTier}
+									<div class="text-xs font-medium">
+										${compactFormat.format(pool.volumeDay)}
+									</div>
+									<div class="text-muted-foreground text-xs">
+										{(pool.tradingAPR + pool.bonusAPR).toFixed(1)}% APR
+										{#if pool.bonusAPR > 0}
+											<span class="text-primary">⭐</span>
+										{/if}
+									</div>
+								{:else}
+									<div class="text-muted-foreground">-</div>
+								{/if}
+								<div class="text-muted-foreground mt-1 text-xs">
+									{percentFormat.format(parseFloat(feeTier) / 100)}
 								</div>
 							</div>
 						{/each}

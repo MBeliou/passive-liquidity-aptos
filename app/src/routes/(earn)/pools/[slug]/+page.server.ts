@@ -25,7 +25,11 @@ export const load = (async ({ params }) => {
 	const tokenA = alias(tokensTable, 'tokenA');
 	const tokenB = alias(tokensTable, 'tokenB');
 	const pools = await db
-		.select()
+		.select({
+			pools: poolsTable,
+			tokenA: tokenA,
+			tokenB: tokenB
+		})
 		.from(poolsTable)
 		.innerJoin(tokenA, eq(poolsTable.tokenA, tokenA.id))
 		.innerJoin(tokenB, eq(poolsTable.tokenB, tokenB.id))
@@ -138,15 +142,48 @@ export const load = (async ({ params }) => {
 
 	const volatility = analyzeVolatility(prices);
 
+	// Calculate aggregate metrics
+	const totalVolume = pools.reduce((sum, p) => sum + p.pools.volumeDay, 0);
+	const totalVolumePrevDay = pools.reduce((sum, p) => sum + p.pools.volumePrevDay, 0);
+	const totalTVL = pools.reduce((sum, p) => sum + p.pools.tvl, 0);
+
+	const aprValues = pools.map((p) => p.pools.tradingAPR + p.pools.bonusAPR);
+	const minAPR = aprValues.length > 0 ? Math.min(...aprValues) : 0;
+	const maxAPR = aprValues.length > 0 ? Math.max(...aprValues) : 0;
+
+	const volumeChange =
+		totalVolumePrevDay > 0 ? ((totalVolume - totalVolumePrevDay) / totalVolumePrevDay) * 100 : 0;
+	const usedLiquidityPercent = totalLiquidity > 0 ? (totalInRangeLiquidity / totalLiquidity) * 100 : 0;
+
+	const hasBonus = pools.some((p) => p.pools.bonusAPR > 0);
+
+	// Calculate position dollar values
+	const positionsWithValue = positions.map((p) => {
+		const liquidityAmount = parseFloat(p.liquidity);
+		const valueUSD = totalLiquidity > 0 ? (liquidityAmount / totalLiquidity) * totalTVL : 0;
+		return {
+			...p,
+			fee: parseFloat(p.fee),
+			valueUSD
+		};
+	});
+
 	return {
 		assets,
 		pools: pools.map((p) => p.pools),
-		positions: positions.map((p) => {
-			return { ...p, fee: parseFloat(p.fee) };
-		}),
+		positions: positionsWithValue,
 		liquidity: binnedLiquidity,
 		prices,
 		volatility,
+		poolMetrics: {
+			totalVolume,
+			totalTVL,
+			minAPR,
+			maxAPR,
+			volumeChange,
+			usedLiquidityPercent
+		},
+		hasBonus,
 		about: {
 			liquidityDistribution,
 			inRangeLiquidityDistribution,

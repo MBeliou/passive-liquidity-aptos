@@ -68,10 +68,7 @@
 	const maxAPR = $derived(aprValues.length > 0 ? Math.max(...aprValues) : 0);
 </script>
 
-<a
-	class="hover:border-primary grid grid-rows-1 rounded border duration-200"
-	href="/pools/{slug}"
->
+<a class="hover:border-primary hover:bg-muted/60  grid grid-rows-1 rounded border duration-200" href="/pools/{slug}">
 	<div class="flex items-center gap-4 p-4">
 		<LogoStack tokenA={{ logo: tokenA.logo }} tokenB={{ logo: tokenB.logo }}></LogoStack>
 		<div class="flex-1">
@@ -85,7 +82,7 @@
 	</div>
 
 	<div class="border-t px-4 py-3">
-		<div class="grid grid-cols-3 gap-4 text-sm">
+		<div class="flex justify-evenly gap-4 text-right text-sm">
 			<div>
 				<div class="text-muted-foreground text-xs">Volume (24h)</div>
 				<div class="font-medium">${compactFormat.format(totalVolume)}</div>
