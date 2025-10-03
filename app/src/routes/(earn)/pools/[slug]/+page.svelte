@@ -10,6 +10,7 @@
 	import * as ToggleGroup from '$lib/components/ui/toggle-group';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Clipboard from '@lucide/svelte/icons/clipboard';
+	import ArrowUpRight from "@lucide/svelte/icons/arrow-up-right";
 	import { toast } from 'svelte-sonner';
 
 	let { data } = $props();
@@ -106,7 +107,7 @@
 </script>
 
 <div class="grid gap-8 [&>*]:px-2 xl:[&>*]:px-0">
-	<div class="to-muted/20 px-6! grid gap-4 rounded-b-xl border-b bg-gradient-to-b py-12 md:pt-24">
+	<div class="to-muted/20 px-6! grid gap-4 rounded-b-xl border-b border-x bg-gradient-to-b py-8 md:pt-24">
 		<div class="flex justify-between">
 			<div class="flex items-center space-x-8">
 				<div>
@@ -208,13 +209,20 @@
 				</div>
 			</div>
 		</div>
+
+		<div class="flex items-center justify-end">
+			<Button variant="secondary" href="/profile">Manage my liquidity
+			<ArrowUpRight></ArrowUpRight>
+			
+			</Button>
+		</div>
 	</div>
 	<section class="grid gap-6">
 		<Card.Root>
 			<Card.Header>
 				<div>
 					<h2 class="font-semibold md:text-lg">{tokenPairDisplay}</h2>
-					<div class="mt-0 md:flex items-baseline gap-2">
+					<div class="mt-0 items-baseline gap-2 md:flex">
 						<span class="font-bold md:text-2xl">${currentPrice.toFixed(6)}</span>
 						<div class="md:inline-block">
 							{#if priceChange7d !== 0}
