@@ -1,7 +1,9 @@
 import {
 	bigint,
 	decimal,
+	doublePrecision,
 	integer,
+	numeric,
 	pgEnum,
 	pgTable,
 	primaryKey,
@@ -28,7 +30,18 @@ export const poolsTable = pgTable('pools', {
 	tokenB: varchar('token_b').references(() => tokensTable.id),
 	fee: decimal().notNull(),
 	dex: varchar().notNull(), // Only dealing with tapp for now but we might have time to expand
-	positionIndex: integer('position_index').default(0), // highest position found
+	positionIndex: integer('position_index').default(0), // highest position found, unused for now as we're using the positions themselves and we can deal with the added API queries
+
+	tradingAPR: doublePrecision('trading_apr').notNull().default(0.0),
+	bonusAPR: doublePrecision('bonus_apr').notNull().default(0.0),
+	
+	volumeDay: doublePrecision('volume_apr').notNull().default(0.0),
+	volumeWeek: doublePrecision('volume_apr').notNull().default(0.0),
+	volumeMonth: doublePrecision('volume_apr').notNull().default(0.0),
+	volumePrevDay: doublePrecision('volume_apr').notNull().default(0.0),
+
+
+
 	updatedAt: timestamp('updated_at').defaultNow()
 });
 
@@ -36,10 +49,12 @@ export const positionsTable = pgTable(
 	'positions',
 	{
 		index: integer().notNull(),
-		pool: varchar().references(() => poolsTable.id).notNull(),
+		pool: varchar()
+			.references(() => poolsTable.id)
+			.notNull(),
 		updatedAt: timestamp('updated_at').defaultNow(),
-		tickLower: bigint('tick_lower', {mode: "number"}).notNull(),
-		tickUpper: bigint('tick_upper', {mode: "number"}).notNull(),
+		tickLower: bigint('tick_lower', { mode: 'number' }).notNull(),
+		tickUpper: bigint('tick_upper', { mode: 'number' }).notNull(),
 		liquidity: varchar().notNull()
 	},
 	(table) => [primaryKey({ columns: [table.index, table.pool] })]
@@ -79,7 +94,9 @@ export const managedPositionsTable = pgTable('managed_positions', {
 	userId: integer('user_id')
 		.references(() => usersTable.id)
 		.notNull(),
-	poolId: varchar('pool_id').references(() => poolsTable.id).notNull(),
+	poolId: varchar('pool_id')
+		.references(() => poolsTable.id)
+		.notNull(),
 	positionId: varchar('position_id').notNull(), // On-chain position ID
 	tickLower: bigint('tick_lower', { mode: 'number' }).notNull(),
 	tickUpper: bigint('tick_upper', { mode: 'number' }).notNull(),
