@@ -8,6 +8,8 @@
 	import { setUser, UserState } from '$lib/user/user-state.svelte';
 	import { useAptos } from '$lib/shared';
 	import { setTabBarState, TabBarState } from '$lib/components/app/tab-bar/tab-bar-state.svelte';
+  import { Toaster } from "$lib/components/ui/sonner/index.js";
+
 
 	let { children } = $props();
 
@@ -42,6 +44,7 @@
 </script>
 
 <ModeWatcher />
+<Toaster />
 
 <div class="mx-auto mt-8 min-h-screen w-full max-w-7xl pb-20">
 	{@render children?.()}

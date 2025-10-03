@@ -102,3 +102,18 @@ export const managedPositionsTable = pgTable('managed_positions', {
 	createdAt: timestamp('created_at').defaultNow().notNull(),
 	updatedAt: timestamp('updated_at').defaultNow().notNull()
 });
+
+export const userBalancesTable = pgTable(
+	'user_balances',
+	{
+		userId: integer('user_id')
+			.references(() => usersTable.id)
+			.notNull(),
+		tokenId: varchar('token_id', { length: 66 })
+			.references(() => tokensTable.id)
+			.notNull(),
+		amount: varchar().notNull(), // Store as string for big number support
+		updatedAt: timestamp('updated_at').defaultNow().notNull()
+	},
+	(table) => [primaryKey({ columns: [table.userId, table.tokenId] })]
+);

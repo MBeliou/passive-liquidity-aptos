@@ -6,7 +6,9 @@ import {
 	getManagedPositions,
 	createManagedPosition,
 	recordUserMovement,
-	updateManagedPositionStatus
+	updateManagedPositionStatus,
+	getUserBalance,
+	updateUserBalance
 } from './db/manager';
 import { Ed25519PrivateKey } from '@aptos-labs/ts-sdk';
 
@@ -44,23 +46,37 @@ export class ManagerService {
 
 	/**
 	 * Handle a deposit from a user
-	 * Records the deposit in the database and returns transaction info
+	 * Records the deposit in the database and updates user balance
 	 */
-	async handleDeposit(walletAddress: string, amount: bigint) {
+	async handleDeposit(walletAddress: string, amount: bigint, tokenId: string, txHash: string) {
 		const user = await this.getOrCreateUser(walletAddress);
 
-		// Process deposit through manager
-		const txInfo = await this.manager.handleDeposit(walletAddress, amount);
+		// Get current balance
+		const currentBalance = await getUserBalance(user.id, tokenId);
+		const currentAmount = currentBalance ? BigInt(currentBalance.amount) : BigInt(0);
+
+		// Calculate new balance
+		const newAmount = currentAmount + amount;
+
+		// Update balance in database
+		const updatedBalance = await updateUserBalance(user.id, tokenId, newAmount.toString());
 
 		// Record movement in database
 		await recordUserMovement({
 			userId: user.id,
-			txHash: txInfo.hash,
-			txInfo: JSON.stringify(txInfo),
+			txHash,
+			txInfo: JSON.stringify({
+				tokenId,
+				amount: amount.toString(),
+				previousBalance: currentAmount.toString(),
+				newBalance: newAmount.toString()
+			}),
 			movementType: 'deposit' as any
 		});
 
-		return { user, txInfo };
+		console.log(`[ManagerService] Deposit recorded: ${amount} of token ${tokenId} for user ${user.id}`);
+
+		return { user, balance: updatedBalance };
 	}
 
 	/**

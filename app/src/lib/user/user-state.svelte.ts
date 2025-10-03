@@ -3,6 +3,7 @@ import type { WalletState } from '$lib/wallet/wallet.svelte';
 import type { Aptos } from '@aptos-labs/ts-sdk';
 import { type AccountInfo } from '@aptos-labs/wallet-adapter-core';
 import { getContext, setContext } from 'svelte';
+import { getManagedPositions as getManagedPositionsQuery } from '../../routes/profile/manager.remote';
 
 export class UserState {
 	account = $state<AccountInfo | null>(null);
@@ -105,16 +106,11 @@ export class UserState {
 		}
 
 		try {
-			const response = await fetch('/api/manager/positions', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					userAddress: this.displayAddress, // Use displayAddress (demo if not authorized)
-					requestingUserAddress: this.account.address.toString() // Send actual user for auth check
-				})
+			const result = await getManagedPositionsQuery({
+				userAddress: this.displayAddress, // Use displayAddress (demo if not authorized)
+				requestingUserAddress: this.account.address.toString() // Send actual user for auth check
 			});
 
-			const result = await response.json();
 			return result.positions || [];
 		} catch (error) {
 			console.error('Failed to fetch managed positions:', error);

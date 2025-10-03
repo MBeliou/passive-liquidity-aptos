@@ -5,11 +5,12 @@
 	import PriceChart from '$lib/components/app/charts/price/price-chart.svelte';
 	import * as Card from '$lib/components/ui/card';
 
-	import TappLogo from '$lib/assets/tapp-logo.png';
-	import { FEE_TIERS } from '$lib/components/app/charts/pool/utils.js';
 	import LogoStack from '$lib/components/app/logo-stack/logo-stack.svelte';
 	import { getTabBarState } from '$lib/components/app/tab-bar/tab-bar-state.svelte';
 	import * as ToggleGroup from '$lib/components/ui/toggle-group';
+	import Button from '$lib/components/ui/button/button.svelte';
+	import Clipboard from '@lucide/svelte/icons/clipboard';
+	import { toast } from 'svelte-sonner';
 
 	let { data } = $props();
 
@@ -32,10 +33,36 @@
 		pricedInToken === 'A' ? data.assets.tokenA.symbol : data.assets.tokenB.symbol
 	);
 
-	const tappPools = $derived.by(() => {
+	// Calculate current price and 7-day change
+	const currentPrice = $derived.by(() => {
+		if (displayPrices.length === 0) return 0;
+		return parseFloat(displayPrices[displayPrices.length - 1].y);
+	});
+
+	const priceChange7d = $derived.by(() => {
+		if (displayPrices.length < 2) return 0;
+		const firstPrice = parseFloat(displayPrices[0].y);
+		const lastPrice = parseFloat(displayPrices[displayPrices.length - 1].y);
+		if (firstPrice === 0) return 0;
+		return ((lastPrice - firstPrice) / firstPrice) * 100;
+	});
+
+	const tokenPairDisplay = $derived(
+		pricedInToken === 'A'
+			? `${data.assets.tokenB.symbol}/${data.assets.tokenA.symbol}`
+			: `${data.assets.tokenA.symbol}/${data.assets.tokenB.symbol}`
+	);
+
+	const orderedPools = $derived.by(() => {
 		const sorted = [...data.pools]
-			.sort((a, b) => parseInt(a.fee) - parseInt(b.fee))
-			.map((s) => parseFloat(s.fee));
+			.map((s) => {
+				return {
+					...s,
+					fee: parseFloat(s.fee)
+				};
+			})
+			.sort((a, b) => a.fee - b.fee);
+
 		return sorted;
 	});
 
@@ -76,12 +103,10 @@
 			tabBarState.clearBackButton();
 		};
 	});
-
-	$inspect(data);
 </script>
 
-<div class="grid gap-8 [&>*]:px-6">
-	<div class="to-muted/20 grid gap-4 rounded-b-xl border-b bg-gradient-to-b py-12 md:pt-24">
+<div class="grid gap-8 [&>*]:px-6 [&>section]:md:px-0">
+	<div class="to-muted/20 grid gap-4 rounded-b-xl border-b bg-gradient-to-b py-12 md:pt-24 px-6">
 		<div class="flex justify-between">
 			<div class="flex items-center space-x-8">
 				<div>
@@ -101,7 +126,7 @@
 			</div>
 		</div>
 
-		<div class="mt-6">
+		<div class="">
 			<div class="grid grid-cols-4 gap-4 text-sm">
 				<div>
 					<div class="text-muted-foreground text-xs">Volume (24h)</div>
@@ -109,9 +134,9 @@
 						${compactFormat.format(data.poolMetrics.totalVolume)}
 						{#if data.poolMetrics.volumeChange !== 0}
 							<span class={data.poolMetrics.volumeChange > 0 ? 'text-green-500' : 'text-red-500'}>
-								{data.poolMetrics.volumeChange > 0 ? '+' : ''}{data.poolMetrics.volumeChange.toFixed(
-									1
-								)}%
+								{data.poolMetrics.volumeChange > 0
+									? '+'
+									: ''}{data.poolMetrics.volumeChange.toFixed(1)}%
 							</span>
 						{/if}
 					</div>
@@ -129,6 +154,14 @@
 							{data.poolMetrics.minAPR.toFixed(2)}% - {data.poolMetrics.maxAPR.toFixed(2)}%
 						{/if}
 					</div>
+					<div class="text-muted-foreground text-xs">
+						Trading: {data.poolMetrics.minTradingAPR.toFixed(
+							1
+						)}-{data.poolMetrics.maxTradingAPR.toFixed(1)}%
+						{#if data.poolMetrics.maxBonusAPR > 0}
+							· Bonus: up to {data.poolMetrics.maxBonusAPR.toFixed(1)}%
+						{/if}
+					</div>
 				</div>
 				<div>
 					<div class="text-muted-foreground text-xs">Liquidity In Range</div>
@@ -137,49 +170,61 @@
 			</div>
 		</div>
 
-		<div class="mt-6 grid md:grid-cols-2">
-			<div class="">
-				<div class="flex items-center">
-					<img src={TappLogo} alt="Tapp Exchange Logo" class="w-12" />
-					<h2 class=" font-medium">Tapp Exchange Pools</h2>
+		<div class="bg-muted/30 p-4">
+			<h3 class="mb-2 font-semibold">Overall Pool Performance</h3>
+			<div class="grid grid-cols-3 gap-6 text-sm">
+				<div>
+					<div class="text-muted-foreground text-xs">Total Fees Captured (24h)</div>
+					<div class="text-xl font-semibold">
+						${compactFormat.format(data.poolMetrics.totalFeesAggregate)}
+					</div>
 				</div>
-				<div class="flex items-center">
-					<div class="flex items-center border-l border-t">
-						{#each FEE_TIERS as feeTier}
-							{@const pool = poolsByFee[feeTier]}
-							{@const hasTier = !!pool}
-							<div
-								class={[
-									'flex flex-grow flex-col items-center justify-center border-r p-2 text-center'
-								]}
-							>
-								{#if hasTier}
-									<div class="text-xs font-medium">
-										${compactFormat.format(pool.volumeDay)}
-									</div>
-									<div class="text-muted-foreground text-xs">
-										{(pool.tradingAPR + pool.bonusAPR).toFixed(1)}% APR
-										{#if pool.bonusAPR > 0}
-											<span class="text-primary">⭐</span>
-										{/if}
-									</div>
-								{:else}
-									<div class="text-muted-foreground">-</div>
-								{/if}
-								<div class="text-muted-foreground mt-1 text-xs">
-									{percentFormat.format(parseFloat(feeTier) / 100)}
-								</div>
-							</div>
-						{/each}
+				<div>
+					<div class="text-muted-foreground text-xs">Trading APR (All Liquidity)</div>
+					<div class="text-xl font-semibold">
+						{#if data.poolMetrics.aggregateTradingAPR > 0}
+							{data.poolMetrics.aggregateTradingAPR.toFixed(2)}%
+						{:else}
+							<span class="text-muted-foreground">-</span>
+						{/if}
+					</div>
+				</div>
+				<div>
+					<div class="text-muted-foreground text-xs">In-Range Trading APR</div>
+					<div class="text-xl font-semibold">
+						{#if data.poolMetrics.aggregateInRangeAPR > 0}
+							{data.poolMetrics.aggregateInRangeAPR.toFixed(2)}%
+							{@const difference = data.poolMetrics.aggregateInRangeAPR - data.poolMetrics.aggregateTradingAPR}
+							{#if difference > 0}
+								<span class="text-green-500 text-xs">
+									(+{difference.toFixed(2)}% higher)
+								</span>
+							{/if}
+						{:else}
+							<span class="text-muted-foreground">-</span>
+						{/if}
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<section>
-		<div class="mt-4">
+	<section class="mt-4">
+		<!-- 
+		
 			<div class="mb-4 flex items-center justify-between">
-				<h2 class="text-lg font-semibold">Price Chart</h2>
+				<div>
+					<h2 class="text-lg font-semibold">{tokenPairDisplay}</h2>
+					<div class="mt-1 flex items-baseline gap-2">
+						<span class="text-2xl font-bold">${currentPrice.toFixed(6)}</span>
+						{#if priceChange7d !== 0}
+							<span class={priceChange7d > 0 ? 'text-green-500' : 'text-red-500'}>
+								{priceChange7d > 0 ? '+' : ''}{priceChange7d.toFixed(2)}% (7d)
+							</span>
+						{:else}
+							<span class="text-muted-foreground">0% (7d)</span>
+						{/if}
+					</div>
+				</div>
 				<div class="flex items-center gap-2">
 					<span class="text-muted-foreground text-sm">Priced in:</span>
 					<ToggleGroup.Root type="single" variant="outline" bind:value={pricedInToken}>
@@ -191,33 +236,42 @@
 						</ToggleGroup.Item>
 					</ToggleGroup.Root>
 				</div>
-			</div>
+			
 			<PriceChart data={displayPrices} tokenSymbol={priceTokenSymbol}></PriceChart>
-			<div class="mt-4">
-				<Card.Root>
-					<Card.Header>
-						<Card.Title>Volatility Analysis</Card.Title>
-						<Card.Description>{data.volatility.insight}</Card.Description>
-					</Card.Header>
-					<Card.Content>
-						<div class="grid grid-cols-3 gap-4">
-							<div>
-								<div class="text-muted-foreground text-xs uppercase tracking-wide">Week</div>
-								<div class="text-2xl font-semibold">{data.volatility.week.toFixed(1)}%</div>
-							</div>
-							<div>
-								<div class="text-muted-foreground text-xs uppercase tracking-wide">Day</div>
-								<div class="text-2xl font-semibold">{data.volatility.day.toFixed(1)}%</div>
-							</div>
-							<div>
-								<div class="text-muted-foreground text-xs uppercase tracking-wide">Recent</div>
-								<div class="text-2xl font-semibold">{data.volatility.hour.toFixed(1)}%</div>
-							</div>
-						</div>
-					</Card.Content>
-				</Card.Root>
-			</div>
 		</div>
+		 -->
+		<Card.Root>
+			<Card.Header>
+				<h2 class="text-lg font-semibold">{tokenPairDisplay}</h2>
+				<div class="mt-1 flex items-baseline gap-2">
+					<span class="text-2xl font-bold">${currentPrice.toFixed(6)}</span>
+					{#if priceChange7d !== 0}
+						<span class={priceChange7d > 0 ? 'text-green-500' : 'text-red-500'}>
+							{priceChange7d > 0 ? '+' : ''}{priceChange7d.toFixed(2)}% (7d)
+						</span>
+					{:else}
+						<span class="text-muted-foreground">0% (7d)</span>
+					{/if}
+				</div>
+
+				<Card.Action>
+					<div class="flex items-center gap-2">
+						<span class="text-muted-foreground text-sm">Priced in:</span>
+						<ToggleGroup.Root type="single" variant="outline" bind:value={pricedInToken}>
+							<ToggleGroup.Item value="A" class="px-3 py-1">
+								{data.assets.tokenA.symbol}
+							</ToggleGroup.Item>
+							<ToggleGroup.Item value="B" class="px-3 py-1">
+								{data.assets.tokenB.symbol}
+							</ToggleGroup.Item>
+						</ToggleGroup.Root>
+					</div>
+				</Card.Action>
+			</Card.Header>
+			<Card.Content class="mt-4 px-4 pl-16">
+				<PriceChart data={displayPrices} tokenSymbol={priceTokenSymbol}></PriceChart>
+			</Card.Content>
+		</Card.Root>
 	</section>
 
 	<section>
@@ -226,7 +280,110 @@
 		</div>
 	</section>
 
-	<section>
+	<section class="mt-12 grid gap-6">
+		<div>
+			<h2 class="text-xl font-semibold">Deep Dive</h2>
+			<p class="text-muted-foreground text-sm">
+				Deep dive into liquidity and returns, per fee tier
+			</p>
+		</div>
+		<div class="grid gap-6 lg:grid-cols-3 lg:grid-rows-1">
+			<Card.Root>
+				<Card.Header>
+					<Card.Title>Volatility Analysis</Card.Title>
+					<Card.Description>{data.volatility.insight}</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<div class="grid grid-cols-1 grid-rows-3 gap-4">
+						<div>
+							<div class="text-muted-foreground text-xs uppercase tracking-wide">Week</div>
+							<div class="text-2xl font-semibold">{data.volatility.week.toFixed(1)}%</div>
+						</div>
+						<div>
+							<div class="text-muted-foreground text-xs uppercase tracking-wide">Day</div>
+							<div class="text-2xl font-semibold">{data.volatility.day.toFixed(1)}%</div>
+						</div>
+						<div>
+							<div class="text-muted-foreground text-xs uppercase tracking-wide">Recent</div>
+							<div class="text-2xl font-semibold">{data.volatility.hour.toFixed(1)}%</div>
+						</div>
+					</div>
+				</Card.Content>
+			</Card.Root>
+			<Card.Root class="lg:col-span-2">
+				<Card.Header>
+					<Card.Title>Pool fee info</Card.Title>
+					<Card.Description>info per fee tier</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<div class="grid gap-4 md:grid-cols-2">
+						{#each orderedPools as pool}
+							<div class="rounded-lg border p-4">
+								<div class="mb-3 flex items-center justify-between">
+									<h3 class="text-lg font-semibold">
+										{percentFormat.format(pool.fee / 100)} Fee Pool
+									</h3>
+									{#if pool.bonusAPR > 0}
+										<span class="text-primary text-sm">⭐ Bonus</span>
+									{/if}
+								</div>
+
+								<div class="grid grid-cols-2 gap-4 text-sm">
+									<div>
+										<div class="text-muted-foreground text-xs">Volume (24h)</div>
+										<div class="font-medium">
+											${compactFormat.format(pool.volumeDay)}
+											{#if pool.volumeChangePercent !== 0}
+												<span
+													class={pool.volumeChangePercent > 0 ? 'text-green-500' : 'text-red-500'}
+												>
+													{pool.volumeChangePercent > 0
+														? '+'
+														: ''}{pool.volumeChangePercent.toFixed(1)}%
+												</span>
+											{/if}
+										</div>
+									</div>
+									<div>
+										<div class="text-muted-foreground text-xs">TVL</div>
+										<div class="font-medium">${compactFormat.format(pool.tvl)}</div>
+										<div class="text-muted-foreground text-xs">
+											${compactFormat.format(pool.inRangeTVL)} in range
+										</div>
+									</div>
+									<div>
+										<div class="text-muted-foreground text-xs">Trading APR</div>
+										<div class="font-medium">{pool.tradingAPR.toFixed(2)}%</div>
+										<div class="font-medium">
+											{#if pool.inRangeAPR > 0}
+												{pool.inRangeAPR.toFixed(2)}% in range APR
+											{:else}
+												<span class="text-muted-foreground">-</span>
+											{/if}
+										</div>
+									</div>
+
+									<div>
+										<div class="text-muted-foreground text-xs">Total Fees (24h)</div>
+										<div class="font-medium">${compactFormat.format(pool.totalFees)}</div>
+									</div>
+									<div>
+										<div class="text-muted-foreground text-xs">Bonus APR</div>
+										<div class="font-medium">
+											{#if pool.bonusAPR > 0}
+												<span class="text-primary">{pool.bonusAPR.toFixed(2)}%</span>
+											{:else}
+												<span class="text-muted-foreground">None</span>
+											{/if}
+										</div>
+									</div>
+								</div>
+							</div>
+						{/each}
+					</div>
+				</Card.Content>
+			</Card.Root>
+		</div>
 		<div class="grid min-h-[200px] w-full gap-6 md:grid-cols-2">
 			<Card.Root>
 				<Card.Header>
@@ -272,5 +429,38 @@
 				></LiquidityRepartition>
 			</Card.Root>
 		</div>
+	</section>
+
+	<section>
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>Pool Addresses</Card.Title>
+				<Card.Description>Contract addresses for each fee tier pool</Card.Description>
+			</Card.Header>
+			<Card.Content>
+				<div class="space-y-3">
+					{#each orderedPools as pool}
+						<div class="flex items-center justify-between border-b pb-3 last:border-b-0">
+							<div class="flex-1">
+								<div class="font-medium">{percentFormat.format(pool.fee / 100)} Fee Pool</div>
+								<div class="text-muted-foreground mt-1 break-all font-mono text-xs">
+									{pool.id}
+								</div>
+							</div>
+							<Button
+								size="sm"
+								variant="secondary"
+								onclick={() => {
+									navigator.clipboard.writeText(pool.id);
+									toast(`Copied ${pool.fee}% pool address`);
+								}}
+							>
+								<Clipboard></Clipboard>
+							</Button>
+						</div>
+					{/each}
+				</div>
+			</Card.Content>
+		</Card.Root>
 	</section>
 </div>

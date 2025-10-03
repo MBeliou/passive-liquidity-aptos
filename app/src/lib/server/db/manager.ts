@@ -3,6 +3,7 @@ import {
 	usersTable,
 	userMovementsTable,
 	managedPositionsTable,
+	userBalancesTable,
 	type movementTypeEnum,
 	type positionStatusEnum
 } from './schema';
@@ -114,4 +115,51 @@ export async function getUserMovements(userId: number, limit = 50) {
 		.where(eq(userMovementsTable.userId, userId))
 		.orderBy(desc(userMovementsTable.createdAt))
 		.limit(limit);
+}
+
+/**
+ * Get user balance for a specific token
+ */
+export async function getUserBalance(userId: number, tokenId: string) {
+	const balances = await db
+		.select()
+		.from(userBalancesTable)
+		.where(and(eq(userBalancesTable.userId, userId), eq(userBalancesTable.tokenId, tokenId)))
+		.limit(1);
+
+	return balances[0] || null;
+}
+
+/**
+ * Get all balances for a user
+ */
+export async function getUserBalances(userId: number) {
+	return await db.select().from(userBalancesTable).where(eq(userBalancesTable.userId, userId));
+}
+
+/**
+ * Update user balance (insert or update)
+ * @param userId - User ID
+ * @param tokenId - Token ID (Tapp format)
+ * @param amount - New amount as string
+ */
+export async function updateUserBalance(userId: number, tokenId: string, amount: string) {
+	const existing = await getUserBalance(userId, tokenId);
+
+	if (existing) {
+		const [updated] = await db
+			.update(userBalancesTable)
+			.set({ amount, updatedAt: new Date() })
+			.where(
+				and(eq(userBalancesTable.userId, userId), eq(userBalancesTable.tokenId, tokenId))
+			)
+			.returning();
+		return updated;
+	} else {
+		const [created] = await db
+			.insert(userBalancesTable)
+			.values({ userId, tokenId, amount })
+			.returning();
+		return created;
+	}
 }

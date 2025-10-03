@@ -151,11 +151,59 @@ export const load = (async ({ params }) => {
 	const minAPR = aprValues.length > 0 ? Math.min(...aprValues) : 0;
 	const maxAPR = aprValues.length > 0 ? Math.max(...aprValues) : 0;
 
+	// Calculate APR ranges for trading and bonus separately
+	const tradingAPRValues = pools.map((p) => p.pools.tradingAPR);
+	const minTradingAPR = tradingAPRValues.length > 0 ? Math.min(...tradingAPRValues) : 0;
+	const maxTradingAPR = tradingAPRValues.length > 0 ? Math.max(...tradingAPRValues) : 0;
+
+	const bonusAPRValues = pools.map((p) => p.pools.bonusAPR).filter((apr) => apr > 0);
+	const maxBonusAPR = bonusAPRValues.length > 0 ? Math.max(...bonusAPRValues) : 0;
+
 	const volumeChange =
 		totalVolumePrevDay > 0 ? ((totalVolume - totalVolumePrevDay) / totalVolumePrevDay) * 100 : 0;
 	const usedLiquidityPercent = totalLiquidity > 0 ? (totalInRangeLiquidity / totalLiquidity) * 100 : 0;
 
+	// Calculate in-range TVL (liquidity in USD)
+	const inRangeTVL = totalLiquidity > 0 ? (totalInRangeLiquidity / totalLiquidity) * totalTVL : 0;
+
 	const hasBonus = pools.some((p) => p.pools.bonusAPR > 0);
+
+	// Enrich pools with per-pool metrics
+	const enrichedPools = pools.map((p) => {
+		const feeKey = p.pools.fee;
+		const volumeChangePercent =
+			p.pools.volumePrevDay > 0
+				? ((p.pools.volumeDay - p.pools.volumePrevDay) / p.pools.volumePrevDay) * 100
+				: 0;
+
+		// Calculate in-range liquidity for this pool
+		const poolTotalLiquidity = liquidityTotals[feeKey] || 0;
+		const poolInRangeLiquidity = inRangeLiquidityTotals[feeKey] || 0;
+		const inRangePercent =
+			poolTotalLiquidity > 0 ? (poolInRangeLiquidity / poolTotalLiquidity) * 100 : 0;
+		const poolInRangeTVL = poolTotalLiquidity > 0 ? (poolInRangeLiquidity / poolTotalLiquidity) * p.pools.tvl : 0;
+
+		// Calculate total fees captured (daily)
+		const totalFees = p.pools.volumeDay * (parseFloat(p.pools.fee) / 100);
+
+		// Calculate in-range APR (APR for liquidity actively earning fees)
+		const inRangeAPR = poolInRangeTVL > 0 ? (totalFees / poolInRangeTVL) * 365 * 100 : 0;
+
+		return {
+			...p.pools,
+			volumeChangePercent,
+			inRangeLiquidity: poolInRangeLiquidity,
+			inRangePercent,
+			inRangeTVL: poolInRangeTVL,
+			totalFees,
+			inRangeAPR
+		};
+	});
+
+	// Calculate aggregate metrics
+	const totalFeesAggregate = enrichedPools.reduce((sum, p) => sum + p.totalFees, 0);
+	const aggregateInRangeAPR = inRangeTVL > 0 ? (totalFeesAggregate / inRangeTVL) * 365 * 100 : 0;
+	const aggregateTradingAPR = totalTVL > 0 ? (totalFeesAggregate / totalTVL) * 365 * 100 : 0;
 
 	// Calculate position dollar values
 	const positionsWithValue = positions.map((p) => {
@@ -170,7 +218,7 @@ export const load = (async ({ params }) => {
 
 	return {
 		assets,
-		pools: pools.map((p) => p.pools),
+		pools: enrichedPools,
 		positions: positionsWithValue,
 		liquidity: binnedLiquidity,
 		prices,
@@ -180,8 +228,15 @@ export const load = (async ({ params }) => {
 			totalTVL,
 			minAPR,
 			maxAPR,
+			minTradingAPR,
+			maxTradingAPR,
+			maxBonusAPR,
 			volumeChange,
-			usedLiquidityPercent
+			usedLiquidityPercent,
+			inRangeTVL,
+			totalFeesAggregate,
+			aggregateInRangeAPR,
+			aggregateTradingAPR
 		},
 		hasBonus,
 		about: {
