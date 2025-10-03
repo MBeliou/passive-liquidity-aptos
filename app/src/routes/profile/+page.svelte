@@ -3,6 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { getUser } from '$lib/user/user-state.svelte';
 	import ManagedPositionsList from '$lib/components/app/managed-positions-list/managed-positions-list.svelte';
+	import ViewOnlyBanner from '$lib/components/app/view-only-banner/view-only-banner.svelte';
 
 	let { data } = $props();
 
@@ -25,20 +26,34 @@
 		</Card.Root>
 	{:else}
 		<div class="grid gap-6">
+			{#if !userState.isAuthorized}
+				<ViewOnlyBanner />
+			{/if}
+
 			<Card.Root>
 				<Card.Header>
 					<div class="flex items-center justify-between">
 						<div>
 							<Card.Title>Managed Positions</Card.Title>
 							<Card.Description>
-								Automated liquidity positions managed by the protocol
+								{#if userState.isAuthorized}
+									Automated liquidity positions managed by the protocol
+								{:else}
+									Viewing demo positions (read-only)
+								{/if}
 							</Card.Description>
 						</div>
 						<Button
 							onclick={() => userState.triggerRebalance()}
-							disabled={userState.loadingManagedPositions}
+							disabled={userState.loadingManagedPositions || !userState.isAuthorized}
 						>
-							{userState.loadingManagedPositions ? 'Processing...' : 'Trigger Rebalance'}
+							{#if !userState.isAuthorized}
+								View Only
+							{:else if userState.loadingManagedPositions}
+								Processing...
+							{:else}
+								Trigger Rebalance
+							{/if}
 						</Button>
 					</div>
 				</Card.Header>

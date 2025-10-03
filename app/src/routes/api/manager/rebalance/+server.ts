@@ -2,11 +2,13 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { ManagerService } from '$lib/server/manager-service';
 import { MANAGER_PRIVATE_KEY } from '$env/static/private';
+import { isAuthorizedManager } from '$lib/server/manager-auth';
 
 /**
  * POST /api/manager/rebalance
  *
  * Analyzes user positions and rebalances based on market conditions
+ * REQUIRES AUTHORIZATION - Only works for allowed manager address
  *
  * Request body:
  * {
@@ -22,7 +24,19 @@ export const POST: RequestHandler = async ({ request }) => {
 			return json({ error: 'userAddress is required' }, { status: 400 });
 		}
 
-		console.log(`[Rebalance API] Processing rebalance request for user: ${userAddress}`);
+		// Check authorization - only allow rebalancing for authorized users
+		if (!isAuthorizedManager(userAddress)) {
+			console.log(`[Rebalance API] Unauthorized rebalance attempt by: ${userAddress}`);
+			return json(
+				{
+					error: 'Unauthorized',
+					message: 'Rebalancing is only available to authorized manager addresses'
+				},
+				{ status: 403 }
+			);
+		}
+
+		console.log(`[Rebalance API] Processing authorized rebalance request for user: ${userAddress}`);
 
 		// Initialize manager service
 		const managerService = new ManagerService(MANAGER_PRIVATE_KEY);

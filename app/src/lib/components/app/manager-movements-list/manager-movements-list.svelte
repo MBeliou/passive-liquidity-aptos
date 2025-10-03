@@ -1,6 +1,8 @@
 <script lang="ts">
 	import TappLogo from '$lib/assets/tapp-logo.png';
-	import { ArrowDownToLine, ArrowUpFromLine, ArrowRightLeft } from 'lucide-svelte';
+	import ArrowDownToLine from "@lucide/svelte/icons/arrow-down-to-line";
+	import ArrowUpFromLine from "@lucide/svelte/icons/arrow-up-to-line";
+	import ArrowRightLeft from "@lucide/svelte/icons/arrow-right-left";
 
 	type PoolInfo = {
 		tokenA: string;

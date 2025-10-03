@@ -35,6 +35,7 @@ export const getPools = query(async () => {
 					fee: string;
 					dex: string;
 					positionIndex: number;
+					volumeDay: number;
 					updatedAt: Date;
 				}>
 			>`
@@ -43,6 +44,7 @@ export const getPools = query(async () => {
 						'id', ${poolsTable.id},
 						'fee', ${poolsTable.fee},
 						'dex', ${poolsTable.dex},
+						'volumeDay', ${poolsTable.volumeDay},
 						'positionIndex', ${poolsTable.positionIndex},
 						'updatedAt', ${poolsTable.updatedAt}
 					)
