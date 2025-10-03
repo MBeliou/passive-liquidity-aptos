@@ -105,8 +105,8 @@
 	});
 </script>
 
-<div class="grid gap-8 [&>*]:px-6 xl:[&>*]:px-0">
-	<div class="to-muted/20 grid gap-4 rounded-b-xl border-b bg-gradient-to-b px-6! py-12 md:pt-24">
+<div class="grid gap-8 [&>*]:px-2 xl:[&>*]:px-0">
+	<div class="to-muted/20 px-6! grid gap-4 rounded-b-xl border-b bg-gradient-to-b py-12 md:pt-24">
 		<div class="flex justify-between">
 			<div class="flex items-center space-x-8">
 				<div>
@@ -127,7 +127,7 @@
 		</div>
 
 		<div class="">
-			<div class="grid grid-cols-4 gap-4 text-sm">
+			<div class="grid gap-4 text-sm md:grid-cols-4">
 				<div>
 					<div class="text-muted-foreground text-xs">Volume (24h)</div>
 					<div class="font-medium">
@@ -172,7 +172,7 @@
 
 		<div class="bg-muted/30 p-4">
 			<h3 class="mb-2 font-semibold">Overall Pool Performance</h3>
-			<div class="grid grid-cols-3 gap-6 text-sm">
+			<div class="grid grid-cols-2 gap-6 text-sm md:grid-cols-3">
 				<div>
 					<div class="text-muted-foreground text-xs">Total Fees Captured (24h)</div>
 					<div class="text-xl font-semibold">
@@ -213,16 +213,18 @@
 		<Card.Root>
 			<Card.Header>
 				<div>
-					<h2 class="text-lg font-semibold">{tokenPairDisplay}</h2>
-					<div class="mt-0 flex items-baseline gap-2">
-						<span class="text-2xl font-bold">${currentPrice.toFixed(6)}</span>
-						{#if priceChange7d !== 0}
-							<span class={priceChange7d > 0 ? 'text-green-500' : 'text-red-500'}>
-								{priceChange7d > 0 ? '+' : ''}{priceChange7d.toFixed(2)}% (7d)
-							</span>
-						{:else}
-							<span class="text-muted-foreground">0% (7d)</span>
-						{/if}
+					<h2 class="font-semibold md:text-lg">{tokenPairDisplay}</h2>
+					<div class="mt-0 md:flex items-baseline gap-2">
+						<span class="font-bold md:text-2xl">${currentPrice.toFixed(6)}</span>
+						<div class="md:inline-block">
+							{#if priceChange7d !== 0}
+								<span class={priceChange7d > 0 ? 'text-green-500' : 'text-red-500'}>
+									{priceChange7d > 0 ? '+' : ''}{priceChange7d.toFixed(2)}% (7d)
+								</span>
+							{:else}
+								<span class="text-muted-foreground">0% (7d)</span>
+							{/if}
+						</div>
 					</div>
 				</div>
 
@@ -258,7 +260,7 @@
 		</Card.Root>
 	</section>
 
-	<section class=" grid gap-6">
+	<section class="grid gap-4">
 		<div>
 			<h2 class="text-xl font-semibold">Deep Dive</h2>
 			<p class="text-muted-foreground text-sm">
