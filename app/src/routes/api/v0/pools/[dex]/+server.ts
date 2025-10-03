@@ -56,10 +56,10 @@ export const POST: RequestHandler = async ({ params }) => {
 			fee: pool.feeTier,
 			tradingAPR: apr.feeAprPercentage,
 			bonusAPR: apr.boostedAprPercentage,
-			volumeDay: pool.volumeData.volume24h,
-			volumeWeek: pool.volumeData.volume7d,
-			volumeMonth: pool.volumeData.volume30d,
-			volumePrevDay: pool.volumeData.volumeprev24h,
+			volumeDay: parseFloat(pool.volumeData.volume24h),
+			volumeWeek: parseFloat(pool.volumeData.volume7d),
+			volumeMonth: parseFloat(pool.volumeData.volume30d),
+			volumePrevDay: parseFloat(pool.volumeData.volumeprev24h),
 			tokenA: pool.tokens[0].addr,
 			tokenB: pool.tokens[1].addr,
 			updatedAt: new Date()
@@ -76,8 +76,12 @@ export const POST: RequestHandler = async ({ params }) => {
 			}*/
 			set: {
 				fee: sql`excluded.fee`,
-				tradingAPR: sql`excluded.tradingAPR`,
-				bonusAPR: sql`excluded.bonusAPR`
+				tradingAPR: sql`excluded.trading_apr`,
+				bonusAPR: sql`excluded.bonus_apr`,
+				volumeDay: sql`excluded.volume_day`,
+				volumeWeek: sql`excluded.volume_week`,
+				volumeMonth: sql`excluded.volume_month`,
+				volumePrevDay: sql`excluded.volume_prev_day`,
 			}
 		});
 
