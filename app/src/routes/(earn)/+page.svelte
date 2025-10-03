@@ -32,7 +32,7 @@
 								<PoolCard
 									tokenA={pool.tokenA}
 									tokenB={pool.tokenB}
-									uniqueFees={pool.uniqueFees}
+									poolDetails={pool.poolDetails}
 									{slug}
 								/>
 							</li>
@@ -55,7 +55,7 @@
 								<PoolCard
 									tokenA={pool.tokenA}
 									tokenB={pool.tokenB}
-									uniqueFees={pool.uniqueFees}
+									poolDetails={pool.poolDetails}
 									{slug}
 								/>
 							</li>

@@ -34,7 +34,9 @@ export const poolsTable = pgTable('pools', {
 
 	tradingAPR: doublePrecision('trading_apr').notNull().default(0.0),
 	bonusAPR: doublePrecision('bonus_apr').notNull().default(0.0),
-	
+
+	tvl: doublePrecision('tvl').notNull().default(0.0),
+
 	volumeDay: doublePrecision('volume_day').notNull().default(0.0),
 	volumeWeek: doublePrecision('volume_week').notNull().default(0.0),
 	volumeMonth: doublePrecision('volume_month').notNull().default(0.0),

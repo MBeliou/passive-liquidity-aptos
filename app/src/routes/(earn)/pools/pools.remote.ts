@@ -35,6 +35,9 @@ export const getPools = query(async () => {
 					fee: string;
 					dex: string;
 					positionIndex: number;
+					tradingAPR: number;
+					bonusAPR: number;
+					tvl: number;
 					volumeDay: number;
 					updatedAt: Date;
 				}>
@@ -44,6 +47,9 @@ export const getPools = query(async () => {
 						'id', ${poolsTable.id},
 						'fee', ${poolsTable.fee},
 						'dex', ${poolsTable.dex},
+						'tradingAPR', ${poolsTable.tradingAPR},
+						'bonusAPR', ${poolsTable.bonusAPR},
+						'tvl', ${poolsTable.tvl},
 						'volumeDay', ${poolsTable.volumeDay},
 						'positionIndex', ${poolsTable.positionIndex},
 						'updatedAt', ${poolsTable.updatedAt}
