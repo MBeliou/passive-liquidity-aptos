@@ -1,6 +1,5 @@
 <script lang="ts" module>
 	import { IsMobile } from '$lib/hooks/is-mobile.svelte';
-	import Search from '@lucide/svelte/icons/search';
 	import { type Component } from 'svelte';
 
 	export type TabBarLink = {
@@ -12,13 +11,12 @@
 </script>
 
 <script lang="ts">
-	import SearchPanel from '../search-panel/search-panel.svelte';
-	import { searchTokens } from '../search-panel/data.remote';
-	import WalletConnector from '../wallet/wallet-connector.svelte';
-	import ShareButton from '../share-button/share-button.svelte';
-	import { getTabBarState } from './tab-bar-state.svelte';
-	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
 	import { Button } from '$lib/components/ui/button';
+	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
+	import SearchPanel from '../search-panel/search-panel.svelte';
+	import ShareButton from '../share-button/share-button.svelte';
+	import WalletConnector from '../wallet/wallet-connector.svelte';
+	import { getTabBarState } from './tab-bar-state.svelte';
 
 	const isMobile = new IsMobile();
 	let {

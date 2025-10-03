@@ -7,18 +7,11 @@
 	import { searchTokens } from './data.remote';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 
-	const filters = ['all', 'pools', 'tokens'] as const;
-	/*
-	let {
-		search = $bindable(),
-		query,
-		...restProps
-	}: { search: string; query: ReturnType<typeof searchTokens> } & HTMLButtonAttributes = $props();
-*/
+	const filters = ['all', 'tokens'] as const;
+	
 
 	let { ...restProps }: HTMLButtonAttributes = $props();
 	let search = $state('');
-	// const query = $derived(await searchTokens(search));
 	let currentFilter = $state<(typeof filters)[number]>('all');
 </script>
 
@@ -49,50 +42,6 @@
 			</Drawer.Header>
 
 			<div class="flex-grow gap-4 overflow-y-auto p-4">
-				<!-- 
-				{#if query.loading}
-					<div class="flex flex-col items-center justify-center">
-						<LoaderCircle class="text-muted-foreground animate-spin" size={32}></LoaderCircle>
-					</div>
-				{:else if query.current && query.current.length === 0}
-					<div class="flex flex-col items-center justify-center">
-						<p class="text-muted-foreground">No results found</p>
-					</div>
-				{:else if query.current}
-					<h2 class=" mb-1 text-xl font-medium">Tokens</h2>
-					<ul class="overflow-y-auto">
-						{#each query.current as token (token.id)}
-							<li class="flex items-center gap-2 border-t py-3">
-								<div
-									class="bg-muted flex size-10 items-center justify-center overflow-hidden rounded-full"
-								>
-									{#if token.logo}
-										<div
-											class="size-full bg-cover bg-center"
-											style="background-image: url({token.logo});"
-										></div>
-									{:else}
-										<div class="text-muted-foreground">?</div>
-									{/if}
-								</div>
-								<div class="flex-grow">
-									<div class="text-lg font-medium">
-										{token.name}
-									</div>
-									<div class="text-muted-foreground text-xs font-semibold">
-										{token.symbol}
-									</div>
-								</div>
-
-								<div>
-									<ChevronRight></ChevronRight>
-								</div>
-							</li>
-						{/each}
-					</ul>
-				{/if}
-				 -->
-
 				{#if searchResult.length === 0}
 					<div class="flex flex-col items-center justify-center">
 						<p class="text-muted-foreground">No results found</p>
