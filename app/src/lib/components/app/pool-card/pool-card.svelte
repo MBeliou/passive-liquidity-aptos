@@ -69,7 +69,7 @@
 </script>
 
 <a class="hover:border-primary hover:bg-muted/60  grid grid-rows-1 rounded border duration-200" href="/pools/{slug}">
-	<div class="flex items-center gap-4 p-4">
+	<div class="flex items-center gap-6 p-4">
 		<LogoStack tokenA={{ logo: tokenA.logo }} tokenB={{ logo: tokenB.logo }}></LogoStack>
 		<div class="flex-1">
 			<h2 class="font-semibold">
