@@ -210,37 +210,6 @@
 		</div>
 	</div>
 	<section class="mt-4">
-		<!-- 
-		
-			<div class="mb-4 flex items-center justify-between">
-				<div>
-					<h2 class="text-lg font-semibold">{tokenPairDisplay}</h2>
-					<div class="mt-1 flex items-baseline gap-2">
-						<span class="text-2xl font-bold">${currentPrice.toFixed(6)}</span>
-						{#if priceChange7d !== 0}
-							<span class={priceChange7d > 0 ? 'text-green-500' : 'text-red-500'}>
-								{priceChange7d > 0 ? '+' : ''}{priceChange7d.toFixed(2)}% (7d)
-							</span>
-						{:else}
-							<span class="text-muted-foreground">0% (7d)</span>
-						{/if}
-					</div>
-				</div>
-				<div class="flex items-center gap-2">
-					<span class="text-muted-foreground text-sm">Priced in:</span>
-					<ToggleGroup.Root type="single" variant="outline" bind:value={pricedInToken}>
-						<ToggleGroup.Item value="A" class="px-3 py-1">
-							{data.assets.tokenA.symbol}
-						</ToggleGroup.Item>
-						<ToggleGroup.Item value="B" class="px-3 py-1">
-							{data.assets.tokenB.symbol}
-						</ToggleGroup.Item>
-					</ToggleGroup.Root>
-				</div>
-			
-			<PriceChart data={displayPrices} tokenSymbol={priceTokenSymbol}></PriceChart>
-		</div>
-		 -->
 		<Card.Root>
 			<Card.Header>
 				<div>
