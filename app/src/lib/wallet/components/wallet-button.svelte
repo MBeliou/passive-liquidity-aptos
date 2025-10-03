@@ -31,7 +31,7 @@
 				Continue with
 				<span class="text-lg font-medium">{nameParts[1]}</span>
 			{:else}
-				Connect to <span class="text-lg font-medium">{wallet.name}</span>
+				Connect to <span class="text-lg font-medium tracking-wide">{wallet.name}</span>
 			{/if}
 		</span>
 	</button>
@@ -44,7 +44,7 @@
 	>
 		<img src={wallet.icon} alt="{wallet.name} icon" class="size-8" />
 		<span>
-			Install <span class="text-lg font-medium">{wallet.name}</span>
+			Install <span class="text-lg font-medium tracking-wide">{wallet.name}</span>
 		</span>
 	</a>
 {/if}

@@ -1,33 +1,38 @@
 <script lang="ts">
 	import * as Drawer from '$lib/components/ui/drawer/index.js';
+	import * as Sheet from '$lib/components/ui/sheet';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 	import LoaderCircle from '@lucide/svelte/icons/loader-circle';
 	import Search from '@lucide/svelte/icons/search';
 	import { searchTokens } from './data.remote';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
+	import { MediaQuery } from 'svelte/reactivity';
+
+	const isDesktop = new MediaQuery('(min-width: 768px)');
 
 	const filters = ['all', 'tokens'] as const;
-	
 
 	let { ...restProps }: HTMLButtonAttributes = $props();
 	let search = $state('');
 	let currentFilter = $state<(typeof filters)[number]>('all');
+
+	const UsedComponent = isDesktop.current ? Sheet : Drawer;
 </script>
 
-<Drawer.Root>
-	<Drawer.Trigger
+<UsedComponent.Root>
+	<UsedComponent.Trigger
 		class={[
 			'bg-muted flex aspect-square h-16 w-16 items-center justify-center rounded-full',
 			restProps.class
 		]}
 	>
 		<Search></Search>
-	</Drawer.Trigger>
-	<Drawer.Content class="flex min-h-[90%] flex-col overflow-hidden">
+	</UsedComponent.Trigger>
+	<UsedComponent.Content class="flex min-h-[90%] flex-col overflow-hidden">
 		<svelte:boundary>
 			{@const searchResult = await searchTokens(search)}
-			<Drawer.Header>
+			<UsedComponent.Header class="md:mt-6">
 				<div class="bg-muted flex items-center gap-1 rounded-full p-1">
 					{#each filters as filter}
 						<button
@@ -39,7 +44,7 @@
 						>
 					{/each}
 				</div>
-			</Drawer.Header>
+			</UsedComponent.Header>
 
 			<div class="flex-grow gap-4 overflow-y-auto p-4">
 				{#if searchResult.length === 0}
@@ -87,7 +92,7 @@
 				</div>
 			{/snippet}
 
-			<Drawer.Footer>
+			<UsedComponent.Footer>
 				<div class="relative">
 					<div class="absolute inset-y-0 left-4 flex flex-col justify-center">
 						{#if $effect.pending()}
@@ -103,7 +108,7 @@
 						bind:value={search}
 					></Input>
 				</div>
-			</Drawer.Footer>
+			</UsedComponent.Footer>
 		</svelte:boundary>
-	</Drawer.Content>
-</Drawer.Root>
+	</UsedComponent.Content>
+</UsedComponent.Root>

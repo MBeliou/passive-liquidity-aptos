@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as Drawer from '$lib/components/ui/drawer/index.js';
+	import * as Sheet from '$lib/components/ui/sheet';
+
 	import WalletButton from '$lib/wallet/components/wallet-button.svelte';
 	import { getWalletState } from '$lib/wallet/wallet.svelte';
 	import { onMount } from 'svelte';
@@ -11,15 +13,17 @@
 	import LoaderCircle from '@lucide/svelte/icons/loader-circle';
 	import CircleOff from '@lucide/svelte/icons/circle-off';
 	import { formatCurrency } from '$lib/utils';
+	import { MediaQuery } from 'svelte/reactivity';
 
 	let { ...restProps }: HTMLButtonAttributes = $props();
+	const isDesktop = new MediaQuery('(min-width: 768px)');
 
 	/* 
         Responsible for managing wallet connections:
         - Show available wallet options
         - Handle connection and disconnection
     
-        Mobile is a drawer, desktop is a panel
+        Mobile is a UsedComponent, desktop is a panel
     */
 
 	const wallet = getWalletState();
@@ -34,6 +38,7 @@
 	});
 
 	const allTokens = searchTokens(undefined);
+	const UsedComponent = isDesktop.current ? Sheet : Drawer;
 </script>
 
 <svelte:boundary>
@@ -42,27 +47,27 @@
 			<LoaderCircle></LoaderCircle>
 		</div>
 	{:else}
-		<Drawer.Root>
+		<UsedComponent.Root>
 			<WalletTrigger wallet={wallet.wallet} class={restProps.class}></WalletTrigger>
 			{#if wallet.connected}
-				<Drawer.Content class="pointer-events-auto flex min-h-[60vh] flex-col">
-					<Drawer.Header class="flex w-full flex-row items-center justify-start gap-4">
+				<UsedComponent.Content class="pointer-events-auto flex min-h-[60vh] flex-col">
+					<UsedComponent.Header class="flex w-full flex-row items-center justify-start gap-4">
 						<div
 							class="size-6 bg-cover bg-center"
 							style="background-image: url({wallet.wallet?.icon});"
 						></div>
 						<div>
-							<Drawer.Title>
+							<UsedComponent.Title>
 								<div>Your Wallet</div>
-							</Drawer.Title>
-							<Drawer.Description>
+							</UsedComponent.Title>
+							<UsedComponent.Description>
 								Connected with
 								<span class="inline-block max-w-[100px] overflow-clip overflow-ellipsis">
 									{wallet.wallet?.accounts.at(0)?.address}
 								</span>
-							</Drawer.Description>
+							</UsedComponent.Description>
 						</div>
-					</Drawer.Header>
+					</UsedComponent.Header>
 
 					<div class="flex flex-grow flex-col p-4">
 						{#await userState.balances}
@@ -117,20 +122,20 @@
 							{/if}
 						{/await}
 					</div>
-					<Drawer.Footer>
+					<UsedComponent.Footer>
 						<Button variant="destructive" onclick={() => wallet.disconnect()}>Disconnect</Button>
-					</Drawer.Footer>
-				</Drawer.Content>
+					</UsedComponent.Footer>
+				</UsedComponent.Content>
 			{:else}
-				<Drawer.Content class="min-h-[60vh]">
-					<Drawer.Header class="border-b">
-						<Drawer.Title>Connect to your wallet</Drawer.Title>
-					</Drawer.Header>
+				<UsedComponent.Content class="min-h-[60vh]">
+					<UsedComponent.Header class="border-b">
+						<UsedComponent.Title>Connect to your wallet</UsedComponent.Title>
+					</UsedComponent.Header>
 
 					<div class="grid gap-6 p-4">
 						<div>
 							<h3 class="text-muted-foreground text-sm">Available Wallets</h3>
-							<ul class="mt-2 grid gap-4 sm:grid-cols-2">
+							<ul class="mt-2 grid gap-4 sm:grid-cols-2 md:grid-cols-1">
 								{#each wallet.wallets as availableWallet}
 									<WalletButton
 										onConnect={() => {
@@ -144,15 +149,15 @@
 
 						<div>
 							<h3 class="text-muted-foreground text-sm">Other Wallets</h3>
-							<ul class="mt-2 grid gap-4 sm:grid-cols-2">
+							<ul class="mt-2 grid gap-4 sm:grid-cols-2 md:grid-cols-1">
 								{#each wallet.notDetectedWallets as unavailableWallet}
 									<WalletButton wallet={unavailableWallet}></WalletButton>
 								{/each}
 							</ul>
 						</div>
 					</div>
-				</Drawer.Content>
+				</UsedComponent.Content>
 			{/if}
-		</Drawer.Root>
+		</UsedComponent.Root>
 	{/if}
 </svelte:boundary>
