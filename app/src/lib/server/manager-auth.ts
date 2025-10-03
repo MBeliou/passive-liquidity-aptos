@@ -1,6 +1,7 @@
-import { MANAGER_PRIVATE_KEY, PUBLIC_DEMO_ADDRESS } from '$env/static/private';
+import { MANAGER_PRIVATE_KEY } from '$env/static/private';
 import { Ed25519PrivateKey } from '@aptos-labs/ts-sdk';
 import { Manager } from '$lib/shared/manager';
+import { PUBLIC_DEMO_ADDRESS } from '$env/static/public';
 
 /**
  * Get the manager's address from the private key
