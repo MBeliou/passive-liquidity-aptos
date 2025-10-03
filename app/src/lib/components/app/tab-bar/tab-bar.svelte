@@ -55,7 +55,7 @@
 	</div>
 
 	<div
-		class="pointer-events-none fixed inset-x-4 top-8 isolate z-50 flex justify-between [&>*]:pointer-events-auto"
+		class="pointer-events-none fixed inset-x-4 top-8 isolate z-50 flex {tabBarState.backButton ? 'justify-between' : 'justify-end'} [&>*]:pointer-events-auto"
 	>
 		{#if tabBarState.backButton}
 			<Button

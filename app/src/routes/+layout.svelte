@@ -3,31 +3,32 @@
 	import { ModeWatcher } from 'mode-watcher';
 	import TabBar, { type TabBarLink } from '$lib/components/app/tab-bar/tab-bar.svelte';
 	import PiggyBank from '@lucide/svelte/icons/piggy-bank';
+	import Gauge from "@lucide/svelte/icons/gauge";
 	import { setWalletState, WalletState } from '$lib/wallet/wallet.svelte';
 	import { Network } from '@aptos-labs/ts-sdk';
 	import { setUser, UserState } from '$lib/user/user-state.svelte';
 	import { useAptos } from '$lib/shared';
 	import { setTabBarState, TabBarState } from '$lib/components/app/tab-bar/tab-bar-state.svelte';
 	import { Toaster } from '$lib/components/ui/sonner/index.js';
-	import { navigating } from '$app/state';
+	import { navigating, page } from '$app/state';
 	import LoaderCircle from '@lucide/svelte/icons/loader-circle';
 
 	let { children } = $props();
 
-	const links: TabBarLink[] = [
+	const links: TabBarLink[] = $derived([
 		{
 			label: 'Earn',
 			icon: PiggyBank,
 			url: '/',
-			isActive: true
+			isActive: page.url.pathname === '/' || page.url.pathname.startsWith('/pools')
 		},
 		{
-			label: 'Profile',
-			icon: PiggyBank,
+			label: 'Manage',
+			icon: Gauge,
 			url: '/profile',
-			isActive: false
+			isActive: page.url.pathname.startsWith('/profile')
 		}
-	];
+	]);
 
 	const walletState = new WalletState(
 		['Petra', 'Backpack', 'Continue with Google', 'Continue with Apple'],
@@ -42,6 +43,8 @@
 	setUser(userState);
 	const tabBarState = new TabBarState();
 	setTabBarState(tabBarState);
+
+	
 </script>
 
 <ModeWatcher />

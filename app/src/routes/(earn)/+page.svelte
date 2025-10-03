@@ -2,6 +2,7 @@
 	import PoolCard from '$lib/components/app/pool-card/pool-card.svelte';
 	import LoaderCircle from '@lucide/svelte/icons/loader-circle';
 	import { getPools } from './pools/pools.remote';
+	import { CTA } from '$lib/components/app/cta';
 </script>
 
 <div class="flex justify-between px-4">
@@ -41,6 +42,7 @@
 					</ul>
 				</div>
 			</section>
+			<CTA></CTA>
 			<section>
 				<div>
 					<h2 class="text-lg font-semibold">Unused Pools</h2>

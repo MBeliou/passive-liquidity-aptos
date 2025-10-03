@@ -5,9 +5,9 @@
 	import ArrowRight from '@lucide/svelte/icons/arrow-right';
 
 	let {
-		title = 'Manage Your Liquidity',
-		description = 'View and manage your positions, track performance, and optimize your returns.',
-		buttonText = 'Go to Profile',
+		title = 'Stop missing out on liquidity fees',
+		description = "The average LP missed out on up to 70% of trading fees. This shouldn' be so hard",
+		buttonText = 'Manage my liquidity',
 		href = '/profile'
 	}: {
 		title?: string;
@@ -17,12 +17,9 @@
 	} = $props();
 </script>
 
-<Card.Root class="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+<Card.Root class="from-primary/5 to-primary/10 border-primary/20 bg-gradient-to-br">
 	<Card.Content class="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
 		<div class="flex items-start gap-4">
-			<div class="bg-primary/10 text-primary rounded-full p-3">
-				<UserRound class="size-6" />
-			</div>
 			<div class="flex-1">
 				<h3 class="text-lg font-semibold">{title}</h3>
 				<p class="text-muted-foreground mt-1 text-sm">
