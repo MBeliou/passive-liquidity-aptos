@@ -60,11 +60,6 @@ export const positionsTable = pgTable(
 	(table) => [primaryKey({ columns: [table.index, table.pool] })]
 );
 
-/*
- NOTE: Not quite doing the vaults for now, we'll see if we get the opportunity.
-export const vault = pgTable('vaults', {});
-*/
-
 // Manager-related tables
 
 export const usersTable = pgTable('users', {
