@@ -55,7 +55,11 @@ export const POST: RequestHandler = async ({ params }) => {
 			dex: dex,
 			fee: pool.feeTier,
 			tradingAPR: apr.feeAprPercentage,
-			bonusAPR: apr.boostedAprPercentage,	
+			bonusAPR: apr.boostedAprPercentage,
+			volumeDay: pool.volumeData.volume24h,
+			volumeWeek: pool.volumeData.volume7d,
+			volumeMonth: pool.volumeData.volume30d,
+			volumePrevDay: pool.volumeData.volumeprev24h,
 			tokenA: pool.tokens[0].addr,
 			tokenB: pool.tokens[1].addr,
 			updatedAt: new Date()
