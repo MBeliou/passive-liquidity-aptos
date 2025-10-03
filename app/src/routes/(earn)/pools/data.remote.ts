@@ -1,9 +1,7 @@
 import { query } from '$app/server';
 import { db } from '$lib/server/db';
 import { poolsTable, tokensTable } from '$lib/server/db/schema';
-import { useTapp } from '$lib/shared/tapp/sdk';
-import { PoolType } from '@tapp-exchange/sdk';
-import { eq, inArray, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 
 export const getPools = query(async () => {

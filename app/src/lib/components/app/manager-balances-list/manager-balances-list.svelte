@@ -14,11 +14,9 @@
 	};
 
 	let {
-		balances,
-		loading = false
+		balances
 	}: {
 		balances: Balance[];
-		loading?: boolean;
 	} = $props();
 
 	function formatAmount(amount: string, decimals: number): string {
@@ -37,9 +35,7 @@
 	}
 </script>
 
-{#if loading && balances.length === 0}
-	<div class="text-muted-foreground py-8 text-center">Loading balances...</div>
-{:else if balances.length === 0}
+{#if balances.length === 0}
 	<div class="text-muted-foreground py-8 text-center">
 		No undeployed funds. Deposits will appear here before being allocated to positions.
 	</div>

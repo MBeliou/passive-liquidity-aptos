@@ -4,33 +4,15 @@
 	import { getUser } from '$lib/user/user-state.svelte';
 	import ManagedPositionsList from '$lib/components/app/managed-positions-list/managed-positions-list.svelte';
 	import ManagerBalancesList from '$lib/components/app/manager-balances-list/manager-balances-list.svelte';
+	import ManagerMovementsList from '$lib/components/app/manager-movements-list/manager-movements-list.svelte';
 	import ViewOnlyBanner from '$lib/components/app/view-only-banner/view-only-banner.svelte';
-	import { getManagedBalances } from './manager.remote';
+	import { getManagedBalances, getManagedMovements, getManagedPositions } from './manager.remote';
+	import { PUBLIC_DEMO_ADDRESS } from '$env/static/public';
+	import LoaderCircle from '@lucide/svelte/icons/loader-circle';
 
 	let { data } = $props();
 
 	const userState = getUser();
-
-	// Fetch managed balances
-	let balancesPromise = $derived(
-		userState.account && userState.displayAddress
-			? getManagedBalances({
-					userAddress: userState.displayAddress,
-					requestingUserAddress: userState.account.address.toString()
-				})
-			: Promise.resolve({ balances: [], isViewOnly: true })
-	);
-
-	let balances = $state<any[]>([]);
-	let loadingBalances = $state(false);
-
-	$effect(() => {
-		loadingBalances = true;
-		balancesPromise.then((result) => {
-			balances = result.balances;
-			loadingBalances = false;
-		});
-	});
 </script>
 
 <div class="mx-auto max-w-7xl p-4">
@@ -52,7 +34,17 @@
 				</Card.Description>
 			</Card.Header>
 			<Card.Content>
-				<ManagerBalancesList balances={balances} loading={loadingBalances} />
+				<svelte:boundary>
+					{@const balances = await getManagedBalances({
+						userAddress: PUBLIC_DEMO_ADDRESS,
+						requestingUserAddress: PUBLIC_DEMO_ADDRESS
+					})}
+					<ManagerBalancesList balances={balances.balances} />
+
+					{#snippet pending()}
+						<LoaderCircle class="text-muted-foreground animate-spin"></LoaderCircle>
+					{/snippet}
+				</svelte:boundary>
 			</Card.Content>
 		</Card.Root>
 
@@ -80,10 +72,37 @@
 				</div>
 			</Card.Header>
 			<Card.Content>
-				<ManagedPositionsList
-					positions={userState.managedPositions}
-					loading={userState.loadingManagedPositions}
-				/>
+				<svelte:boundary>
+					{@const positions = await getManagedPositions({
+						userAddress: PUBLIC_DEMO_ADDRESS,
+						requestingUserAddress: PUBLIC_DEMO_ADDRESS
+					})}
+					<ManagedPositionsList positions={positions.positions} />
+					{#snippet pending()}
+						<LoaderCircle class="text-muted-foreground animate-spin"></LoaderCircle>
+					{/snippet}
+				</svelte:boundary>
+			</Card.Content>
+		</Card.Root>
+
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>Recent Activity</Card.Title>
+				<Card.Description>
+					Transaction history for deposits, withdrawals, and rebalances
+				</Card.Description>
+			</Card.Header>
+			<Card.Content>
+				<svelte:boundary>
+					{@const movements = await getManagedMovements({
+						userAddress: PUBLIC_DEMO_ADDRESS,
+						requestingUserAddress: PUBLIC_DEMO_ADDRESS
+					})}
+					<ManagerMovementsList movements={movements.movements} />
+					{#snippet pending()}
+						<LoaderCircle class="text-muted-foreground animate-spin"></LoaderCircle>
+					{/snippet}
+				</svelte:boundary>
 			</Card.Content>
 		</Card.Root>
 

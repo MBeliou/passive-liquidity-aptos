@@ -102,7 +102,7 @@
 				</a>
 			{/each}
 
-			<SearchPanel class="h-full w-full pr-3" ></SearchPanel>
+			<SearchPanel class="h-full w-full ml-2 pr-3" ></SearchPanel>
 		</div>
 
 		<div class="flex items-center justify-end gap-2">

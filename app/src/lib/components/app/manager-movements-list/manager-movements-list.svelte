@@ -1,8 +1,8 @@
 <script lang="ts">
 	import TappLogo from '$lib/assets/tapp-logo.png';
-	import ArrowDownToLine from "@lucide/svelte/icons/arrow-down-to-line";
-	import ArrowUpFromLine from "@lucide/svelte/icons/arrow-up-to-line";
-	import ArrowRightLeft from "@lucide/svelte/icons/arrow-right-left";
+	import ArrowDownToLine from '@lucide/svelte/icons/arrow-down-to-line';
+	import ArrowUpFromLine from '@lucide/svelte/icons/arrow-up-to-line';
+	import ArrowRightLeft from '@lucide/svelte/icons/arrow-right-left';
 
 	type PoolInfo = {
 		tokenA: string;
@@ -25,11 +25,9 @@
 	};
 
 	let {
-		movements,
-		loading = false
+		movements
 	}: {
 		movements: Movement[];
-		loading?: boolean;
 	} = $props();
 
 	function formatRelativeTime(date: Date): string {
@@ -90,10 +88,8 @@
 	}
 </script>
 
-{#if loading && movements.length === 0}
-	<div class="text-muted-foreground text-center py-8">Loading movements...</div>
-{:else if movements.length === 0}
-	<div class="text-muted-foreground text-center py-8">
+{#if movements.length === 0}
+	<div class="text-muted-foreground py-8 text-center">
 		No movements yet. Deposits and rebalances will appear here.
 	</div>
 {:else}
@@ -101,7 +97,9 @@
 		{#each movements as movement}
 			{@const Icon = getMovementIcon(movement.type)}
 			{@const color = getMovementColor(movement.type)}
-			<div class="border-muted flex flex-col md:flex-row items-start md:items-center justify-between gap-3 rounded-lg border p-4">
+			<div
+				class="border-muted flex flex-col items-start justify-between gap-3 rounded-lg border p-4 md:flex-row md:items-center"
+			>
 				<div class="flex items-start gap-4">
 					<div class={`mt-0.5 ${color}`}>
 						<Icon size={20} />
@@ -109,15 +107,18 @@
 					<div class="flex-1">
 						<div class="flex items-center gap-2 font-medium">
 							<span>{getMovementLabel(movement.type)}</span>
-							<span class="text-muted-foreground text-xs">{formatRelativeTime(movement.timestamp)}</span>
+							<span class="text-muted-foreground text-xs"
+								>{formatRelativeTime(movement.timestamp)}</span
+							>
 						</div>
 
 						{#if movement.type === 'deposit' || movement.type === 'withdraw'}
 							<div class="text-muted-foreground text-sm">
-								{movement.amount} {movement.tokenSymbol}
+								{movement.amount}
+								{movement.tokenSymbol}
 							</div>
 						{:else if movement.type === 'rebalance' && movement.fromPool && movement.toPool}
-							<div class="text-muted-foreground text-sm flex items-center gap-2 flex-wrap">
+							<div class="text-muted-foreground flex flex-wrap items-center gap-2 text-sm">
 								<div class="flex items-center gap-1">
 									<img src={TappLogo} alt="Tapp" class="h-3 w-3" />
 									<span>{movement.fromPool.tokenA}/{movement.fromPool.tokenB}</span>

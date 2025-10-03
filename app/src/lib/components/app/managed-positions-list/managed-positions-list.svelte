@@ -23,8 +23,7 @@
 	};
 
 	let {
-		positions,
-		loading = false
+		positions
 	}: {
 		positions: ManagedPosition[];
 		loading?: boolean;
@@ -46,10 +45,8 @@
 	});
 </script>
 
-{#if loading && positions.length === 0}
-	<div class="text-muted-foreground text-center py-8">Loading positions...</div>
-{:else if positions.length === 0}
-	<div class="text-muted-foreground text-center py-8">
+{#if positions.length === 0}
+	<div class="text-muted-foreground py-8 text-center">
 		No managed positions yet. Deposit funds to create your first position.
 	</div>
 {:else}
@@ -57,7 +54,9 @@
 		{#each positions as position}
 			{@const lowerPrice = tickToPrice(position.tickLower, position.decimalsA, position.decimalsB)}
 			{@const upperPrice = tickToPrice(position.tickUpper, position.decimalsA, position.decimalsB)}
-			<div class="border-muted flex flex-col md:flex-row items-start md:items-center justify-between gap-4 rounded-lg border p-4">
+			<div
+				class="border-muted flex flex-col items-start justify-between gap-4 rounded-lg border p-4 md:flex-row md:items-center"
+			>
 				<div class="flex items-center gap-4">
 					<LogoStack
 						tokenA={{ logo: position.tokenA.logo }}
@@ -66,8 +65,12 @@
 					<div>
 						<div class="flex flex-wrap items-center gap-1 font-medium">
 							<img src={TappLogo} alt="Tapp Exchange" class="h-4 w-4" />
-							<span class="text-sm md:text-base">{position.tokenA.name} / {position.tokenB.name}</span>
-							<span class="text-muted-foreground text-xs">• {percentFormat.format(position.fee / 100)}</span>
+							<span class="text-sm md:text-base"
+								>{position.tokenA.name} / {position.tokenB.name}</span
+							>
+							<span class="text-muted-foreground text-xs"
+								>• {percentFormat.format(position.fee / 100)}</span
+							>
 						</div>
 						<div class="text-muted-foreground text-sm">
 							{position.tokenA.symbol} / {position.tokenB.symbol}

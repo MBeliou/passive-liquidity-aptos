@@ -4,10 +4,13 @@ import {
 	userMovementsTable,
 	managedPositionsTable,
 	userBalancesTable,
+	poolsTable,
+	tokensTable,
 	type movementTypeEnum,
 	type positionStatusEnum
 } from './schema';
 import { eq, and, desc } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 
 /**
  * Get user by wallet address
@@ -45,13 +48,50 @@ export async function getNextUserIndex(): Promise<number> {
 }
 
 /**
- * Get all managed positions for a user
+ * Get all managed positions for a user with token and pool metadata
  */
 export async function getManagedPositions(userId: number, status?: typeof positionStatusEnum) {
-	const query = db.select().from(managedPositionsTable).where(eq(managedPositionsTable.userId, userId));
+	// Create aliases for double-joining tokensTable
+	const tokenA = alias(tokensTable, 'tokenA');
+	const tokenB = alias(tokensTable, 'tokenB');
 
+	// Build base query with joins
+	let query = db
+		.select({
+			id: managedPositionsTable.id,
+			userId: managedPositionsTable.userId,
+			positionId: managedPositionsTable.positionId,
+			poolId: managedPositionsTable.poolId,
+			tickLower: managedPositionsTable.tickLower,
+			tickUpper: managedPositionsTable.tickUpper,
+			liquidity: managedPositionsTable.liquidity,
+			liquidityValue: managedPositionsTable.liquidity, // Alias for component compatibility
+			status: managedPositionsTable.status,
+			createdAt: managedPositionsTable.createdAt,
+			updatedAt: managedPositionsTable.updatedAt,
+			fee: poolsTable.fee,
+			tokenA: {
+				logo: tokenA.logo,
+				name: tokenA.name,
+				symbol: tokenA.symbol
+			},
+			tokenB: {
+				logo: tokenB.logo,
+				name: tokenB.name,
+				symbol: tokenB.symbol
+			},
+			decimalsA: tokenA.decimals,
+			decimalsB: tokenB.decimals
+		})
+		.from(managedPositionsTable)
+		.innerJoin(poolsTable, eq(managedPositionsTable.poolId, poolsTable.id))
+		.innerJoin(tokenA, eq(poolsTable.tokenA, tokenA.id))
+		.innerJoin(tokenB, eq(poolsTable.tokenB, tokenB.id))
+		.where(eq(managedPositionsTable.userId, userId));
+
+	// Add status filter if provided
 	if (status) {
-		return await query.where(
+		query = query.where(
 			and(
 				eq(managedPositionsTable.userId, userId),
 				eq(managedPositionsTable.status, status as any)

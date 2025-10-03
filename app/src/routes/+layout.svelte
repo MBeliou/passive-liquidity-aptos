@@ -46,6 +46,10 @@
 
 </script>
 
+<svelte:head>
+	<title>Convergence - Optimize your liquidity</title>
+</svelte:head>
+
 <ModeWatcher />
 <Toaster />
 

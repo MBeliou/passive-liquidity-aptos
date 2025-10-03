@@ -6,8 +6,8 @@ import { MANAGER_PRIVATE_KEY } from '$env/static/private';
 import { isAuthorizedManager, getDemoAddress } from '$lib/server/manager-auth';
 import { getUserByAddress, getUserBalances } from '$lib/server/db/manager';
 import { db } from '$lib/server/db';
-import { tokensTable } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { tokensTable, positionsTable } from '$lib/server/db/schema';
+import { eq, and } from 'drizzle-orm';
 
 /**
  * Get managed positions for a user
@@ -35,10 +35,36 @@ export const getManagedPositions = query(
 
 		const positions = await managerService.getUserPositions(targetAddress);
 
-		console.log(`[getManagedPositions] Found ${positions.length} positions`);
+		// Fetch actual liquidity from positionsTable for each position
+		const positionsWithLiquidity = await Promise.all(
+			positions.map(async (position) => {
+				// Query positionsTable using composite key (index, pool)
+				const [positionData] = await db
+					.select()
+					.from(positionsTable)
+					.where(
+						and(
+							eq(positionsTable.index, parseInt(position.positionId)),
+							eq(positionsTable.pool, position.poolId)
+						)
+					)
+					.limit(1);
+
+				// Use actual liquidity from positionsTable if found
+				const actualLiquidity = positionData?.liquidity || position.liquidity;
+
+				return {
+					...position,
+					liquidity: actualLiquidity,
+					liquidityValue: actualLiquidity
+				};
+			})
+		);
+
+		console.log(`[getManagedPositions] Found ${positionsWithLiquidity.length} positions with liquidity data`);
 
 		return {
-			positions,
+			positions: positionsWithLiquidity,
 			isViewOnly
 		};
 	}
@@ -147,6 +173,110 @@ export const getManagedBalances = query(
 
 		return {
 			balances: balancesWithMetadata,
+			isViewOnly
+		};
+	}
+);
+
+/**
+ * Format token amount using decimals
+ */
+function formatTokenAmount(amount: string, decimals: number): string {
+	const value = BigInt(amount);
+	const divisor = BigInt(10 ** decimals);
+	const whole = value / divisor;
+	const remainder = value % divisor;
+
+	if (remainder === BigInt(0)) {
+		return whole.toString();
+	}
+
+	const decimalStr = remainder.toString().padStart(decimals, '0');
+	const trimmed = decimalStr.replace(/0+$/, '');
+	return `${whole}.${trimmed}`;
+}
+
+/**
+ * Get managed movements (transaction history) for a user
+ * If user is not authorized, returns demo movements
+ */
+export const getManagedMovements = query(
+	z.object({
+		userAddress: z.string(),
+		requestingUserAddress: z.string()
+	}),
+	async ({ userAddress, requestingUserAddress }) => {
+		// If requesting user is not authorized, use demo address
+		const targetAddress =
+			requestingUserAddress && isAuthorizedManager(requestingUserAddress)
+				? userAddress
+				: getDemoAddress();
+
+		const isViewOnly = !requestingUserAddress || !isAuthorizedManager(requestingUserAddress);
+
+		console.log(
+			`[getManagedMovements] Fetching movements for: ${targetAddress} (view-only: ${isViewOnly})`
+		);
+
+		// Get user from database
+		const user = await getUserByAddress(targetAddress);
+		if (!user) {
+			console.log(`[getManagedMovements] No user found for address: ${targetAddress}`);
+			return { movements: [], isViewOnly };
+		}
+
+		// Import getUserMovements
+		const { getUserMovements } = await import('$lib/server/db/manager');
+		const userMovements = await getUserMovements(user.id);
+
+		// Transform movements to component format
+		const formattedMovements = await Promise.all(
+			userMovements.map(async (movement) => {
+				const txInfo = movement.txInfo ? JSON.parse(movement.txInfo) : {};
+
+				// Base movement data
+				const baseMovement = {
+					id: movement.id.toString(),
+					type: movement.movementType,
+					timestamp: movement.createdAt,
+					txHash: movement.txHash
+				};
+
+				// Handle deposit/withdraw
+				if (movement.movementType === 'deposit' || movement.movementType === 'withdraw') {
+					const tokenId = txInfo.tokenId;
+					const [token] = await db
+						.select()
+						.from(tokensTable)
+						.where(eq(tokensTable.id, tokenId))
+						.limit(1);
+
+					// Format amount using token decimals
+					const formattedAmount = token
+						? formatTokenAmount(txInfo.amount, token.decimals)
+						: txInfo.amount;
+
+					return {
+						...baseMovement,
+						amount: formattedAmount,
+						tokenSymbol: token?.symbol || 'Unknown'
+					};
+				}
+
+				// Handle rebalance - just return basic info for now
+				return {
+					...baseMovement,
+					fromPool: undefined,
+					toPool: undefined,
+					amountMoved: txInfo.liquidity
+				};
+			})
+		);
+
+		console.log(`[getManagedMovements] Found ${formattedMovements.length} movements`);
+
+		return {
+			movements: formattedMovements,
 			isViewOnly
 		};
 	}
