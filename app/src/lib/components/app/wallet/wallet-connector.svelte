@@ -66,7 +66,9 @@
 
 					<div class="flex flex-grow flex-col p-4">
 						{#await userState.balances}
-							<div>Loading</div>
+							<div class=" self-center">
+								<LoaderCircle class="animate-spin"></LoaderCircle>
+							</div>
 						{:then balances}
 							{@const allTokensSymbols = allTokens.current?.map((tok) => tok.symbol) || []}
 							{@const filtered = balances.filter((b) =>

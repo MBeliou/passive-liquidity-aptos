@@ -1,5 +1,6 @@
 <script lang="ts">
 	import PoolCard from '$lib/components/app/pool-card/pool-card.svelte';
+	import LoaderCircle from '@lucide/svelte/icons/loader-circle';
 	import { getPools } from './pools/pools.remote';
 </script>
 
@@ -16,7 +17,7 @@
 	)}
 
 	<div class="mt-12 flex min-h-screen flex-col px-4">
-		<div class="flex-1 grid gap-8">
+		<div class="grid flex-1 gap-8">
 			<section>
 				<div>
 					<h2 class="text-lg font-semibold">Top Pools Today</h2>
@@ -67,6 +68,8 @@
 	</div>
 
 	{#snippet pending()}
-		<p>loading</p>
+		<div class="min-h-screen flex flex-col justify-center items-center">
+			<LoaderCircle class="animate-spin"></LoaderCircle>
+		</div>
 	{/snippet}
 </svelte:boundary>
