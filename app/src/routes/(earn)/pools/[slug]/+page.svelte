@@ -106,7 +106,7 @@
 </script>
 
 <div class="grid gap-8 [&>*]:px-6 xl:[&>*]:px-0">
-	<div class="to-muted/20 grid gap-4 rounded-b-xl border-b bg-gradient-to-b px-6 py-12 md:pt-24">
+	<div class="to-muted/20 grid gap-4 rounded-b-xl border-b bg-gradient-to-b px-6! py-12 md:pt-24">
 		<div class="flex justify-between">
 			<div class="flex items-center space-x-8">
 				<div>

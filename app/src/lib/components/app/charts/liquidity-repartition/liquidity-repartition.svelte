@@ -32,10 +32,15 @@
 			value: valueFormatter(liquidity[f] ?? 0)
 		};
 	});
+
+	const hasData = $derived(
+		FEE_TIERS.some((f) => (liquidity[f] ?? 0) > 0)
+	);
 </script>
 
 <Chart.Container config={chartConfig} class=" aspect-square max-h-[250px]">
-	<PieChart
+	{#if hasData}
+		<PieChart
 		data={chartData}
 		key="key"
 		value="value"
@@ -67,4 +72,9 @@
 			</Arc>
 		{/snippet}
 	</PieChart>
+	{:else}
+		<div class="flex h-full items-center justify-center">
+			<p class="text-muted-foreground text-sm">No data available</p>
+		</div>
+	{/if}
 </Chart.Container>
