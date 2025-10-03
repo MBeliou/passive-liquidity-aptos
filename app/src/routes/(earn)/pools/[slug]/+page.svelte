@@ -106,7 +106,7 @@
 </script>
 
 <div class="grid gap-8 [&>*]:px-6 [&>section]:md:px-0">
-	<div class="to-muted/20 grid gap-4 rounded-b-xl border-b bg-gradient-to-b py-12 md:pt-24 px-6">
+	<div class="to-muted/20 grid gap-4 rounded-b-xl border-b bg-gradient-to-b px-6 py-12 md:pt-24">
 		<div class="flex justify-between">
 			<div class="flex items-center space-x-8">
 				<div>
@@ -194,9 +194,10 @@
 					<div class="text-xl font-semibold">
 						{#if data.poolMetrics.aggregateInRangeAPR > 0}
 							{data.poolMetrics.aggregateInRangeAPR.toFixed(2)}%
-							{@const difference = data.poolMetrics.aggregateInRangeAPR - data.poolMetrics.aggregateTradingAPR}
+							{@const difference =
+								data.poolMetrics.aggregateInRangeAPR - data.poolMetrics.aggregateTradingAPR}
 							{#if difference > 0}
-								<span class="text-green-500 text-xs">
+								<span class="text-xs text-green-500">
 									(+{difference.toFixed(2)}% higher)
 								</span>
 							{/if}
@@ -242,16 +243,18 @@
 		 -->
 		<Card.Root>
 			<Card.Header>
-				<h2 class="text-lg font-semibold">{tokenPairDisplay}</h2>
-				<div class="mt-1 flex items-baseline gap-2">
-					<span class="text-2xl font-bold">${currentPrice.toFixed(6)}</span>
-					{#if priceChange7d !== 0}
-						<span class={priceChange7d > 0 ? 'text-green-500' : 'text-red-500'}>
-							{priceChange7d > 0 ? '+' : ''}{priceChange7d.toFixed(2)}% (7d)
-						</span>
-					{:else}
-						<span class="text-muted-foreground">0% (7d)</span>
-					{/if}
+				<div>
+					<h2 class="text-lg font-semibold">{tokenPairDisplay}</h2>
+					<div class="mt-0 flex items-baseline gap-2">
+						<span class="text-2xl font-bold">${currentPrice.toFixed(6)}</span>
+						{#if priceChange7d !== 0}
+							<span class={priceChange7d > 0 ? 'text-green-500' : 'text-red-500'}>
+								{priceChange7d > 0 ? '+' : ''}{priceChange7d.toFixed(2)}% (7d)
+							</span>
+						{:else}
+							<span class="text-muted-foreground">0% (7d)</span>
+						{/if}
+					</div>
 				</div>
 
 				<Card.Action>
