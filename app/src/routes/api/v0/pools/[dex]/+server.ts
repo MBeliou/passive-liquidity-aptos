@@ -7,6 +7,7 @@ import { PoolType } from '@tapp-exchange/sdk';
 import { poolsTable } from '$lib/server/db/schema';
 import { db } from '$lib/server/db';
 import { sql } from 'drizzle-orm';
+import type { TappApiApr } from '$lib/shared/tapp/types';
 
 export const POST: RequestHandler = async ({ params }) => {
 	const { dex, id } = params;
@@ -42,12 +43,19 @@ export const POST: RequestHandler = async ({ params }) => {
 				(result as PromiseFulfilledResult<Awaited<(typeof poolPromises)[number]>>).value.data
 		);
 
+	
+
 	const poolsUpsert: (typeof poolsTable.$inferInsert)[] = allPools.map((pool) => {
+		// NOTE: Tapp's sdk return type is wrong for APR
+		// We're not concerned by the campaign details
+		const apr = pool.apr as unknown as TappApiApr;
+
 		return {
 			id: pool.poolId,
 			dex: dex,
-			//fee_tier: pool.feeTier,
 			fee: pool.feeTier,
+			tradingAPR: apr.feeAprPercentage,
+			bonusAPR: apr.boostedAprPercentage,	
 			tokenA: pool.tokens[0].addr,
 			tokenB: pool.tokens[1].addr,
 			updatedAt: new Date()
@@ -63,7 +71,9 @@ export const POST: RequestHandler = async ({ params }) => {
 				fee: poolsTable.fee
 			}*/
 			set: {
-				fee: sql`excluded.fee`
+				fee: sql`excluded.fee`,
+				tradingAPR: sql`excluded.tradingAPR`,
+				bonusAPR: sql`excluded.bonusAPR`
 			}
 		});
 

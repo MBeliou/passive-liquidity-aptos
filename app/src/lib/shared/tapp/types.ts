@@ -12,3 +12,24 @@ export type Position = {
 	tick_lower_index: TickIndex;
 	tick_upper_index: TickIndex;
 };
+
+export type TappApiApr = {
+	boostedAprPercentage: number;
+	campaignAprs: CampaignApr[];
+	feeAprPercentage: number;
+	totalAprPercentage: number;
+};
+export type CampaignApr = {
+	aprPercentage: number;
+	campaignIdx: number;
+	token: TappAPIToken;
+};
+
+export type TappAPIToken = {
+	addr: string;
+	color: string;
+	decimals: number;
+	img: string;
+	symbol: string;
+	verified: boolean;
+};
