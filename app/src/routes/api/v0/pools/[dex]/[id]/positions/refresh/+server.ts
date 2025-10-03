@@ -6,6 +6,7 @@ import { poolsTable, positionsTable } from '$lib/server/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import { useAptos, useTapp } from '$lib/shared';
 import { APTOS_KEY } from '$env/static/private';
+import { convertTickBitsToSigned } from '$lib/utils';
 
 function parseTickValue(tickBits: string): number {
 	const tick = BigInt(tickBits);
@@ -20,11 +21,7 @@ function parseTickValue(tickBits: string): number {
 	return Number(tick);
 }
 
-function convertTickBitsToSigned(bits: bigint): number {
-	const MAX_I64 = BigInt(2) ** BigInt(63) - BigInt(1);
-	const MAX_U64 = BigInt(2) ** BigInt(64);
-	return bits > MAX_I64 ? Number(bits - MAX_U64) : Number(bits);
-}
+
 
 export const POST: RequestHandler = async ({ params }) => {
 	const { dex, id } = params;

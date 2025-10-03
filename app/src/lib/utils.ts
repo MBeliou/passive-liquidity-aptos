@@ -23,3 +23,9 @@ export function formatCurrency(amount: number, symbol: string) {
 
 	return `${format} ${symbol}`;
 }
+
+export function convertTickBitsToSigned(bits: bigint): number {
+	const MAX_I64 = BigInt(2) ** BigInt(63) - BigInt(1);
+	const MAX_U64 = BigInt(2) ** BigInt(64);
+	return bits > MAX_I64 ? Number(bits - MAX_U64) : Number(bits);
+}
