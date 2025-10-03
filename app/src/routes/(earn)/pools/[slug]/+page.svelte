@@ -105,7 +105,7 @@
 	});
 </script>
 
-<div class="grid gap-8 [&>*]:px-6 [&>section]:md:px-0">
+<div class="grid gap-8 [&>*]:px-6 xl:[&>*]:px-0">
 	<div class="to-muted/20 grid gap-4 rounded-b-xl border-b bg-gradient-to-b px-6 py-12 md:pt-24">
 		<div class="flex justify-between">
 			<div class="flex items-center space-x-8">
@@ -209,7 +209,7 @@
 			</div>
 		</div>
 	</div>
-	<section class="mt-4">
+	<section class="grid gap-6">
 		<Card.Root>
 			<Card.Header>
 				<div>
@@ -244,15 +244,23 @@
 				<PriceChart data={displayPrices} tokenSymbol={priceTokenSymbol}></PriceChart>
 			</Card.Content>
 		</Card.Root>
+
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>
+					Liquidity Distribution
+				</Card.Title>
+				<Card.Description>
+					How liquidity is distributed around the current price point between pools
+				</Card.Description>
+			</Card.Header>
+			<Card.Content>
+				<PoolChart chartData={data.liquidity}></PoolChart>
+			</Card.Content>
+		</Card.Root>
 	</section>
 
-	<section>
-		<div class="mt-4">
-			<PoolChart chartData={data.liquidity}></PoolChart>
-		</div>
-	</section>
-
-	<section class="mt-12 grid gap-6">
+	<section class=" grid gap-6">
 		<div>
 			<h2 class="text-xl font-semibold">Deep Dive</h2>
 			<p class="text-muted-foreground text-sm">
