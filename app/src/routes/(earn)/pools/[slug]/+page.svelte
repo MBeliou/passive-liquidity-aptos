@@ -12,6 +12,7 @@
 	import Clipboard from '@lucide/svelte/icons/clipboard';
 	import ArrowUpRight from "@lucide/svelte/icons/arrow-up-right";
 	import { toast } from 'svelte-sonner';
+	import RefreshButton from '$lib/components/app/refresh-button/refresh-button.svelte';
 
 	let { data } = $props();
 
@@ -124,6 +125,9 @@
 						{data.assets.tokenA.symbol} / {data.assets.tokenB.symbol}
 					</div>
 				</div>
+			</div>
+			<div>
+				<RefreshButton></RefreshButton>
 			</div>
 		</div>
 

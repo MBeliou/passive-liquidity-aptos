@@ -15,7 +15,10 @@
 		} catch (error) {
 			console.error(error);
 		} finally {
-			state = 'idle';
+            setTimeout(() => {
+                state = 'refreshed';
+
+            }, 1000);
 		}
 	}
 </script>
