@@ -10,7 +10,7 @@
 	import * as ToggleGroup from '$lib/components/ui/toggle-group';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Clipboard from '@lucide/svelte/icons/clipboard';
-	import ArrowUpRight from "@lucide/svelte/icons/arrow-up-right";
+	import ArrowUpRight from '@lucide/svelte/icons/arrow-up-right';
 	import { toast } from 'svelte-sonner';
 	import RefreshButton from '$lib/components/app/refresh-button/refresh-button.svelte';
 
@@ -105,10 +105,28 @@
 			tabBarState.clearBackButton();
 		};
 	});
+
+	async function refreshPools() {
+		// We're iterating on the various pools, not the "aggregate"
+		// We don't need to wait, we're just asking for a refresh
+		data.pools
+			.map((p) => p.id)
+			.forEach((id) => {
+				fetch(`/api/v0/pools/${'tapp'}/${id}/refresh`, {
+					method: 'POST'
+				});
+
+				fetch(`/api/v0/pools/${'tapp'}/${id}/positions/refresh`, {
+					method: 'POST'
+				});
+			});
+	}
 </script>
 
 <div class="grid gap-8 [&>*]:px-2 xl:[&>*]:px-0">
-	<div class="to-muted/20 px-6! grid gap-4 rounded-b-xl border-b border-x bg-gradient-to-b py-8 md:pt-24">
+	<div
+		class="to-muted/20 px-6! grid gap-4 rounded-b-xl border-x border-b bg-gradient-to-b py-8 md:pt-24"
+	>
 		<div class="flex justify-between">
 			<div class="flex items-center space-x-8">
 				<div>
@@ -127,7 +145,11 @@
 				</div>
 			</div>
 			<div>
-				<RefreshButton></RefreshButton>
+				<RefreshButton
+					onclick={() => {
+						refreshPools();
+					}}
+				></RefreshButton>
 			</div>
 		</div>
 
@@ -215,9 +237,9 @@
 		</div>
 
 		<div class="flex items-center justify-end">
-			<Button variant="secondary" href="/profile">Manage my liquidity
-			<ArrowUpRight></ArrowUpRight>
-			
+			<Button variant="secondary" href="/profile"
+				>Manage my liquidity
+				<ArrowUpRight></ArrowUpRight>
 			</Button>
 		</div>
 	</div>
