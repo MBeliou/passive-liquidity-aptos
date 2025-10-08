@@ -91,7 +91,7 @@
 		}
 	];
 
-	const multipleBinsData = binLiquidity(midPrice, multipleBinsPosition, { bins: 10, delta: 10 });
+	const multipleBinsData = binLiquidity(midPrice, multipleBinsPosition, { bins: 10, delta: 20 });
 	console.log('Multiple bins data:', multipleBinsData);
 </script>
 

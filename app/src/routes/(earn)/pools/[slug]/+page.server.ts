@@ -72,9 +72,11 @@ export const load = (async ({ params }) => {
 			.filter((p) => p.fee === 0.05)
 			.reduce((prev, curr) => prev + parseFloat(curr.liquidity), 0)
 	);
+
+	console.log('Mid price:', computedMidPrice);
 	const binnedLiquidity = binLiquidity(computedMidPrice, positions, {
-		delta: 10,
-		bins: 10
+		delta: 25,
+		bins: 20
 	});
 
 	// Compute full liquidity distribution and position counts per fee tier

@@ -24,24 +24,11 @@ export function binLiquidity(
 		return Math.pow(1.0001, tick);
 	};
 
-	const priceToTick = (price: number): number => {
-		return Math.log(price) / Math.log(1.0001);
-	};
-	/*
-	const getFeeLabel = (feeBps: number): string => {
-		return `${feeBps.toFixed(3)}%`;
-	};*/
-
 	const rangeMin = midPrice * (1 - delta / 100);
 	const rangeMax = midPrice * (1 + delta / 100);
+	const viewingWidth = rangeMax - rangeMin;
 
-	const inRangePositions = positions.filter((pos) => {
-		const lowerPrice = tickToPrice(pos.tickLower);
-		const upperPrice = tickToPrice(pos.tickUpper);
-		return upperPrice >= rangeMin && lowerPrice <= rangeMax;
-	});
-
-	const binWidth = (rangeMax - rangeMin) / bins;
+	const binWidth = viewingWidth / bins;
 	const binRanges: [number, number][] = [];
 	for (let i = 0; i < bins; i++) {
 		binRanges.push([rangeMin + i * binWidth, rangeMin + (i + 1) * binWidth]);
@@ -52,21 +39,35 @@ export function binLiquidity(
 		...({} as Record<string, number>)
 	}));
 
-	inRangePositions.forEach((pos) => {
-		const lowerPrice = tickToPrice(pos.tickLower);
-		const upperPrice = tickToPrice(pos.tickUpper);
-		//const feeLabel = makeFeeLabel(pos.fee);
-		const feeLabel = pos.fee.toString();
-		const liquidityAmount = parseFloat(pos.liquidity);
+	binRanges.forEach((binRange, idx) => {
+		const [binMin, binMax] = binRange;
 
-		binRanges.forEach((binRange, idx) => {
-			const [binMin, binMax] = binRange;
+		positions.forEach((pos) => {
+			const lowerPrice = tickToPrice(pos.tickLower);
+			const upperPrice = tickToPrice(pos.tickUpper);
+			const feeLabel = pos.fee.toString();
 
-			if (upperPrice >= binMin && lowerPrice <= binMax) {
+			const hasOverlap = binMax > lowerPrice && binMin < upperPrice;
+
+			if (hasOverlap) {
+				const liquidityAmount = parseFloat(pos.liquidity);
+
+				// Calculate how much of this bin the position actually covers
+				const overlapStart = Math.max(binMin, lowerPrice);
+				const overlapEnd = Math.min(binMax, upperPrice);
+				const overlapWidth = overlapEnd - overlapStart;
+
+				// Weight by overlap proportion AND inverse of position width
+				const positionWidth = upperPrice - lowerPrice;
+
+				//const densityFactor = 1 / positionWidth;
+				//const contributedLiquidity = liquidityAmount * densityFactor * (overlapWidth / binWidth);
+				const contributedLiquidity = liquidityAmount * (overlapWidth / positionWidth);
+
 				if (!result[idx][feeLabel]) {
 					result[idx][feeLabel] = 0;
 				}
-				result[idx][feeLabel] += liquidityAmount;
+				result[idx][feeLabel] += contributedLiquidity;
 			}
 		});
 	});
@@ -74,11 +75,11 @@ export function binLiquidity(
 	const typedResult: ChartData[] = [];
 	result.forEach((r) => {
 		const range = formatRange(r.range);
-
 		const feeAccumulator: Record<string, number> = {};
+
 		FEE_TIERS.forEach((tier) => {
 			const formattedTier = normalizeFeeTier(tier);
-			// @ts-expect-error Typescript resolves earlier ...({}) as never so that gets gutted out
+			// @ts-expect-error
 			const liquidity = r[tier] ?? 0;
 			feeAccumulator[formattedTier] = liquidity;
 		});
@@ -86,6 +87,5 @@ export function binLiquidity(
 		typedResult.push({ range, ...feeAccumulator });
 	});
 
-	//return result;
 	return typedResult;
 }
