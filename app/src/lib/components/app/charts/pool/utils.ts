@@ -7,6 +7,11 @@ export type Fee = (typeof FEE_TIERS)[number];
 export type PositionWithFee = typeof positionsTable.$inferSelect & {
 	fee: number; // fee in bps (e.g., 500 for 0.05%, 3000 for 0.30%)
 };
+
+export const tickToPrice = (tick: number): number => {
+	return Math.pow(1.0001, tick);
+};
+
 /**
  * Bins and ratios the liquidity from positions depending on the midPrice
  * @param midPrice
@@ -19,10 +24,6 @@ export function binLiquidity(
 	options = { bins: 20, delta: 5 }
 ) {
 	const { bins, delta } = options;
-
-	const tickToPrice = (tick: number): number => {
-		return Math.pow(1.0001, tick);
-	};
 
 	const rangeMin = midPrice * (1 - delta / 100);
 	const rangeMax = midPrice * (1 + delta / 100);
@@ -39,12 +40,33 @@ export function binLiquidity(
 		...({} as Record<string, number>)
 	}));
 
+	const p = positions.map((pos) => {
+		const lowerPrice = tickToPrice(pos.tickLower);
+		const upperPrice = tickToPrice(pos.tickUpper);
+
+		return {
+			...pos,
+			lowerPrice,
+			upperPrice
+		};
+	});
+
+	p.filter((pos) => {
+		return true;
+		//return pos.lowerPrice > 1 ;
+	}).map((pos) => {
+		console.log(
+			`position: ${pos.index} [${pos.lowerPrice} - ${pos.upperPrice}], ticks: [${pos.tickLower} - ${pos.tickUpper}], liquidity: ${pos.liquidity}`
+		);
+	});
+
 	binRanges.forEach((binRange, idx) => {
 		const [binMin, binMax] = binRange;
 
 		positions.forEach((pos) => {
 			const lowerPrice = tickToPrice(pos.tickLower);
 			const upperPrice = tickToPrice(pos.tickUpper);
+
 			const feeLabel = pos.fee.toString();
 
 			const hasOverlap = binMax > lowerPrice && binMin < upperPrice;
@@ -79,13 +101,14 @@ export function binLiquidity(
 
 		FEE_TIERS.forEach((tier) => {
 			const formattedTier = normalizeFeeTier(tier);
-			// @ts-expect-error
+			// @ts-expect-error typescript too harsh
 			const liquidity = r[tier] ?? 0;
 			feeAccumulator[formattedTier] = liquidity;
 		});
 
 		typedResult.push({ range, ...feeAccumulator });
 	});
+	//console.dir(typedResult);
 
 	return typedResult;
 }

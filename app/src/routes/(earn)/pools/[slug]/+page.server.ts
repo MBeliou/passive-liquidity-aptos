@@ -40,6 +40,7 @@ export const load = (async ({ params }) => {
 				tickLower: positionsTable.tickLower,
 				tickUpper: positionsTable.tickUpper,
 				liquidity: positionsTable.liquidity,
+				index: positionsTable.index,
 				fee: poolsTable.fee
 			})
 			.from(positionsTable)
@@ -67,13 +68,8 @@ export const load = (async ({ params }) => {
 		decimalsB: pool.tokenB.decimals,
 		sqrtPrice: poolInfo.sqrtPrice
 	});
-	console.log(
-		positions
-			.filter((p) => p.fee === 0.05)
-			.reduce((prev, curr) => prev + parseFloat(curr.liquidity), 0)
-	);
+	
 
-	console.log('Mid price:', computedMidPrice);
 	const binnedLiquidity = binLiquidity(computedMidPrice, positions, {
 		delta: 25,
 		bins: 20

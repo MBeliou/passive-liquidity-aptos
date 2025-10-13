@@ -63,6 +63,8 @@ export const POST: RequestHandler = async ({ params }) => {
 		indexes: [...indexesToRefresh, ...toFetch]
 	});
 
+	//console.dir(positions)
+
 	const toUpsert: (typeof positionsTable.$inferInsert)[] = positions.positions.map((pos) => {
 		return {
 			index: parseInt(pos.index),

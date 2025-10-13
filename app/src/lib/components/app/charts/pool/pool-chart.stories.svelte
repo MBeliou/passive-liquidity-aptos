@@ -2,6 +2,7 @@
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import PoolChart from './pool-chart.svelte';
 	import { binLiquidity, type PositionWithFee } from './utils';
+	import { positions, midPrice as aptMidPrice } from './data';
 
 	const { Story } = defineMeta({
 		title: 'Charts/Pool',
@@ -92,7 +93,19 @@
 	];
 
 	const multipleBinsData = binLiquidity(midPrice, multipleBinsPosition, { bins: 10, delta: 20 });
-	console.log('Multiple bins data:', multipleBinsData);
+
+	const apt_usdt_data = binLiquidity(
+		aptMidPrice,
+		positions.map((p) => ({
+			...p,
+			tickLower: parseFloat(p.tick_lower),
+			tickUpper: parseFloat(p.tick_upper),
+			fee: 0.3,
+			pool: '',
+			updatedAt: new Date(p.updated_at)
+		})),
+		{ bins: 20, delta: 25 }
+	);
 </script>
 
 <Story name="Default" />
@@ -102,3 +115,5 @@
 <Story name="Single Bin Position" args={{ chartData: singleBinData }} />
 
 <Story name="Multiple Bins Equal Distribution" args={{ chartData: multipleBinsData }} />
+
+<Story name="Apt USDT data export" args={{ chartData: apt_usdt_data }} />

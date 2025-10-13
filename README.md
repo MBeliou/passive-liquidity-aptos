@@ -4,6 +4,10 @@ Intelligent concentrated liquidity management for Aptos DEXes.
 Learn more on [Dorahacks](https://dorahacks.io/buidl/34023)
 
 
+## Svelte Wallet Adapter
+
+Work on bringing the Svelte Wallet Adapter into a dedicated package is happening [in this repository](https://github.com/MBeliou/aptos-wallet-adapter-svelte)
+
 ## Roadmap
 
 - [ ] Release standalone Svelte wallet library for Aptos ecosystem
