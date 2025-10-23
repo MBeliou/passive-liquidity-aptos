@@ -16,8 +16,6 @@ async fn main() -> Result<()> {
 
     let view_address = "0xf5840b576a3a6a42464814bc32ae1160c50456fb885c62be389b817e75b2a385";
 
-    //AptosClientBuilder::ne
-
     let state = client.get_state().await?;
 
     println!("State: {:?}", state);

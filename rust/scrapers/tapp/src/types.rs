@@ -1,3 +1,4 @@
+use aptos_rust_sdk::client::config::AptosNetwork;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -46,4 +47,23 @@ pub struct TappApiToken {
     pub img: String,
     pub symbol: String,
     pub verified: bool,
+}
+
+
+
+// Network related
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Network {
+    Mainnet,
+    Testnet,
+}
+
+
+impl Network {
+    pub fn to_aptos_network(&self) -> AptosNetwork {
+        match self {
+            Network::Mainnet => AptosNetwork::mainnet(),
+            Network::Testnet => AptosNetwork::testnet(),
+        }
+    }
 }
