@@ -4,3 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+aptos-rust-sdk.workspace = true
+aptos-rust-sdk-types.workspace = true
+tokio.workspace = true
+anyhow.workspace = true
