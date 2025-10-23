@@ -3207,6 +3207,8 @@ dependencies = [
  "anyhow",
  "aptos-rust-sdk",
  "aptos-rust-sdk-types",
+ "serde",
+ "serde_json",
  "tokio",
 ]
 
