@@ -1,3 +1,4 @@
+mod pools;
 use axum::{
     Router,
     extract::{Path, Query, State},
@@ -8,7 +9,8 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
-// Mock database state (replace with real SQLx pool later)
+//use crate::pools::router;
+
 #[derive(Clone)]
 struct AppState {
     // pool: PgPool,
@@ -118,6 +120,7 @@ async fn main() {
         )
         .route("/transactions/{hash}", get(get_transaction_by_hash))
         .route("/dex/{name}/stats", get(get_dex_stats))
+        .merge(pools::router())
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
