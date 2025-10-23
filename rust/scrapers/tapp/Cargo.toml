@@ -3,9 +3,6 @@ name = "tapp"
 version = "0.1.0"
 edition = "2024"
 
-[lib]
-name = "convergence-scrappers-tapp"
-path="src/lib.rs"
 
 [dependencies]
 aptos-rust-sdk.workspace = true

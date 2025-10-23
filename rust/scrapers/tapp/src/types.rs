@@ -55,7 +55,8 @@ pub struct TappApiToken {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Network {
     Mainnet,
-    Testnet,
+    // NOTE: No public testnet deployment 
+    //Testnet, 
 }
 
 
@@ -63,7 +64,7 @@ impl Network {
     pub fn to_aptos_network(&self) -> AptosNetwork {
         match self {
             Network::Mainnet => AptosNetwork::mainnet(),
-            Network::Testnet => AptosNetwork::testnet(),
+            //Network::Testnet => AptosNetwork::testnet(),
         }
     }
 }
