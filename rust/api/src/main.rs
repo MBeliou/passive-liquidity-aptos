@@ -1,9 +1,9 @@
 use axum::{
+    Router,
     extract::{Path, Query, State},
     http::StatusCode,
     response::Json,
     routing::{get, post},
-    Router,
 };
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -48,7 +48,7 @@ async fn get_transactions(
 ) -> Json<Vec<Transaction>> {
     let limit = params.limit.unwrap_or(10);
     let dex_filter = params.dex.unwrap_or_else(|| "all".to_string());
-    
+
     // Mock data
     let txs = vec![
         Transaction {
@@ -64,7 +64,7 @@ async fn get_transactions(
             amount: "2000000000000000000".to_string(),
         },
     ];
-    
+
     Json(txs.into_iter().take(limit as usize).collect())
 }
 
@@ -112,7 +112,10 @@ async fn main() {
 
     let app = Router::new()
         .route("/health", get(health_check))
-        .route("/transactions", get(get_transactions).post(create_transaction))
+        .route(
+            "/transactions",
+            get(get_transactions).post(create_transaction),
+        )
         .route("/transactions/{hash}", get(get_transaction_by_hash))
         .route("/dex/{name}/stats", get(get_dex_stats))
         .with_state(state);
@@ -120,8 +123,8 @@ async fn main() {
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
         .unwrap();
-    
+
     println!("🚀 Server running on http://127.0.0.1:3000");
-    
+
     axum::serve(listener, app).await.unwrap();
 }

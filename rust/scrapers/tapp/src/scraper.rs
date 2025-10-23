@@ -16,8 +16,7 @@ impl TappClient {
         let view_address = match network {
             Network::Mainnet => {
                 "0xf5840b576a3a6a42464814bc32ae1160c50456fb885c62be389b817e75b2a385".to_string()
-            }
-            //Network::Testnet => "0xTESTNET_ADDRESS".to_string(),
+            } //Network::Testnet => "0xTESTNET_ADDRESS".to_string(),
         };
 
         Self {

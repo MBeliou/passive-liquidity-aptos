@@ -49,16 +49,13 @@ pub struct TappApiToken {
     pub verified: bool,
 }
 
-
-
 // Network related
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Network {
     Mainnet,
-    // NOTE: No public testnet deployment 
-    //Testnet, 
+    // NOTE: No public testnet deployment
+    //Testnet,
 }
-
 
 impl Network {
     pub fn to_aptos_network(&self) -> AptosNetwork {

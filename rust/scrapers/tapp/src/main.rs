@@ -21,6 +21,6 @@ async fn main() -> Result<()> {
         .fetch_positions("0x4ed8fda291b604491ead0cc9e5232bc1edc1f31d0e0cf343be043d8c792af1a8")
         .await?;
     println!("Positions: {:?}", positions);
-    
+
     Ok(())
 }
