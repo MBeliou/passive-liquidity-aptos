@@ -1,6 +1,8 @@
 use crate::types::{Network, Position};
 use anyhow::Result;
-use aptos_rust_sdk::client::{self, config::AptosNetwork, rest_api::AptosFullnodeClient};
+use aptos_rust_sdk::client::{
+    self, builder::AptosClientBuilder, config::AptosNetwork, rest_api::AptosFullnodeClient,
+};
 use aptos_rust_sdk_types::api_types::view::ViewRequest;
 use serde_json::Value;
 
@@ -36,6 +38,13 @@ impl TappClient {
             network,
             view_address,
         }
+    }
+
+    pub fn from_network(network: Network) -> Self {
+        let builder = AptosClientBuilder::new(network.to_aptos_network());
+        let aptos_client = builder.build();
+
+        TappClient::new(aptos_client, network)
     }
 
     pub fn network(&self) -> Network {

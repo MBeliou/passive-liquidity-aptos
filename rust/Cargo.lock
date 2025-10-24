@@ -92,9 +92,11 @@ name = "api"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "dotenvy",
  "serde",
  "serde_json",
  "sqlx",
+ "tapp",
  "tokio",
  "utoipa",
  "utoipa-swagger-ui",

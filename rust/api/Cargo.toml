@@ -11,3 +11,5 @@ utoipa-swagger-ui = "9.0.2"
 tokio = { workspace = true, features = ["full"] }
 serde = { workspace = true }
 serde_json = "1.0.145"
+dotenvy.workspace = true
+tapp = {path = "../scrapers/tapp"}

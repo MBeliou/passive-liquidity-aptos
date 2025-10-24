@@ -12,3 +12,4 @@ serde = { version = "1.0.228", features = ["derive"] }
 aptos-rust-sdk = { git = "https://github.com/aptos-labs/aptos-rust-sdk", branch = "main" }
 aptos-rust-sdk-types = { git = "https://github.com/aptos-labs/aptos-rust-sdk", branch = "main" }
 anyhow = "1.0.100"
+dotenvy = "0.15.7"
