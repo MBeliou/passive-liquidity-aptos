@@ -1,5 +1,5 @@
-mod pools;
 mod errors;
+mod pools;
 use axum::{
     Router,
     extract::{Path, Query, State},
@@ -9,15 +9,27 @@ use axum::{
 };
 use sea_orm::DatabaseConnection;
 use serde::{Deserialize, Serialize};
-use sqlx::{postgres::PgPoolOptions, PgPool, Pool};
+use sqlx::{PgPool, Pool, postgres::PgPoolOptions};
 use std::sync::Arc;
+use utoipa_scalar::{Scalar, Servable as ScalarServable};
+use utoipa::{OpenApi, ToSchema};
+
+
+/* OpenAPI */
+#[derive(OpenApi)]
+#[openapi(
+    paths(pools::handlers::get_pools),
+    //components(schemas(User))
+    components()
+)]
+struct ApiDoc;
 
 //use crate::pools::router;
 
 #[derive(Clone)]
 struct AppState {
     //pool: PgPool,
-    database: DatabaseConnection
+    database: DatabaseConnection,
 }
 
 // Models
@@ -42,6 +54,7 @@ struct CreateTransaction {
     dex: String,
     amount: String,
 }
+
 
 // Routes
 async fn health_check() -> &'static str {
@@ -113,14 +126,13 @@ async fn get_dex_stats(Path(dex): Path<String>) -> Json<serde_json::Value> {
 }
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()>{
-    
-    let connection = db::create_connection("postgresql://root:mysecretpassword@localhost:5432/passive_liquidity_db").await?;
-    //let pool = PgPoolOptions::
-    //let pool = PgPool::connect().await?;
+async fn main() -> anyhow::Result<()> {
+    let connection = db::create_connection(
+        "postgresql://root:mysecretpassword@localhost:5432/passive_liquidity_db",
+    )
+    .await?;
     let state = Arc::new(AppState {
-        //pool
-        database: connection
+        database: connection,
     });
 
     let app = Router::new()
@@ -132,6 +144,7 @@ async fn main() -> anyhow::Result<()>{
         .route("/transactions/{hash}", get(get_transaction_by_hash))
         .route("/dex/{name}/stats", get(get_dex_stats))
         .merge(pools::router())
+        .merge(Scalar::with_url("/scalar", ApiDoc::openapi()))
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
@@ -141,7 +154,6 @@ async fn main() -> anyhow::Result<()>{
     println!("🚀 Server running on http://127.0.0.1:3000");
 
     axum::serve(listener, app).await.unwrap();
-
 
     Ok(())
 }

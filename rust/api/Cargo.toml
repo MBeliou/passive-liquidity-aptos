@@ -4,16 +4,17 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-axum = { version = "0.8.6", features = ["macros"] }
-sqlx = { version = "0.8.6", features = ["postgres", "runtime-tokio"] }
-utoipa = "5.4.0"
-utoipa-swagger-ui = "9.0.2"
-tokio = { workspace = true, features = ["full"] }
 serde = { workspace = true }
-serde_json = "1.0.145"
-tapp = { path = "../scrapers/tapp" }
+tokio = { workspace = true, features = ["full"] }
 dotenvy.workspace = true
 anyhow.workspace = true
-db = { path = "../crates/db" }
 sea-orm.workspace = true
 rust_decimal.workspace = true
+axum = { version = "0.8.6", features = ["macros"] }
+sqlx = { version = "0.8.6", features = ["postgres", "runtime-tokio"] }
+utoipa = { version = "5.4.0" }
+utoipa-swagger-ui = "9.0.2"
+tapp = { path = "../scrapers/tapp" }
+serde_json = "1.0.145"
+db = { path = "../crates/db" }
+utoipa-scalar = { version = "0.3.0", features = ["axum"] }

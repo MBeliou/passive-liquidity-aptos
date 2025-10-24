@@ -1,8 +1,8 @@
-mod handlers;
+pub mod handlers;
 use std::sync::Arc;
 mod jobs;
 
-use axum::{Json, Router, routing::get};
+use axum::{Router, routing::get};
 
 use crate::AppState;
 

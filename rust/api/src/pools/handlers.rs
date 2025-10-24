@@ -109,16 +109,11 @@ pub struct PoolsResponse {
     pub count: usize,
 }
 
-/*
-#[axum::debug_handler]
-pub async fn get_pools(State(state): State<Arc<AppState>>) -> AppResult<Json<Vec<pools::Model>>> {
-    let pools = Pools::find()
-        .all(&state.database)
-        .await?;
-        //.ok_or(AppError::InternalServer);
-    Ok(Json(pools))
-}
- */
+#[utoipa::path(
+    get,
+    path="/pools",
+    tag = "pools"
+)]
 #[axum::debug_handler]
 pub async fn get_pools(
     State(state): State<Arc<AppState>>,
