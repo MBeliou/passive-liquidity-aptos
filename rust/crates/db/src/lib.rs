@@ -1,14 +1,7 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+pub mod entities;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+use sea_orm::{Database, DatabaseConnection};
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+pub async fn create_connection(database_url: &str) -> Result<DatabaseConnection, sea_orm::DbErr> {
+    Database::connect(database_url).await
 }

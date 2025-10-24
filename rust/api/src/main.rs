@@ -1,4 +1,5 @@
 mod pools;
+mod errors;
 use axum::{
     Router,
     extract::{Path, Query, State},
@@ -6,14 +7,17 @@ use axum::{
     response::Json,
     routing::{get, post},
 };
+use sea_orm::DatabaseConnection;
 use serde::{Deserialize, Serialize};
+use sqlx::{postgres::PgPoolOptions, PgPool, Pool};
 use std::sync::Arc;
 
 //use crate::pools::router;
 
 #[derive(Clone)]
 struct AppState {
-    // pool: PgPool,
+    //pool: PgPool,
+    database: DatabaseConnection
 }
 
 // Models
@@ -109,8 +113,15 @@ async fn get_dex_stats(Path(dex): Path<String>) -> Json<serde_json::Value> {
 }
 
 #[tokio::main]
-async fn main() {
-    let state = Arc::new(AppState {});
+async fn main() -> anyhow::Result<()>{
+    
+    let connection = db::create_connection("postgresql://root:mysecretpassword@localhost:5432/passive_liquidity_db").await?;
+    //let pool = PgPoolOptions::
+    //let pool = PgPool::connect().await?;
+    let state = Arc::new(AppState {
+        //pool
+        database: connection
+    });
 
     let app = Router::new()
         .route("/health", get(health_check))
@@ -130,4 +141,7 @@ async fn main() {
     println!("🚀 Server running on http://127.0.0.1:3000");
 
     axum::serve(listener, app).await.unwrap();
+
+
+    Ok(())
 }

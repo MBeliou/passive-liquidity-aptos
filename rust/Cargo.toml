@@ -13,3 +13,5 @@ aptos-rust-sdk = { git = "https://github.com/aptos-labs/aptos-rust-sdk", branch 
 aptos-rust-sdk-types = { git = "https://github.com/aptos-labs/aptos-rust-sdk", branch = "main" }
 anyhow = "1.0.100"
 dotenvy = "0.15.7"
+sea-orm = { version = "2.0.0-rc.13", features = [ "sqlx-postgres", "runtime-tokio-native-tls", "macros" ] }
+rust_decimal = "1.39.0"

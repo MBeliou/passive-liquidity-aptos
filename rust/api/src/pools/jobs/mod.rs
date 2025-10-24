@@ -10,6 +10,7 @@ pub async fn refresh_pool(Path(id): Path<String>) -> Result<Json<Vec<tapp::types
 
     let positions = tapp_client.fetch_positions(&id).await;
 
+    // TODO: link to database
     match positions {
         Ok(value) => Ok(Json(value)),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR)
