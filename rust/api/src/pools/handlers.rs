@@ -18,6 +18,14 @@ use sea_orm::QueryFilter;
 use sea_orm::QueryOrder;
 use sea_orm::QuerySelect;
 
+#[utoipa::path(
+    get,
+    path = "/pools/{id}",
+    tag = "pools",
+    params(
+        ("id" = String, Path, description = "Pool ID")
+    )
+)]
 #[axum::debug_handler]
 pub async fn get_pool(
     State(state): State<Arc<AppState>>,
@@ -33,8 +41,15 @@ pub async fn get_pool(
 
 #[derive(Debug, Deserialize)]
 pub struct PoolsQuery {
+    // DEX/Exchange filter
+    pub dex: Option<String>,
+
     // Token filter - matches if token is in tokenA OR tokenB
     pub token: Option<String>,
+
+    // Exact pair filter (order-agnostic)
+    pub token_a: Option<String>,
+    pub token_b: Option<String>,
 
     // Fee filters
     pub fee: Option<Decimal>,
@@ -129,12 +144,34 @@ pub async fn get_pools(
     // Apply filters
     let mut condition = Condition::all();
 
+    // DEX/Exchange filter
+    if let Some(dex) = params.dex {
+        condition = condition.add(pools::Column::Dex.eq(dex));
+    }
+
     // Token filter - check both tokenA and tokenB
     if let Some(token) = params.token {
         condition = condition.add(
             Condition::any()
                 .add(pools::Column::TokenA.eq(token.clone()))
                 .add(pools::Column::TokenB.eq(token)),
+        );
+    }
+
+    // Exact pair filter (order-agnostic: match (A,B) or (B,A))
+    if let (Some(token_a), Some(token_b)) = (params.token_a, params.token_b) {
+        condition = condition.add(
+            Condition::any()
+                .add(
+                    Condition::all()
+                        .add(pools::Column::TokenA.eq(token_a.clone()))
+                        .add(pools::Column::TokenB.eq(token_b.clone()))
+                )
+                .add(
+                    Condition::all()
+                        .add(pools::Column::TokenA.eq(token_b))
+                        .add(pools::Column::TokenB.eq(token_a))
+                )
         );
     }
 

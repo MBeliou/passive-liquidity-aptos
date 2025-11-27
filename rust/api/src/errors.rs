@@ -37,5 +37,12 @@ impl From<DbErr> for AppError {
     }
 }
 
+// Convert anyhow::Error to AppError
+impl From<anyhow::Error> for AppError {
+    fn from(err: anyhow::Error) -> Self {
+        AppError::InternalServer(err.to_string())
+    }
+}
+
 // Type alias for convenience
 pub type AppResult<T> = Result<T, AppError>;

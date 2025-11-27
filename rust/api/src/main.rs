@@ -1,25 +1,38 @@
 mod errors;
+mod exchanges;
+mod hyperion;
 mod pools;
+mod positions;
+mod tokens;
 use axum::{
     Router,
     extract::{Path, Query, State},
     http::StatusCode,
     response::Json,
-    routing::{get, post},
+    routing::get,
 };
 use sea_orm::DatabaseConnection;
 use serde::{Deserialize, Serialize};
-use sqlx::{PgPool, Pool, postgres::PgPoolOptions};
 use std::sync::Arc;
 use utoipa_scalar::{Scalar, Servable as ScalarServable};
-use utoipa::{OpenApi, ToSchema};
+use utoipa::OpenApi;
 
 
 /* OpenAPI */
 #[derive(OpenApi)]
 #[openapi(
-    paths(pools::handlers::get_pools),
-    //components(schemas(User))
+    paths(
+        exchanges::handlers::list_exchanges,
+        pools::handlers::get_pools,
+        pools::handlers::get_pool,
+        pools::jobs::handlers::refresh_pools,
+        pools::jobs::handlers::refresh_single_pool,
+        tokens::handlers::list_tokens,
+        tokens::handlers::refresh_tokens,
+        positions::handlers::refresh_positions,
+        hyperion::handlers::refresh_pools,
+        hyperion::handlers::refresh_positions
+    ),
     components()
 )]
 struct ApiDoc;
@@ -66,7 +79,7 @@ async fn get_transactions(
     Query(params): Query<QueryParams>,
 ) -> Json<Vec<Transaction>> {
     let limit = params.limit.unwrap_or(10);
-    let dex_filter = params.dex.unwrap_or_else(|| "all".to_string());
+    let _dex_filter = params.dex.unwrap_or_else(|| "all".to_string());
 
     // Mock data
     let txs = vec![
@@ -143,7 +156,11 @@ async fn main() -> anyhow::Result<()> {
         )
         .route("/transactions/{hash}", get(get_transaction_by_hash))
         .route("/dex/{name}/stats", get(get_dex_stats))
+        .merge(exchanges::router())
         .merge(pools::router())
+        .merge(tokens::router())
+        .merge(positions::router())
+        .merge(hyperion::router())
         .merge(Scalar::with_url("/scalar", ApiDoc::openapi()))
         .with_state(state);
 

@@ -25,7 +25,6 @@
 		links: TabBarLink[];
 	} = $props();
 
-
 	const tabBarState = getTabBarState();
 </script>
 
@@ -50,12 +49,14 @@
 				{/each}
 			</div>
 
-			<SearchPanel ></SearchPanel>
+			<SearchPanel></SearchPanel>
 		</div>
 	</div>
 
 	<div
-		class="pointer-events-none fixed inset-x-4 top-8 isolate z-50 flex {tabBarState.backButton ? 'justify-between' : 'justify-end'} [&>*]:pointer-events-auto"
+		class="pointer-events-none fixed inset-x-4 top-8 isolate z-50 flex {tabBarState.backButton
+			? 'justify-between'
+			: 'justify-end'} [&>*]:pointer-events-auto"
 	>
 		{#if tabBarState.backButton}
 			<Button
@@ -102,7 +103,7 @@
 				</a>
 			{/each}
 
-			<SearchPanel class="h-full w-full ml-2 pr-3" ></SearchPanel>
+			<SearchPanel class="ml-2 h-full w-full pr-3"></SearchPanel>
 		</div>
 
 		<div class="flex items-center justify-end gap-2">

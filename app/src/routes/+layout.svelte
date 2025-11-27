@@ -10,6 +10,8 @@
 	import Gauge from '@lucide/svelte/icons/gauge';
 	import LoaderCircle from '@lucide/svelte/icons/loader-circle';
 	import PiggyBank from '@lucide/svelte/icons/piggy-bank';
+	import CreditCard from '@lucide/svelte/icons/credit-card';
+
 	import { ModeWatcher } from 'mode-watcher';
 	import '../app.css';
 
@@ -21,6 +23,12 @@
 			icon: PiggyBank,
 			url: '/',
 			isActive: page.url.pathname === '/' || page.url.pathname.startsWith('/pools')
+		},
+		{
+			label: 'Money Markets',
+			icon: CreditCard,
+			url: '/money-market',
+			isActive: page.url.pathname.startsWith('/money-market')
 		},
 		{
 			label: 'Manage',

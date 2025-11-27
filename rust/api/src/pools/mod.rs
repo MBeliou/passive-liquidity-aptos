@@ -1,6 +1,6 @@
 pub mod handlers;
+pub mod jobs;
 use std::sync::Arc;
-mod jobs;
 
 use axum::{Router, routing::get};
 
