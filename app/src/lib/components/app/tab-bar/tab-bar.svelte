@@ -72,7 +72,7 @@
 	</div>
 {:else}
 	<!--  on top -->
-	<div class="pointer-events-none fixed inset-x-0 top-8 mx-auto grid max-w-7xl grid-cols-3 px-4">
+	<div class="pointer-events-none fixed inset-x-0 top-8 mx-auto flex max-w-7xl px-4">
 		<div class="flex items-center justify-start">
 			{#if tabBarState.backButton}
 				<Button
@@ -86,24 +86,24 @@
 			{/if}
 		</div>
 
-		<div
-			class="bg-muted pointer-events-auto col-start-2 mx-auto flex items-center rounded-full p-1 md:justify-center"
-		>
-			{#each links as link (link.label)}
-				<a
-					data-active-tab={link.isActive}
-					href={link.url}
-					class={[
-						'z-20 px-6 py-2 text-sm',
-						'text-muted-foreground hover:text-foreground',
-						link.isActive && 'text-primary bg-muted-foreground/20 rounded-full'
-					]}
-				>
-					{link.label}
-				</a>
-			{/each}
+		<div class="flex grow justify-center">
+			<div class="bg-muted pointer-events-auto flex items-center rounded-full p-1 whitespace-nowrap">
+				{#each links as link (link.label)}
+					<a
+						data-active-tab={link.isActive}
+						href={link.url}
+						class={[
+							'z-20 px-6 py-2 text-sm ',
+							'text-muted-foreground hover:text-foreground',
+							link.isActive && 'text-primary bg-muted-foreground/20 break-after-avoid rounded-full'
+						]}
+					>
+						{link.label}
+					</a>
+				{/each}
 
-			<SearchPanel class="ml-2 h-full w-full pr-3"></SearchPanel>
+				<SearchPanel class="ml-2 h-full w-full pr-3"></SearchPanel>
+			</div>
 		</div>
 
 		<div class="flex items-center justify-end gap-2">
