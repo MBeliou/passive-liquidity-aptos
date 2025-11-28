@@ -5,13 +5,12 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Spinner } from '$lib/components/ui/spinner';
 	import ArrowUpRight from '@lucide/svelte/icons/arrow-up-right';
-	import { getEchelonMarkets } from './money-market.remote';
+	import { getMarkets } from './money-market.remote';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
+	import { MONEY_MARKETS } from './shared';
 
-	const echelonQuery = getEchelonMarkets();
+	const marketsQuery = getMarkets();
 
-	const makeEchelonMarketUrl = (market: string) =>
-		`https://app.echelon.market/market/${market}?network=aptos_mainnet`;
 	function formatPrice(price: number) {
 		return new Intl.NumberFormat(undefined, {
 			currency: 'usd',
@@ -36,18 +35,17 @@
 </div>
 
 <div class=" flex min-h-screen flex-col px-4">
-	{#if echelonQuery.error}
+	{#if marketsQuery.error}
 		<div>
-			Couldn't fetch markets: {echelonQuery.error}
+			Couldn't fetch markets: {marketsQuery.error}
 		</div>
-	{:else if echelonQuery.loading}
+	{:else if marketsQuery.loading}
 		<div>
 			<Spinner></Spinner>
 		</div>
 	{:else}
 		<ul>
-			{#each echelonQuery.current as { name, borrowApr, supplyApr, icon, price, symbol, market }}
-				{@const marketURL = makeEchelonMarketUrl(market)}
+			{#each marketsQuery.current as { name, icon, price, symbol, markets }}
 				<li class="flex items-center gap-8 py-4">
 					<Avatar.Root class="size-12 border-2">
 						<AvatarImage src={icon} class=""></AvatarImage>
@@ -66,33 +64,42 @@
 								</div>
 							</div>
 
+							<!-- 
 							<div>
-								<Button size="sm" href={marketURL} target="_blank" variant="outline">
+								<Button size="sm" href={marketUrl} target="_blank" variant="outline">
 									View Market
 									<ArrowUpRight></ArrowUpRight>
 								</Button>
 							</div>
+							 -->
 						</div>
 						<div class="grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-							<div class="grid gap-2 pr-4">
-								<div class="text-center text-sm">Echelon</div>
-								<div class="grid grid-cols-2 gap-4">
-									<div class="text-muted-foreground text-center text-xs font-semibold">
-										Provide at
-										<span class="text-foreground block text-lg font-medium">
-											{percentFormatter.format(supplyApr)}
-										</span>
-									</div>
-									<div class="text-muted-foreground text-center text-xs font-semibold">
-										Borrow at
-										<span class="text-foreground block text-lg font-medium">
-											{percentFormatter.format(borrowApr)}
-										</span>
-									</div>
+							{#each MONEY_MARKETS as moneyMarket}
+								{@const marketDetails = markets[moneyMarket]}
+
+								<div class="grid gap-2 border-r">
+									<div class="text-center text-sm capitalize">{moneyMarket}</div>
+
+									{#if marketDetails}
+										<div class="grid grid-cols-2 gap-4">
+											<div class="text-muted-foreground text-center text-xs font-semibold">
+												Provide at
+												<span class="text-foreground block text-lg font-medium">
+													{percentFormatter.format(marketDetails.supplyApr)}
+												</span>
+											</div>
+											<div class="text-muted-foreground text-center text-xs font-semibold">
+												Borrow at
+												<span class="text-foreground block text-lg font-medium">
+													{percentFormatter.format(marketDetails.borrowApr)}
+												</span>
+											</div>
+										</div>
+									{:else}
+										<div class="text-muted-foreground text-center text-xs">Market unavailable</div>
+									{/if}
 								</div>
-								
-							</div>
-							<Separator orientation="vertical"></Separator>
+							{/each}
 						</div>
 					</div>
 				</li>
