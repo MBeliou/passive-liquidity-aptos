@@ -4,8 +4,8 @@ use axum::{extract::State, Json};
 use db::entities::{tokens, tokens::Entity as Tokens};
 use sea_orm::{ActiveModelTrait, EntityTrait, QueryOrder, QuerySelect, Set};
 use serde::{Deserialize, Serialize};
-use tapp::api::{TappHttpClient, TokenListQuery};
-
+use tapp::api::{api::TappHttpClient};
+use tapp::api::models::TokenListQuery;
 use crate::{
     errors::{AppError, AppResult},
     AppState,

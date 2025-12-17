@@ -13,3 +13,4 @@ serde.workspace = true
 serde_json = "1.0.145"
 reqwest = { version = "0.12", features = ["json"] }
 rust_decimal.workspace = true
+scraper-common = { path = "../common" }

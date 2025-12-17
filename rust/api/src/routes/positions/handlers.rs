@@ -4,7 +4,7 @@ use axum::{extract::{Path, State}, Json};
 use db::entities::{pools::Entity as Pools, positions, positions::Entity as Positions};
 use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter, Set};
 use serde::Serialize;
-use tapp::{convert_tick_bits_to_signed, types::Network, TappClient};
+use tapp::{convert_tick_bits_to_signed, types::Network, TappChainClient};
 
 use crate::{
     errors::{AppError, AppResult},
@@ -46,7 +46,7 @@ pub async fn refresh_positions(
         .ok_or(AppError::NotFound)?;
 
     // Initialize TAPP client
-    let tapp_client = TappClient::from_network(Network::Mainnet);
+    let tapp_client = TappChainClient::from_network(Network::Mainnet);
 
     // Fetch all positions for the pool
     let positions = tapp_client

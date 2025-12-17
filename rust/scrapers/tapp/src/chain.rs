@@ -6,19 +6,19 @@ use aptos_rust_sdk::client::{
 use aptos_rust_sdk_types::api_types::view::ViewRequest;
 use serde_json::Value;
 
-pub struct TappClient {
+pub struct TappChainClient {
     aptos_client: AptosFullnodeClient,
     view_address: String,
     network: Network,
     // NOTE: We're not dealing with router for now
 }
 
-impl TappClient {
+impl TappChainClient {
     pub fn new(aptos_client: AptosFullnodeClient, network: Network) -> Self {
         let view_address = match network {
             Network::Mainnet => {
                 "0xf5840b576a3a6a42464814bc32ae1160c50456fb885c62be389b817e75b2a385".to_string()
-            } //Network::Testnet => "0xTESTNET_ADDRESS".to_string(),
+            } 
         };
 
         Self {
@@ -44,7 +44,7 @@ impl TappClient {
         let builder = AptosClientBuilder::new(network.to_aptos_network());
         let aptos_client = builder.build();
 
-        TappClient::new(aptos_client, network)
+        TappChainClient::new(aptos_client, network)
     }
 
     pub fn network(&self) -> Network {
@@ -85,6 +85,8 @@ impl TappClient {
 
         Ok(tick_str.parse()?)
     }
+
+    
 }
 
 /// Convert unsigned tick bits to signed tick value
