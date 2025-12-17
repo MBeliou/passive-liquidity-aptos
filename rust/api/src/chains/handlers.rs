@@ -1,7 +1,11 @@
-use crate::{AppState, errors::AppResult, models::chain};
+use crate::{
+    AppState,
+    errors::{AppError, AppResult},
+    models::chain,
+};
 use axum::{Json, extract::State};
 use db::entities::{chains, chains::Entity as Chains};
-use sea_orm::{Condition, EntityTrait};
+use sea_orm::{EntityTrait};
 use std::sync::Arc;
 
 // NOTE: not enough chains to worry about pagination. Not dealing with filtering for now either.
@@ -19,10 +23,17 @@ pub async fn get_chains(
     Ok(Json(chain::ChainsResponse { chains, count }))
 }
 
-pub async fn get_chain(id: String) -> AppResult<Json<chain::Chain>> {
-    // TODO: stub
-    Ok(Json(chain::Chain {
-        name: "Aptos".to_string(),
-        id: "aptos".to_string(),
-    }))
+#[utoipa::path(get, path = "/chain/{id}", tag = "chains")]
+#[axum::debug_handler]
+pub async fn get_chain(
+    State(state): State<Arc<AppState>>,
+    id: String,
+) -> AppResult<Json<chains::Model>> {
+    let query = Chains::find_by_id(id);
+    let chain = query
+        .one(&state.database)
+        .await?
+        .ok_or(AppError::NotFound)?;
+
+    Ok(Json(chain))
 }
