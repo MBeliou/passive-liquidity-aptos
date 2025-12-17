@@ -2,9 +2,11 @@
 
 pub mod prelude;
 
+pub mod chains;
 pub mod managed_positions;
 pub mod pools;
 pub mod positions;
+pub mod protocols;
 pub mod sea_orm_active_enums;
 pub mod tokens;
 pub mod user_balances;

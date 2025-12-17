@@ -3,7 +3,6 @@ import {
 	decimal,
 	doublePrecision,
 	integer,
-	numeric,
 	pgEnum,
 	pgTable,
 	primaryKey,
@@ -12,6 +11,8 @@ import {
 	timestamp,
 	varchar
 } from 'drizzle-orm/pg-core';
+
+// TODO: use singular name for tables, it's cleaner really.
 
 export const tokensTable = pgTable('tokens', {
 	id: varchar({ length: 66 }).primaryKey(),
@@ -41,8 +42,6 @@ export const poolsTable = pgTable('pools', {
 	volumeWeek: doublePrecision('volume_week').notNull().default(0.0),
 	volumeMonth: doublePrecision('volume_month').notNull().default(0.0),
 	volumePrevDay: doublePrecision('volume_prev_day').notNull().default(0.0),
-
-
 
 	updatedAt: timestamp('updated_at').defaultNow()
 });
@@ -117,3 +116,16 @@ export const userBalancesTable = pgTable(
 	},
 	(table) => [primaryKey({ columns: [table.userId, table.tokenId] })]
 );
+
+// chain IDs can be found at https://chainlist.org/
+// I don't think we want rpcs here.
+export const chainsTable = pgTable('chains', {
+	id: varchar().primaryKey(),
+	name: varchar().notNull()
+});
+
+export const protocolsTable = pgTable('protocols', {
+	id: serial().primaryKey(),
+	name: varchar().notNull(),
+	url: varchar()
+});
