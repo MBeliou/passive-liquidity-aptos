@@ -1,8 +1,9 @@
+mod models;
 mod errors;
 mod exchanges;
-mod hyperion;
 mod pools;
 mod positions;
+mod protocols;
 mod tokens;
 use axum::{
     Router,
@@ -29,9 +30,7 @@ use utoipa::OpenApi;
         pools::jobs::handlers::refresh_single_pool,
         tokens::handlers::list_tokens,
         tokens::handlers::refresh_tokens,
-        positions::handlers::refresh_positions,
-        hyperion::handlers::refresh_pools,
-        hyperion::handlers::refresh_positions
+        positions::handlers::refresh_positions
     ),
     components()
 )]
@@ -156,11 +155,11 @@ async fn main() -> anyhow::Result<()> {
         )
         .route("/transactions/{hash}", get(get_transaction_by_hash))
         .route("/dex/{name}/stats", get(get_dex_stats))
+        .merge(protocols::router())
         .merge(exchanges::router())
         .merge(pools::router())
         .merge(tokens::router())
         .merge(positions::router())
-        .merge(hyperion::router())
         .merge(Scalar::with_url("/scalar", ApiDoc::openapi()))
         .with_state(state);
 

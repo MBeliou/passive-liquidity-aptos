@@ -113,7 +113,7 @@ pub struct PricePoint {
     pub y: String, // Price as string
 }
 
-/// TAPP Exchange HTTP API client
+
 pub struct TappHttpClient {
     client: reqwest::Client,
     base_url: String,
