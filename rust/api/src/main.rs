@@ -7,7 +7,6 @@ use std::sync::Arc;
 use utoipa::OpenApi;
 use utoipa_scalar::{Scalar, Servable as ScalarServable};
 
-
 use routes::*;
 
 /* OpenAPI */
@@ -22,7 +21,6 @@ use routes::*;
         tokens::handlers::list_tokens,
         tokens::handlers::refresh_tokens,
         positions::handlers::refresh_positions,
-
         chains::handlers::get_chains,
         chains::handlers::get_chain
     ),
@@ -50,14 +48,17 @@ async fn main() -> anyhow::Result<()> {
         database: connection,
     });
 
-    let app = Router::new()
-        .route("/health", get(health_check))
+    let v1 = Router::new()
         .merge(protocols::router())
         .merge(exchanges::router())
         .merge(pools::router())
         .merge(tokens::router())
         .merge(chains::router())
-        .merge(positions::router())
+        .merge(positions::router());
+
+    let app = Router::new()
+        .route("/health", get(health_check))
+        .nest("/v1", v1)
         .merge(Scalar::with_url("/scalar", ApiDoc::openapi()))
         .with_state(state);
 
