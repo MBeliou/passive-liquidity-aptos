@@ -5,6 +5,7 @@ mod pools;
 mod positions;
 mod protocols;
 mod tokens;
+mod chains;
 use axum::{
     Router,
     extract::{Path, Query, State},
@@ -159,6 +160,7 @@ async fn main() -> anyhow::Result<()> {
         .merge(exchanges::router())
         .merge(pools::router())
         .merge(tokens::router())
+        .merge(chains::router())
         .merge(positions::router())
         .merge(Scalar::with_url("/scalar", ApiDoc::openapi()))
         .with_state(state);
