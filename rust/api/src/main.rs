@@ -1,16 +1,14 @@
-mod chains;
 mod errors;
-mod exchanges;
 mod models;
-mod pools;
-mod positions;
-mod protocols;
-mod tokens;
+mod routes;
 use axum::{Router, routing::get};
 use sea_orm::DatabaseConnection;
 use std::sync::Arc;
 use utoipa::OpenApi;
 use utoipa_scalar::{Scalar, Servable as ScalarServable};
+
+
+use routes::*;
 
 /* OpenAPI */
 #[derive(OpenApi)]
