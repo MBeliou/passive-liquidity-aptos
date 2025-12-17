@@ -23,7 +23,10 @@ use utoipa_scalar::{Scalar, Servable as ScalarServable};
         pools::jobs::handlers::refresh_single_pool,
         tokens::handlers::list_tokens,
         tokens::handlers::refresh_tokens,
-        positions::handlers::refresh_positions
+        positions::handlers::refresh_positions,
+
+        chains::handlers::get_chains,
+        chains::handlers::get_chain
     ),
     components()
 )]

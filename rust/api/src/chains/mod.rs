@@ -1,4 +1,4 @@
-mod handlers;
+pub mod handlers;
 
 use crate::AppState;
 use axum::{Router, routing::get};

@@ -23,7 +23,7 @@ pub async fn get_chains(
     Ok(Json(chain::ChainsResponse { chains, count }))
 }
 
-#[utoipa::path(get, path = "/chain/{id}", tag = "chains")]
+#[utoipa::path(get, path = "/chains/{id}", tag = "chains")]
 #[axum::debug_handler]
 pub async fn get_chain(
     State(state): State<Arc<AppState>>,
