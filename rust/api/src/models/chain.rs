@@ -1,3 +1,4 @@
+use db::entities::chains;
 use serde::Serialize;
 
 // Stub for now, we'll do with an ID and name until we need the rest of the info
@@ -9,6 +10,6 @@ pub struct Chain {
 
 #[derive(Debug, Serialize)]
 pub struct ChainsResponse {
-    pub chains: Vec<Chain>,
+    pub chains: Vec<chains::Model>,
     pub count: usize,
 }
