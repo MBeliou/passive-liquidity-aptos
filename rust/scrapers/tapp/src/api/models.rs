@@ -1,7 +1,8 @@
+use db::entities::pools::{self, Entity};
+use rust_decimal::Decimal;
+use sea_orm::{ActiveValue::Set, sqlx::types::chrono::Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-
-
 
 /// Query parameters for token list
 #[derive(Debug, Serialize)]
@@ -47,6 +48,16 @@ pub struct PoolsQuery {
     pub page_size: usize,
 }
 
+impl PoolsQuery {
+    pub fn all_clmm_pools() -> Self {
+        PoolsQuery {
+            pool_type: PoolType::Clmm,
+            page: 1,
+            page_size: 100,
+        }
+    }
+}
+
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum PriceInterval {
@@ -88,9 +99,7 @@ pub struct TappApiToken {
     pub volume: String,
 }
 
-pub struct TappApiPool {
-    
-}
+pub struct TappApiPool {}
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct PriceData {
@@ -111,7 +120,6 @@ pub struct PricePoint {
     pub y: String, // Price as string
 }
 
-
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Pool {
@@ -129,6 +137,32 @@ pub struct Pool {
     pub volume_percentage24h: String,
     pub volume_percentage30d: String,
     pub volume_percentage7d: String,
+}
+
+impl Pool {
+    pub fn to_active_model(self) -> anyhow::Result<pools::ActiveModel> {
+        let mut tokens = self.tokens;
+        let token_b = tokens.pop().map(|t| t.addr);
+        let token_a = tokens.pop().map(|t| t.addr);
+
+        Ok(pools::ActiveModel {
+            // Note: Position index is mostly unused now that contract queries are fixed
+            position_index: Set(None),
+            id: Set(self.pool_id),
+            dex: Set("tapp".to_string()),
+            fee: Set(self.fee_tier.parse::<Decimal>()?),
+            trading_apr: Set(self.apr.fee_apr_percentage as f64),
+            bonus_apr: Set(self.apr.boosted_apr_percentage as f64),
+            tvl: Set(self.tvl.parse::<f64>()?),
+            volume_day: Set(self.volume_data.volume24h as f64),
+            volume_week: Set(self.volume_data.volume7d as f64),
+            volume_month: Set(self.volume_data.volume30d as f64),
+            volume_prev_day: Set(self.volume_data.volumeprev24h as f64),
+            token_a: Set(token_a),
+            token_b: Set(token_b),
+            updated_at: Set(Some(Utc::now().naive_utc())),
+        })
+    }
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]

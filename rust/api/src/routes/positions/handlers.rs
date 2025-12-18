@@ -1,14 +1,17 @@
 use std::sync::Arc;
 
-use axum::{extract::{Path, State}, Json};
+use axum::{
+    Json,
+    extract::{Path, State},
+};
 use db::entities::{pools::Entity as Pools, positions, positions::Entity as Positions};
 use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter, Set};
 use serde::Serialize;
-use tapp::{convert_tick_bits_to_signed, types::Network, TappChainClient};
+use tapp::{TappChainClient, convert_tick_bits_to_signed, types::Network};
 
 use crate::{
-    errors::{AppError, AppResult},
     AppState,
+    errors::{AppError, AppResult},
 };
 
 #[derive(Debug, Serialize, utoipa::ToSchema)]
@@ -68,12 +71,20 @@ pub async fn refresh_positions(
     let mut positions_updated = 0;
 
     for position in positions {
-        let index = position.index.parse::<i32>()
+        let index = position
+            .index
+            .parse::<i32>()
             .map_err(|e| AppError::InternalServer(format!("Invalid position index: {}", e)))?;
 
-        let tick_lower_bits = position.tick_lower_index.bits.parse::<u64>()
+        let tick_lower_bits = position
+            .tick_lower_index
+            .bits
+            .parse::<u64>()
             .map_err(|e| AppError::InternalServer(format!("Invalid tick_lower bits: {}", e)))?;
-        let tick_upper_bits = position.tick_upper_index.bits.parse::<u64>()
+        let tick_upper_bits = position
+            .tick_upper_index
+            .bits
+            .parse::<u64>()
             .map_err(|e| AppError::InternalServer(format!("Invalid tick_upper bits: {}", e)))?;
 
         let tick_lower = convert_tick_bits_to_signed(tick_lower_bits);
@@ -115,7 +126,10 @@ pub async fn refresh_positions(
 
     Ok(Json(RefreshPositionsResponse {
         status: "success".to_string(),
-        message: format!("Updated {} positions for pool {}", positions_updated, pool_id),
+        message: format!(
+            "Updated {} positions for pool {}",
+            positions_updated, pool_id
+        ),
         positions_updated,
     }))
 }

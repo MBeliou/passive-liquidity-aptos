@@ -18,10 +18,10 @@ use sea_orm::{
     ActiveValue::Set, DatabaseConnection, EntityTrait, QueryFilter, sqlx::types::chrono::Utc,
 };
 use sea_orm::{ColumnTrait, sea_query::OnConflict};
-use tapp::api::api::TappHttpClient;
+use tapp::api::{api::TappHttpClient, models::PoolsQuery};
 use types::Network;
 
-use crate::chain::convert_tick_bits_to_signed;
+use crate::{api::models::Pool, chain::convert_tick_bits_to_signed};
 
 struct TappScraper {
     chain_client: TappChainClient,
@@ -31,16 +31,42 @@ struct TappScraper {
 
 impl Scraper for TappScraper {
     async fn scrape_pools(&self) -> anyhow::Result<()> {
-        todo!("Implement scrape pools");
+        let pools = self
+            .api_client
+            .get_pools(PoolsQuery::all_clmm_pools())
+            .await?;
+
+        let models: Vec<pools::ActiveModel> = pools
+            .into_iter()
+            .map(|p| p.to_active_model().unwrap())
+            .collect();
+
+        Pools::insert_many(models)
+            .on_conflict(
+                OnConflict::column(pools::Column::Id)
+                    .update_columns([
+                        pools::Column::TradingApr,
+                        pools::Column::BonusApr,
+                        pools::Column::Tvl,
+                        pools::Column::VolumeDay,
+                        pools::Column::VolumeWeek,
+                        pools::Column::VolumeMonth,
+                        pools::Column::VolumePrevDay,
+                        pools::Column::UpdatedAt,
+                    ])
+                    .to_owned(),
+            )
+            .exec(&self.database_connection)
+            .await?;
+
+        Ok(())
     }
 
     async fn scrape_pool(&self, id: &str) -> anyhow::Result<()> {
         let pool = self.api_client.get_pool(id).await?;
 
-        let mut tokens = pool.tokens;
-        let token_b = tokens.pop().map(|t| t.addr);
-        let token_a = tokens.pop().map(|t| t.addr);
-
+        let model = pool.to_active_model()?;
+        /*
         let model = pools::ActiveModel {
             // Note: Position index is mostly unused now that contract queries are fixed
             position_index: Set(None),
@@ -58,6 +84,7 @@ impl Scraper for TappScraper {
             token_b: Set(token_b),
             updated_at: Set(Some(Utc::now().naive_utc())),
         };
+         */
         Pools::insert(model)
             .on_conflict(
                 OnConflict::column(pools::Column::Id)
