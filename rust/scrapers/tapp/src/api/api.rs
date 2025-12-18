@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Result, anyhow};
 use serde::{Deserialize, Serialize};
 
 const TAPP_API_BASE_URL: &str = "https://api.tapp.exchange/v1";
@@ -91,6 +91,22 @@ impl TappHttpClient {
 
     pub async fn get_pools(&self, query: PoolsQuery) -> Result<Vec<Pool>> {
         self.query("public/pool", Params { query }).await
+    }
+
+    pub async fn get_pool(&self, id: &str) -> Result<Pool> {
+        // We're using get_pools since it returns more info than just querying public/pool_stats
+        let pools = self
+            .get_pools(PoolsQuery {
+                pool_type: PoolType::Clmm,
+                page: 1,
+                page_size: 100,
+            })
+            .await?;
+
+        pools
+            .into_iter()
+            .find(|pool| pool.pool_id == id)
+            .ok_or_else(|| anyhow!("Pool not found: {}", id))
     }
 }
 

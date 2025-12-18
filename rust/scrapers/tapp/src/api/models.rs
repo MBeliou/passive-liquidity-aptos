@@ -41,10 +41,10 @@ pub enum PoolType {
 #[derive(Serialize, Deserialize)]
 pub struct PoolsQuery {
     #[serde(rename = "poolType")]
-    pool_type: PoolType,
-    page: usize,
+    pub pool_type: PoolType,
+    pub page: usize,
     #[serde(rename = "pageSize")]
-    page_size: usize,
+    pub page_size: usize,
 }
 
 #[derive(Debug, Serialize)]
@@ -134,10 +134,10 @@ pub struct Pool {
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Apr {
-    pub boosted_apr_percentage: i64,
+    pub boosted_apr_percentage: f64,
     pub campaign_aprs: Vec<Value>,
-    pub fee_apr_percentage: i64,
-    pub total_apr_percentage: i64,
+    pub fee_apr_percentage: f64,
+    pub total_apr_percentage: f64,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -155,8 +155,8 @@ pub struct Token {
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct VolumeData {
-    pub volume24h: i64,
-    pub volume30d: i64,
-    pub volume7d: i64,
-    pub volumeprev24h: i64,
+    pub volume24h: f64,
+    pub volume30d: f64,
+    pub volume7d: f64,
+    pub volumeprev24h: f64,
 }

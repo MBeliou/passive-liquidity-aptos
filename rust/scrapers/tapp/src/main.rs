@@ -9,13 +9,15 @@ use aptos_rust_sdk::client::config::AptosNetwork;
 use chain::TappChainClient;
 use db::{
     self,
+    entities::pools::{self, Entity as Pools},
     entities::positions::{self, Entity as Positions},
 };
+use rust_decimal::Decimal;
 use scraper_common::{Scraper, run};
-use sea_orm::ColumnTrait;
 use sea_orm::{
     ActiveValue::Set, DatabaseConnection, EntityTrait, QueryFilter, sqlx::types::chrono::Utc,
 };
+use sea_orm::{ColumnTrait, sea_query::OnConflict};
 use tapp::api::api::TappHttpClient;
 use types::Network;
 
@@ -32,13 +34,57 @@ impl Scraper for TappScraper {
         todo!("Implement scrape pools");
     }
 
-     async fn scrape_pool(&self, id: &str) -> anyhow::Result<()> {
-        todo!("Implement scrape_pool");
+    async fn scrape_pool(&self, id: &str) -> anyhow::Result<()> {
+        let pool = self.api_client.get_pool(id).await?;
+
+        let mut tokens = pool.tokens;
+        let token_b = tokens.pop().map(|t| t.addr);
+        let token_a = tokens.pop().map(|t| t.addr);
+
+        let model = pools::ActiveModel {
+            // Note: Position index is mostly unused now that contract queries are fixed
+            position_index: Set(None),
+            id: Set(id.to_string()),
+            dex: Set("tapp".to_string()),
+            fee: Set(pool.fee_tier.parse::<Decimal>()?),
+            trading_apr: Set(pool.apr.fee_apr_percentage as f64),
+            bonus_apr: Set(pool.apr.boosted_apr_percentage as f64),
+            tvl: Set(pool.tvl.parse::<f64>()?),
+            volume_day: Set(pool.volume_data.volume24h as f64),
+            volume_week: Set(pool.volume_data.volume7d as f64),
+            volume_month: Set(pool.volume_data.volume30d as f64),
+            volume_prev_day: Set(pool.volume_data.volumeprev24h as f64),
+            token_a: Set(token_a),
+            token_b: Set(token_b),
+            updated_at: Set(Some(Utc::now().naive_utc())),
+        };
+        Pools::insert(model)
+            .on_conflict(
+                OnConflict::column(pools::Column::Id)
+                    .update_columns([
+                        pools::Column::TradingApr,
+                        pools::Column::BonusApr,
+                        pools::Column::Tvl,
+                        pools::Column::VolumeDay,
+                        pools::Column::VolumeWeek,
+                        pools::Column::VolumeMonth,
+                        pools::Column::VolumePrevDay,
+                        pools::Column::UpdatedAt,
+                    ])
+                    .to_owned(),
+            )
+            .exec(&self.database_connection)
+            .await?;
+
+        Ok(())
     }
 
     async fn scrape_positions(&self, id: &str) -> anyhow::Result<()> {
         let positions = self.chain_client.fetch_positions(id).await?;
-        let position_ids: Vec<i32> = positions.iter().map(|p| p.index.clone().parse::<i32>().unwrap()).collect();
+        let position_ids: Vec<i32> = positions
+            .iter()
+            .map(|p| p.index.clone().parse::<i32>().unwrap())
+            .collect();
 
         let models: Vec<positions::ActiveModel> = positions
             .into_iter()
