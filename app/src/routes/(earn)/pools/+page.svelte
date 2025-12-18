@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getPools } from './data.remote';
+	import { getPools } from '$lib/remote/pools.remote';
 
 	const feeTiers = [0.01, 0.05, 0.3, 1];
 
