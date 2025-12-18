@@ -65,7 +65,6 @@ impl TappHttpClient {
             method: method.to_string(),
             params,
         };
-        println!("{}", json!(request));
         let response = self
             .client
             .post(&self.base_url)
@@ -73,11 +72,7 @@ impl TappHttpClient {
             .send()
             .await?;
 
-        //let json_response: JsonRpcResponse<T> = response.json().await?;
-        let text = response.text().await?;
-        println!("{}", text);
-        //let pool: Pool = serde_json::from_str(&text)?;
-        let json_response: JsonRpcResponse<T> = serde_json::from_str(&text).unwrap();
+        let json_response: JsonRpcResponse<T> = response.json().await?;
         Ok(json_response.result.data)
     }
     pub async fn get_all_tokens(&self) -> Result<Vec<TappApiToken>> {

@@ -83,13 +83,13 @@ pub struct TappApiToken {
     pub name: String,
     pub price: String,
     #[serde(rename = "price1hPercentage")]
-    pub price_1h_percentage: String,
+    pub price_1h_percentage: Option<String>,
     #[serde(rename = "price24hPercentage")]
-    pub price_24h_percentage: String,
+    pub price_24h_percentage: Option<String>,
     #[serde(rename = "price30dPercentage")]
-    pub price_30d_percentage: String,
+    pub price_30d_percentage: Option<String>,
     #[serde(rename = "price7dPercentage")]
-    pub price_7d_percentage: String,
+    pub price_7d_percentage: Option<String>,
     #[serde(rename = "priceData")]
     pub price_data: PriceData,
     pub ticker: String,
@@ -104,13 +104,13 @@ pub struct TappApiPool {}
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct PriceData {
     #[serde(rename = "price1h")]
-    pub price_1h: f64,
+    pub price_1h: Option<f64>,
     #[serde(rename = "price24h")]
-    pub price_24h: f64,
+    pub price_24h: Option<f64>,
     #[serde(rename = "price30d")]
-    pub price_30d: f64,
+    pub price_30d: Option<f64>,
     #[serde(rename = "price7d")]
-    pub price_7d: f64,
+    pub price_7d: Option<f64>,
 }
 
 /// Price chart data point

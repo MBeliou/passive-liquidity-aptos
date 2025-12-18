@@ -155,7 +155,7 @@ impl Scraper for TappScraper {
                 about: Set(None),
                 decimals: Set(t.decimals.into()),
                 logo: Set(Some(t.img.clone())),
-                updated_at: Set(Some(Utc::now().naive_utc())),
+                updated_at: Set(Some(Utc::now().naive_utc()))
             })
             .collect();
 
