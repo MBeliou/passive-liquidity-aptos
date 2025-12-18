@@ -9,8 +9,11 @@ use aptos_rust_sdk::client::config::AptosNetwork;
 use chain::TappChainClient;
 use db::{
     self,
-    entities::pools::{self, Entity as Pools},
-    entities::positions::{self, Entity as Positions},
+    entities::{
+        pools::{self, Entity as Pools},
+        positions::{self, Entity as Positions},
+        tokens::{self, Entity as Tokens},
+    },
 };
 use rust_decimal::Decimal;
 use scraper_common::{Scraper, run};
@@ -66,25 +69,7 @@ impl Scraper for TappScraper {
         let pool = self.api_client.get_pool(id).await?;
 
         let model = pool.to_active_model()?;
-        /*
-        let model = pools::ActiveModel {
-            // Note: Position index is mostly unused now that contract queries are fixed
-            position_index: Set(None),
-            id: Set(id.to_string()),
-            dex: Set("tapp".to_string()),
-            fee: Set(pool.fee_tier.parse::<Decimal>()?),
-            trading_apr: Set(pool.apr.fee_apr_percentage as f64),
-            bonus_apr: Set(pool.apr.boosted_apr_percentage as f64),
-            tvl: Set(pool.tvl.parse::<f64>()?),
-            volume_day: Set(pool.volume_data.volume24h as f64),
-            volume_week: Set(pool.volume_data.volume7d as f64),
-            volume_month: Set(pool.volume_data.volume30d as f64),
-            volume_prev_day: Set(pool.volume_data.volumeprev24h as f64),
-            token_a: Set(token_a),
-            token_b: Set(token_b),
-            updated_at: Set(Some(Utc::now().naive_utc())),
-        };
-         */
+
         Pools::insert(model)
             .on_conflict(
                 OnConflict::column(pools::Column::Id)
@@ -156,7 +141,30 @@ impl Scraper for TappScraper {
     }
 
     async fn scrape_tokens(&self) -> anyhow::Result<()> {
-        todo!("Need to get tokens within the db somehow");
+        let tokens = self
+            .api_client
+            .get_all_tokens()
+            .await?;
+
+        let token_models: Vec<tokens::ActiveModel> = tokens
+            .iter()
+            .map(|t| tokens::ActiveModel {
+                id: Set(t.addr.clone()),
+                name: Set(Some(t.name.clone())),
+                symbol: Set(t.ticker.clone()),
+                about: Set(None),
+                decimals: Set(t.decimals.into()),
+                logo: Set(Some(t.img.clone())),
+                updated_at: Set(Some(Utc::now().naive_utc())),
+            })
+            .collect();
+
+        Tokens::insert_many(token_models)
+            .on_conflict_do_nothing()
+            .exec_with_returning(&self.database_connection)
+            .await?;
+
+        Ok(())
     }
 }
 

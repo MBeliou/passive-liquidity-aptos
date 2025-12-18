@@ -1,5 +1,6 @@
 use anyhow::{Result, anyhow};
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 
 const TAPP_API_BASE_URL: &str = "https://api.tapp.exchange/v1";
 
@@ -53,7 +54,7 @@ impl TappHttpClient {
             .fetch_add(1, std::sync::atomic::Ordering::SeqCst)
     }
 
-    async fn query<T, P>(&self, method: &str, params: P) -> Result<T>
+    async fn query<T, P>(&self, method: &str, params: Params<P>) -> Result<T>
     where
         T: for<'de> Deserialize<'de>,
         P: Serialize,
@@ -64,7 +65,7 @@ impl TappHttpClient {
             method: method.to_string(),
             params,
         };
-
+        println!("{}", json!(request));
         let response = self
             .client
             .post(&self.base_url)
@@ -72,10 +73,24 @@ impl TappHttpClient {
             .send()
             .await?;
 
-        let json_response: JsonRpcResponse<T> = response.json().await?;
+        //let json_response: JsonRpcResponse<T> = response.json().await?;
+        let text = response.text().await?;
+        println!("{}", text);
+        //let pool: Pool = serde_json::from_str(&text)?;
+        let json_response: JsonRpcResponse<T> = serde_json::from_str(&text).unwrap();
         Ok(json_response.result.data)
     }
-
+    pub async fn get_all_tokens(&self) -> Result<Vec<TappApiToken>> {
+        // TODO: there currently are only 92 tokens defined on tapp. We'll need to iterate in the very near future
+        self.get_token_list(TokenListQuery {
+            start_time: Some(0),
+            end_time: Some(0),
+            keyword: None,
+            page: Some(1),
+            page_size: Some(100),
+        })
+        .await
+    }
     /**  Get token list from TAPP API
      *  It seems tapp's using Fungible Assets with no regards for the older coin type. Careful
      */
