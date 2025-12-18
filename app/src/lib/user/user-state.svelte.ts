@@ -3,38 +3,21 @@ import type { WalletState } from '$lib/wallet/wallet.svelte';
 import type { Aptos } from '@aptos-labs/ts-sdk';
 import { type AccountInfo } from '@aptos-labs/wallet-adapter-core';
 import { getContext, setContext } from 'svelte';
-import { getManagedPositions as getManagedPositionsQuery } from '../../routes/profile/manager.remote';
 
 export class UserState {
 	account = $state<AccountInfo | null>(null);
 
 	balances = $state<Awaited<ReturnType<InstanceType<typeof UserState>['getBalances']>>>([]);
-	managedPositions = $state<any[]>([]);
 	loadingManagedPositions = $state(false);
 
 	aptosClient: Aptos;
 	tappClient: ReturnType<typeof useTapp>;
 
-	// Authorization state
-	isAuthorized = $derived(
-		this.account ? this.checkAuthorization(this.account.address.toString()) : false
-	);
-
 	// Address to use for API calls (user's if authorized, demo address if not)
 	displayAddress = $derived.by(() => {
 		if (!this.account) return null;
-		return this.isAuthorized ? this.account.address.toString() : this.getDemoAddress();
+		this.account.address.toString();
 	});
-
-	private checkAuthorization(address: string): boolean {
-		// This will be checked server-side, but we expose it client-side for UI
-		return false; // Client-side always returns false for security
-	}
-
-	private getDemoAddress(): string {
-		// This is fetched from server on first load
-		return '';
-	}
 
 	constructor(walletState: WalletState, aptosClient: Aptos) {
 		this.aptosClient = aptosClient;
@@ -45,10 +28,6 @@ export class UserState {
 				console.log('found account');
 				this.refreshBalances();
 				this.getPositions();
-				this.refreshManagedPositions();
-			} else {
-				// Clear managed positions when account disconnects
-				this.managedPositions = [];
 			}
 		});
 
@@ -100,64 +79,9 @@ export class UserState {
 		return positions.data;
 	}
 
-	async getManagedPositions() {
-		if (!this.account || !this.displayAddress) {
-			return [];
-		}
-
-		try {
-			const result = await getManagedPositionsQuery({
-				userAddress: this.displayAddress, // Use displayAddress (demo if not authorized)
-				requestingUserAddress: this.account.address.toString() // Send actual user for auth check
-			});
-
-			return result.positions || [];
-		} catch (error) {
-			console.error('Failed to fetch managed positions:', error);
-			return [];
-		}
-	}
-
-	async triggerRebalance() {
-		if (!this.account || !this.isAuthorized) {
-			console.warn('Rebalance action not authorized');
-			return null;
-		}
-
-		this.loadingManagedPositions = true;
-		try {
-			const response = await fetch('/api/manager/rebalance', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					userAddress: this.account.address.toString()
-				})
-			});
-
-			const result = await response.json();
-			console.log('Rebalance result:', result);
-
-			// Refresh positions after rebalancing
-			await this.refreshManagedPositions();
-
-			return result;
-		} catch (error) {
-			console.error('Failed to trigger rebalance:', error);
-			return null;
-		} finally {
-			this.loadingManagedPositions = false;
-		}
-	}
-
 	// Utils
 	async refreshBalances() {
 		this.balances = await this.getBalances();
-	}
-
-	async refreshManagedPositions() {
-		this.loadingManagedPositions = true;
-		this.managedPositions = await this.getManagedPositions();
-		this.loadingManagedPositions = false;
 	}
 }
 
