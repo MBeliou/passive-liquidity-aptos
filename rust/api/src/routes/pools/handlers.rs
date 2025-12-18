@@ -24,6 +24,9 @@ use sea_orm::QuerySelect;
     tag = "pools",
     params(
         ("id" = String, Path, description = "Pool ID")
+    ),
+    responses(
+        (status=200, description="Pool fetched successfully")
     )
 )]
 #[axum::debug_handler]
@@ -118,17 +121,16 @@ pub enum OrderDir {
 }
 
 // Response struct
-#[derive(Serialize)]
+#[derive(Debug, Serialize, utoipa::ToSchema)]
 pub struct PoolsResponse {
     pub pools: Vec<pools::Model>,
     pub count: usize,
 }
 
-#[utoipa::path(
-    get,
-    path="/pools",
-    tag = "pools"
-)]
+#[utoipa::path(get, path = "/pools", tag = "pools",
+responses(
+        (status=200, description="Pools fetched successfully", body = PoolsResponse)
+    ))]
 #[axum::debug_handler]
 pub async fn get_pools(
     State(state): State<Arc<AppState>>,
@@ -165,13 +167,13 @@ pub async fn get_pools(
                 .add(
                     Condition::all()
                         .add(pools::Column::TokenA.eq(token_a.clone()))
-                        .add(pools::Column::TokenB.eq(token_b.clone()))
+                        .add(pools::Column::TokenB.eq(token_b.clone())),
                 )
                 .add(
                     Condition::all()
                         .add(pools::Column::TokenA.eq(token_b))
-                        .add(pools::Column::TokenB.eq(token_a))
-                )
+                        .add(pools::Column::TokenB.eq(token_a)),
+                ),
         );
     }
 

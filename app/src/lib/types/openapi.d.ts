@@ -202,6 +202,35 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Model: {
+            /** Format: double */
+            bonus_apr: number;
+            dex: string;
+            fee: string;
+            id: string;
+            /** Format: int32 */
+            position_index?: number | null;
+            token_a?: string | null;
+            token_b?: string | null;
+            /** Format: double */
+            trading_apr: number;
+            /** Format: double */
+            tvl: number;
+            /** Format: date-time */
+            updated_at?: string | null;
+            /** Format: double */
+            volume_day: number;
+            /** Format: double */
+            volume_month: number;
+            /** Format: double */
+            volume_prev_day: number;
+            /** Format: double */
+            volume_week: number;
+        };
+        PoolsResponse: {
+            count: number;
+            pools: components["schemas"]["Model"][];
+        };
         RefreshPoolsResponse: {
             message: string;
             pools_updated: number;
@@ -272,7 +301,17 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
-        responses: never;
+        responses: {
+            /** @description Pools fetched successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PoolsResponse"];
+                };
+            };
+        };
     };
     refresh_pools: {
         parameters: {
@@ -305,7 +344,15 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
-        responses: never;
+        responses: {
+            /** @description Pool fetched successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
     };
     refresh_single_pool: {
         parameters: {

@@ -3,7 +3,17 @@
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize, Deserialize)]
+#[derive(
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    EnumIter,
+    DeriveActiveEnum,
+    Serialize,
+    Deserialize,
+    utoipa :: ToSchema,
+)]
 #[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "movement_type")]
 pub enum MovementType {
     #[sea_orm(string_value = "deposit")]
@@ -13,7 +23,17 @@ pub enum MovementType {
     #[sea_orm(string_value = "rebalance")]
     Rebalance,
 }
-#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize, Deserialize)]
+#[derive(
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    EnumIter,
+    DeriveActiveEnum,
+    Serialize,
+    Deserialize,
+    utoipa :: ToSchema,
+)]
 #[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "position_status")]
 pub enum PositionStatus {
     #[sea_orm(string_value = "active")]

@@ -1,6 +1,7 @@
 import { query } from '$app/server';
 import { db } from '$lib/server/db';
 import { poolsTable, tokensTable } from '$lib/server/db/schema';
+import { apiClient } from '$lib/shared/api';
 import { eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 
@@ -83,3 +84,12 @@ export const getPools = query(async () => {
 
 	return pools2;
 });
+
+export const getPoolsV1 = query(async () => {
+	const pools = await apiClient.GET('/pools');
+
+
+	return [pools.data];
+});
+
+export const getPool = query(async () => {});

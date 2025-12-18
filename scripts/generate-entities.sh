@@ -12,4 +12,6 @@ DATABASE_URL="postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_
 sea-orm-cli generate entity \
     --database-url "$DATABASE_URL" \
     --with-serde both \
+    --model-extra-derives "utoipa::ToSchema" \
+    --enum-extra-derives "utoipa::ToSchema" \
     --output-dir ./rust/crates/db/src/entities
