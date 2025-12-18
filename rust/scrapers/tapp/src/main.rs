@@ -29,10 +29,14 @@ struct TappScraper {
 
 impl Scraper for TappScraper {
     async fn scrape_pools(&self) -> anyhow::Result<()> {
-        todo!("We need to deal with node usage first");
+        todo!("Implement scrape pools");
     }
 
-    async fn scrape_pool(&self, id: &str) -> anyhow::Result<()> {
+     async fn scrape_pool(&self, id: &str) -> anyhow::Result<()> {
+        todo!("Implement scrape_pool");
+    }
+
+    async fn scrape_positions(&self, id: &str) -> anyhow::Result<()> {
         let positions = self.chain_client.fetch_positions(id).await?;
         let position_ids: Vec<i32> = positions.iter().map(|p| p.index.clone().parse::<i32>().unwrap()).collect();
 
