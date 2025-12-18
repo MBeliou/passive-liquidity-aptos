@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { getPools } from '$lib/remote/pools.remote';
 
 	const feeTiers = [0.01, 0.05, 0.3, 1];
@@ -8,6 +9,8 @@
 		minimumFractionDigits: 2,
 		maximumFractionDigits: 2
 	});
+
+	
 </script>
 
 <section class=" px-4 pt-24">
@@ -16,7 +19,9 @@
 		{#each await getPools() as pool}
 			{@const slug = pool.tokenA.symbol.toLowerCase() + '-' + pool.tokenB.symbol.toLowerCase()}
 			<li>
-				<a class="hover:border-primary grid gap-6 rounded border" href="/pools/{slug}">
+				<a class="hover:border-primary grid gap-6 rounded border" href={resolve("/(earn)/pools/[slug]", {
+					slug
+				})}>
 					<div class="flex items-center gap-4 p-4">
 						<div class="relative">
 							<div
