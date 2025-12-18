@@ -31,9 +31,10 @@ impl Scraper for TappScraper {
     async fn scrape_pools(&self) -> anyhow::Result<()> {
         todo!("We need to deal with node usage first");
     }
+
     async fn scrape_pool(&self, id: &str) -> anyhow::Result<()> {
         let positions = self.chain_client.fetch_positions(id).await?;
-        let position_ids: Vec<String> = positions.iter().map(|p| p.index.clone()).collect();
+        let position_ids: Vec<i32> = positions.iter().map(|p| p.index.clone().parse::<i32>().unwrap()).collect();
 
         let models: Vec<positions::ActiveModel> = positions
             .into_iter()
@@ -71,11 +72,9 @@ impl Scraper for TappScraper {
 
         Positions::delete_many()
             .filter(positions::Column::Pool.eq(id))
-            .filter(positions::Column::Index.is_not_in(&position_ids))
+            .filter(positions::Column::Index.is_not_in(position_ids))
             .exec(&self.database_connection)
             .await?;
-        //self.database_connection.
-        //todo!("What do we want to do here");
         Ok(())
     }
 
