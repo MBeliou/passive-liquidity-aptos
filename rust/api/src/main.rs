@@ -1,7 +1,7 @@
 mod errors;
 mod models;
 mod routes;
-use axum::{Router, routing::get};
+use axum::{Json, Router, response::IntoResponse, routing::get};
 use sea_orm::DatabaseConnection;
 use std::sync::Arc;
 use utoipa::OpenApi;
@@ -38,6 +38,12 @@ async fn health_check() -> &'static str {
     "OK"
 }
 
+
+async fn openapi_json() -> impl IntoResponse {
+    Json(ApiDoc::openapi())
+}
+
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let connection = db::create_connection(
@@ -60,6 +66,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/health", get(health_check))
         .nest("/v1", v1)
         .merge(Scalar::with_url("/scalar", ApiDoc::openapi()))
+        .route("/openapi.json", get(openapi_json))
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")

@@ -1,0 +1,261 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "api",
+    "description": "",
+    "license": {
+      "name": ""
+    },
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/chains": {
+      "get": {
+        "tags": [
+          "chains"
+        ],
+        "operationId": "get_chains",
+        "responses": {}
+      }
+    },
+    "/chains/{id}": {
+      "get": {
+        "tags": [
+          "chains"
+        ],
+        "operationId": "get_chain",
+        "responses": {}
+      }
+    },
+    "/exchanges": {
+      "get": {
+        "tags": [
+          "exchanges"
+        ],
+        "summary": "GET /exchanges - List all available exchanges/DEXes",
+        "description": "Returns a list of exchange identifiers that have pools in the database.\nIf the database is empty, returns a hardcoded list of supported exchanges.",
+        "operationId": "list_exchanges",
+        "responses": {
+          "200": {
+            "description": "List of exchanges"
+          }
+        }
+      }
+    },
+    "/pools": {
+      "get": {
+        "tags": [
+          "pools"
+        ],
+        "operationId": "get_pools",
+        "responses": {}
+      }
+    },
+    "/pools/refresh": {
+      "post": {
+        "tags": [
+          "pools"
+        ],
+        "summary": "POST /pools/refresh - Refresh all pools from TAPP",
+        "description": "This endpoint fetches pool data from TAPP Exchange and updates the database.\n\nNOTE: This implementation requires pool data from TAPP's API or SDK.\nThe TypeScript implementation uses @tapp-exchange/sdk which provides:\n- Pool list with pagination and sorting\n- TVL, volume, APR data\n- Token pair information\n\nFor Rust implementation, options include:\n1. Use TAPP's HTTP API (if publicly documented)\n2. Fetch pool metadata from on-chain resources\n3. Use a proxy service that wraps the TAPP SDK\n\nCurrent implementation is a PLACEHOLDER showing the expected structure.",
+        "operationId": "refresh_pools",
+        "responses": {
+          "200": {
+            "description": "Pools refreshed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshPoolsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pools/{id}": {
+      "get": {
+        "tags": [
+          "pools"
+        ],
+        "operationId": "get_pool",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Pool ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/pools/{id}/refresh": {
+      "post": {
+        "tags": [
+          "pools"
+        ],
+        "summary": "POST /pools/:id/refresh - Refresh a single pool",
+        "description": "This endpoint fetches the latest data for a specific pool from TAPP.",
+        "operationId": "refresh_single_pool",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Pool ID to refresh",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pool refreshed successfully"
+          },
+          "404": {
+            "description": "Pool not found"
+          }
+        }
+      }
+    },
+    "/positions/refresh/{pool_id}": {
+      "post": {
+        "tags": [
+          "positions"
+        ],
+        "summary": "POST /positions/refresh/:pool_id - Refresh positions for a specific pool",
+        "description": "This endpoint fetches position data from the blockchain for a given pool\nand updates the database. It intelligently fetches only new positions\nif the pool has been synced before, or all positions if it's the first sync.",
+        "operationId": "refresh_positions",
+        "parameters": [
+          {
+            "name": "pool_id",
+            "in": "path",
+            "description": "Pool ID to refresh positions for",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Positions refreshed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshPositionsResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pool not found"
+          }
+        }
+      }
+    },
+    "/tokens": {
+      "get": {
+        "tags": [
+          "tokens"
+        ],
+        "summary": "GET /tokens - List all tokens",
+        "operationId": "list_tokens",
+        "responses": {
+          "200": {
+            "description": "List of tokens"
+          }
+        }
+      }
+    },
+    "/tokens/refresh": {
+      "post": {
+        "tags": [
+          "tokens"
+        ],
+        "summary": "POST /tokens/refresh - Refresh token list from TAPP API",
+        "operationId": "refresh_tokens",
+        "responses": {
+          "200": {
+            "description": "Tokens refreshed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RefreshPoolsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message",
+          "pools_updated"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "pools_updated": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "RefreshPositionsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message",
+          "positions_updated"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "positions_updated": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "RefreshResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message",
+          "tokens_updated"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "tokens_updated": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+}
