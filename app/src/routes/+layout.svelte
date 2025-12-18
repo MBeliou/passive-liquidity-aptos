@@ -29,12 +29,6 @@
 			icon: CreditCard,
 			url: '/money-market',
 			isActive: page.url.pathname.startsWith('/money-market')
-		},
-		{
-			label: 'Manage',
-			icon: Gauge,
-			url: '/profile',
-			isActive: page.url.pathname.startsWith('/profile')
 		}
 	]);
 

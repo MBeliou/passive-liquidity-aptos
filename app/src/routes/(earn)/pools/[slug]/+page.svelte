@@ -237,7 +237,7 @@
 		</div>
 
 		<div class="flex items-center justify-end">
-			<Button variant="secondary" href="/profile"
+			<Button variant="secondary" href="#" disabled
 				>Manage my liquidity
 				<ArrowUpRight></ArrowUpRight>
 			</Button>

@@ -28,6 +28,6 @@
 		title: 'Manage Your Liquidity',
 		description: 'View and manage your positions, track performance, and optimize your returns.',
 		buttonText: 'Go to Profile',
-		href: '/profile'
+		href: '#'
 	}}
 />

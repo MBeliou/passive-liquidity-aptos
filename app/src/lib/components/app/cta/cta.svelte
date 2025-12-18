@@ -1,14 +1,13 @@
 <script lang="ts">
 	import Button from '$lib/components/ui/button/button.svelte';
 	import * as Card from '$lib/components/ui/card';
-	import UserRound from '@lucide/svelte/icons/user-round';
 	import ArrowRight from '@lucide/svelte/icons/arrow-right';
 
 	let {
 		title = 'Stop missing out on liquidity fees',
 		description = "The average LP missed out on up to 70% of trading fees. This shouldn' be so hard",
 		buttonText = 'Manage my liquidity',
-		href = '/profile'
+		href = '#'
 	}: {
 		title?: string;
 		description?: string;
