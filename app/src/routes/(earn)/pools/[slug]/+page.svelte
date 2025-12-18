@@ -106,21 +106,7 @@
 		};
 	});
 
-	async function refreshPools() {
-		// We're iterating on the various pools, not the "aggregate"
-		// We don't need to wait, we're just asking for a refresh
-		data.pools
-			.map((p) => p.id)
-			.forEach((id) => {
-				fetch(`/api/v0/pools/${'tapp'}/${id}/refresh`, {
-					method: 'POST'
-				});
-
-				fetch(`/api/v0/pools/${'tapp'}/${id}/positions/refresh`, {
-					method: 'POST'
-				});
-			});
-	}
+	
 </script>
 
 <div class="grid gap-8 [&>*]:px-2 xl:[&>*]:px-0">
@@ -131,8 +117,8 @@
 			<div class="flex items-center space-x-8">
 				<div>
 					<LogoStack
-						tokenA={{ logo: data.assets.tokenA.logo }}
-						tokenB={{ logo: data.assets.tokenB.logo }}
+						tokenA={{ logo: data.assets.tokenA?.logo }}
+						tokenB={{ logo: data.assets.tokenB?.logo }}
 					></LogoStack>
 				</div>
 				<div>
@@ -144,13 +130,10 @@
 					</div>
 				</div>
 			</div>
-			<div>
-				<RefreshButton
-					onclick={() => {
-						refreshPools();
-					}}
-				></RefreshButton>
-			</div>
+				<Button variant="secondary" href="#" disabled
+				>Manage my liquidity
+				<ArrowUpRight></ArrowUpRight>
+			</Button>
 		</div>
 
 		<div class="">
@@ -236,12 +219,6 @@
 			</div>
 		</div>
 
-		<div class="flex items-center justify-end">
-			<Button variant="secondary" href="#" disabled
-				>Manage my liquidity
-				<ArrowUpRight></ArrowUpRight>
-			</Button>
-		</div>
 	</div>
 	<section class="grid gap-6">
 		<Card.Root>
