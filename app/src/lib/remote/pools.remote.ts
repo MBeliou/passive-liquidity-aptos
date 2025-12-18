@@ -5,6 +5,7 @@ import { eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 
 export const getPools = query(async () => {
+	// TODO: this really should be a normalized view or two simpler queries.
 	const tokenA = alias(tokensTable, 'tokenA');
 	const tokenB = alias(tokensTable, 'tokenB');
 

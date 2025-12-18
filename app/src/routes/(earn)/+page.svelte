@@ -1,7 +1,7 @@
 <script lang="ts">
 	import PoolCard from '$lib/components/app/pool-card/pool-card.svelte';
 	import LoaderCircle from '@lucide/svelte/icons/loader-circle';
-	import { getPools } from './pools/pools.remote';
+	import { getPools } from '$lib/remote/pools.remote';
 	import { CTA } from '$lib/components/app/cta';
 </script>
 
