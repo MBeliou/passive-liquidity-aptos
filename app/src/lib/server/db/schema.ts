@@ -61,62 +61,6 @@ export const positionsTable = pgTable(
 	(table) => [primaryKey({ columns: [table.index, table.pool] })]
 );
 
-// Manager-related tables
-
-export const usersTable = pgTable('users', {
-	id: serial().primaryKey(),
-	index: integer().notNull().unique(),
-	address: varchar({ length: 66 }).notNull().unique(),
-	createdAt: timestamp('created_at').defaultNow().notNull()
-});
-
-export const movementTypeEnum = pgEnum('movement_type', ['deposit', 'withdraw', 'rebalance']);
-
-export const userMovementsTable = pgTable('user_movements', {
-	id: serial().primaryKey(),
-	userId: integer('user_id')
-		.references(() => usersTable.id)
-		.notNull(),
-	txHash: varchar('tx_hash', { length: 66 }).notNull(),
-	txInfo: text('tx_info'), // JSON string with transaction details
-	movementType: movementTypeEnum('movement_type').notNull(),
-	createdAt: timestamp('created_at').defaultNow().notNull()
-});
-
-export const positionStatusEnum = pgEnum('position_status', ['active', 'closed']);
-
-export const managedPositionsTable = pgTable('managed_positions', {
-	id: serial().primaryKey(),
-	userId: integer('user_id')
-		.references(() => usersTable.id)
-		.notNull(),
-	poolId: varchar('pool_id')
-		.references(() => poolsTable.id)
-		.notNull(),
-	positionId: varchar('position_id').notNull(), // On-chain position ID
-	tickLower: bigint('tick_lower', { mode: 'number' }).notNull(),
-	tickUpper: bigint('tick_upper', { mode: 'number' }).notNull(),
-	liquidity: varchar().notNull(),
-	status: positionStatusEnum().notNull().default('active'),
-	createdAt: timestamp('created_at').defaultNow().notNull(),
-	updatedAt: timestamp('updated_at').defaultNow().notNull()
-});
-
-export const userBalancesTable = pgTable(
-	'user_balances',
-	{
-		userId: integer('user_id')
-			.references(() => usersTable.id)
-			.notNull(),
-		tokenId: varchar('token_id', { length: 66 })
-			.references(() => tokensTable.id)
-			.notNull(),
-		amount: varchar().notNull(), // Store as string for big number support
-		updatedAt: timestamp('updated_at').defaultNow().notNull()
-	},
-	(table) => [primaryKey({ columns: [table.userId, table.tokenId] })]
-);
-
 // chain IDs can be found at https://chainlist.org/
 // I don't think we want rpcs here.
 export const chainsTable = pgTable('chains', {
