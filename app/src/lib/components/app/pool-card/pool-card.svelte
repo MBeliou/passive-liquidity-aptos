@@ -104,11 +104,11 @@
 		</div>
 	</div>
 
-	<div class="flex h-full flex-grow items-stretch border-t">
+	<div class="flex h-full grow items-stretch border-t">
 		{#each FEE_TIERS as feeTier}
 			{@const poolDetail = poolDetailsByFee[feeTier]}
 			{@const hasTier = !!poolDetail}
-			<div class="flex flex-grow flex-col items-center justify-center border-r p-2 text-center">
+			<div class="flex grow flex-col items-center justify-center border-r p-2 text-center">
 				{#if hasTier}
 					<div class="text-xs font-medium">
 						${compactFormat.format(poolDetail.volumeDay)}

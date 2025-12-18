@@ -46,7 +46,7 @@
 				</div>
 			</UsedComponent.Header>
 
-			<div class="flex-grow gap-4 overflow-y-auto p-4">
+			<div class="grow gap-4 overflow-y-auto p-4">
 				{#if searchResult.length === 0}
 					<div class="flex flex-col items-center justify-center">
 						<p class="text-muted-foreground">No results found</p>
@@ -68,7 +68,7 @@
 										<div class="text-muted-foreground">?</div>
 									{/if}
 								</div>
-								<div class="flex-grow">
+								<div class="grow">
 									<div class="text-lg font-medium">
 										{token.name}
 									</div>

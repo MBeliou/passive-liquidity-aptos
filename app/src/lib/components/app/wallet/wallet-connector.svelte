@@ -69,7 +69,7 @@
 						</div>
 					</UsedComponent.Header>
 
-					<div class="flex flex-grow flex-col p-4">
+					<div class="flex grow flex-col p-4">
 						{#await userState.balances}
 							<div class=" self-center">
 								<LoaderCircle class="animate-spin"></LoaderCircle>
@@ -81,7 +81,7 @@
 							)}
 							{#if filtered.length === 0}
 								<div
-									class="flex h-full min-h-[200px] flex-grow flex-col items-center justify-center rounded border"
+									class="flex h-full min-h-[200px] grow flex-col items-center justify-center rounded border"
 								>
 									<div class="bg-muted rounded-full p-2">
 										<CircleOff class=""></CircleOff>
@@ -103,7 +103,7 @@
 													class="bg-muted size-8 rounded-full border bg-cover bg-center"
 													style="background-image: url({tokenInfo?.logo});"
 												></div>
-												<div class="flex-grow">
+												<div class="grow">
 													<div class="text-lg">
 														{tokenInfo?.name}
 													</div>

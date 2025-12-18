@@ -48,7 +48,7 @@
 							{@const hasTier = pool.uniqueFees.map((f) => parseFloat(f)).includes(feeTier)}
 							<div
 								class={[
-									'flex flex-grow flex-col items-center justify-center border-r p-2 font-medium'
+									'flex grow flex-col items-center justify-center border-r p-2 font-medium'
 								]}
 							>
 								<div class="">{hasTier ? 'volume' : '-'}</div>
